@@ -5,6 +5,7 @@ import React from 'react';
 
 const TopNavigationFlexbox = () => {
   return (
+<<<<<<< HEAD
     <nav style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '10px', backgroundColor: '#e0e0e0' }}>
       <div style={{ display: 'flex', alignItems: 'center' }}>
         <img 
@@ -16,6 +17,17 @@ const TopNavigationFlexbox = () => {
           <h1 style={{ margin: 0, fontSize: '18px' }}>UTM ResearchHub</h1>
           
         </div>
+=======
+    <main className="flex min-h-screen flex-col items-center justify-center bg-gradient-to-b from-[#036846] to-[#5edaa7] text-white">
+      <div className="container flex flex-col items-center justify-center gap-12 px-4 py-16">
+          <Link
+            className="flex max-w-xs flex-col gap-4 rounded-xl bg-white/10 p-4 text-white hover:bg-white/20"
+            href="/login"
+            target="_blank"
+          >
+            <h3 className="text-2xl font-bold">Login here bij</h3>
+          </Link>
+>>>>>>> eb3cf089c67742befc75816518e6bbe63f0b75fa
       </div>
       <div style={{ display: 'flex', gap: '100px' }}>
 
