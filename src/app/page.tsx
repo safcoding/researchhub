@@ -238,7 +238,7 @@ const NavigationFlexbox = () => {
       <a href="/about" style={{ textDecoration: 'none', color: '#333' }}>About</a>
       <a href="/labs" style={{ textDecoration: 'none', color: '#333' }}>Our Labs</a>
       <a href="/publications" style={{ textDecoration: 'none', color: '#333' }}>Publications</a>
-      <a href="/grants" style={{ textDecoration: 'none', color: '#333' }}>Grants</a>
+      <a href="/grant" style={{ textDecoration: 'none', color: '#333' }}>Grants</a>
       <a href="/announcements" style={{ textDecoration: 'none', color: '#333' }}>Announcements</a>
     </nav>
   );
