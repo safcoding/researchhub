@@ -34,7 +34,58 @@ const HomePage = () => {
 
       {/* Achievements */}
      
-
+      <section className="py-12 bg-gray-50">
+  <div className="container mx-auto px-4">
+    <h2 className="text-3xl font-bold mb-8 text-center">Our Achievements</h2>
+    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      {[
+        {
+          id: 1,
+          image: '/news-1.jpg',
+          date: 'October 15, 2023',
+          title: 'Achievement Announcement 1',
+          description: 'Congratulations to Dr. Smith for receiving the Highly Cited Researcher award...',
+          link: '/news/1',
+        },
+        {
+          id: 2,
+          image: '/news-2.jpg',
+          date: 'November 10, 2023',
+          title: 'Achievement Announcement 2',
+          description: 'Our team has published a groundbreaking paper on AI advancements...',
+          link: '/news/2',
+        },
+        {
+          id: 3,
+          image: '/news-3.jpg',
+          date: 'December 5, 2023',
+          title: 'Achievement Announcement 3',
+          description: 'We secured a major research grant for renewable energy projects...',
+          link: '/news/3',
+        },
+      ].map((item) => (
+        <div key={item.id} className="bg-white rounded-lg shadow-md overflow-hidden">
+          <div className="h-48 relative">
+            <Image 
+              src={item.image} 
+              alt={item.title} 
+              fill 
+              style={{ objectFit: 'cover' }} 
+            />
+          </div>
+          <div className="p-6">
+            <p className="text-sm text-gray-500 mb-2">Posted: {item.date}</p>
+            <h3 className="text-xl font-semibold mb-2">{item.title}</h3>
+            <p className="text-gray-600 mb-4">{item.description}</p>
+            <Link href={item.link} className="text-blue-600 hover:text-blue-800 font-medium">
+              Read more →
+            </Link>
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
+</section>
 
       {/* Announcements */}
       <section className="py-12 bg-gray-50">
