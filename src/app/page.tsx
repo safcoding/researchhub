@@ -280,6 +280,7 @@ const NavigationFlexbox = () => {
             <a href="/publications" className="hover:underline">Publications</a>
             <a href="/grant" className="hover:underline">Grants</a>
             <a href="/announcements" className="hover:underline">Announcements</a>
+            <a href="/grant-db" className="hover:underline">Grant Add</a>
           </nav>
         </div>
         
