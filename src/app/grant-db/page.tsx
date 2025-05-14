@@ -3,7 +3,7 @@
 import type { Grant } from '@/hooks/grant-logic';
 import { GrantLogic } from '@/hooks/grant-logic';
 import { GrantTable } from '@/components/grant-table';
-import { GrantModal } from '@/components/grant-crud';  // Add this line
+import { GrantModal } from '@/components/grant-crud'; 
 import { Navbar } from '@/components/navbar';
 import { useState } from 'react';
 
@@ -13,6 +13,19 @@ export default function GrantDBPage() {
     const [showEditModal, setShowEditModal] = useState(false);
     const [selectedGrant, setSelectedGrant] = useState<Grant | null>(null);
 
+    const handleAddGrant = async (newGrant: Omit<Grant, 'PROJECTID'>) => {
+        await addGrant(newGrant);
+        setShowAddModal(false);
+    };
+
+    const handleUpdateGrant = async (updatedData: Partial<Grant>) => {
+        if (selectedGrant) {
+            await updateGrant(selectedGrant.PROJECTID, updatedData);
+            setShowEditModal(false);
+            setSelectedGrant(null);
+        }
+    };
+
     return (
         <>
             <Navbar />
@@ -21,9 +34,9 @@ export default function GrantDBPage() {
                     <h1 className="text-2xl font-bold">Grants Database</h1>
                     <button
                         onClick={() => setShowAddModal(true)}
-                        className="bg-green-500 text-white px-4 py-2 rounded"
+                        className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
                     >
-                        Add New Grant
+                        Add Grant
                     </button>
                 </div>
 
@@ -33,12 +46,15 @@ export default function GrantDBPage() {
                     </div>
                 )}
 
-{loading ? (
-                    <p>Loading grants...</p>
+                {loading ? (
+                    <div>Loading...</div>
                 ) : (
-                    <GrantTable
+                    <GrantTable 
                         grants={grants}
-                        onEdit={setSelectedGrant}
+                        onEdit={(grant) => {
+                            setSelectedGrant(grant);
+                            setShowEditModal(true);
+                        }}
                         onDelete={deleteGrant}
                     />
                 )}
@@ -47,6 +63,7 @@ export default function GrantDBPage() {
                     <GrantModal
                         onSave={handleAddGrant}
                         onClose={() => setShowAddModal(false)}
+                        isEdit={false}
                     />
                 )}
 
@@ -54,7 +71,11 @@ export default function GrantDBPage() {
                     <GrantModal
                         grant={selectedGrant}
                         onSave={handleUpdateGrant}
-                        onClose={() => setShowEditModal(false)}
+                        onClose={() => {
+                            setShowEditModal(false);
+                            setSelectedGrant(null);
+                        }}
+                        isEdit={true}
                     />
                 )}
             </div>

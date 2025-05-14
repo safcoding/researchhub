@@ -2,9 +2,11 @@ import type {Grant} from '@/hooks/grant-logic';
 
 interface GrantsTableProps {
     grants: Grant[];
+    onEdit: (grant: Grant) => void;
+    onDelete: (projectId: string) => void;
 }
 
-export function GrantTable({ grants }: GrantsTableProps) {
+export function GrantTable({ grants, onEdit, onDelete }: GrantsTableProps) {
     return (
         <div className="overflow-x-auto">
             <table className="min-w-full bg-white">
