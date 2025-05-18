@@ -16,6 +16,7 @@ export interface Grant {
     SPONSOR_CATEGORY: string;
     SUBSPONSOR_NAME: string;
     PRO_APPROVED: number;
+    file_path?: string;
 }
 
 export function GrantLogic() {
@@ -41,6 +42,23 @@ export function GrantLogic() {
             const { error: insertError } = await supabase
                 .from('grant')
                 .insert([newGrant]);
+            if (insertError) throw insertError;
+            await fetchGrants();
+        } catch (e) {
+            setError(e instanceof Error ? e.message : 'Unknown error');
+        }
+    };    const addBulkGrants = async (grants: Omit<Grant, 'PROJECTID'>[], filePath?: string) => {
+        try {
+            // Create a new array with optional file path
+            const grantsWithFilePath = grants.map(grant => ({
+                ...grant,
+                file_path: filePath ?? null
+            }));
+
+            const { error: insertError } = await supabase
+                .from('grant')
+                .insert(grantsWithFilePath);
+                
             if (insertError) throw insertError;
             await fetchGrants();
         } catch (e) {
@@ -73,10 +91,27 @@ export function GrantLogic() {
             setError(e instanceof Error ? e.message : 'Unknown error');
             throw e;
         }
+    };    const getFileUrl = (filePath: string | null | undefined, bucket = 'grants'): string => {
+        if (!filePath) {
+            return '';
+        }
+        
+        try {
+            // Get the public URL for the file
+            const { data } = supabase.storage
+                .from(bucket)
+                .getPublicUrl(filePath);
+            
+            console.log('Generated public URL:', data?.publicUrl);    
+            return data?.publicUrl || '';
+        } catch (e) {
+            console.error('Error getting file URL:', e);
+            return '';
+        }
     };
 
     useEffect(() => {
-        fetchGrants();
+        void fetchGrants();
     }, []);
 
     return {
@@ -84,7 +119,9 @@ export function GrantLogic() {
         loading,
         error,
         addGrant,
+        addBulkGrants,
         updateGrant,
-        deleteGrant
+        deleteGrant,
+        getFileUrl
     };
 }
