@@ -7,13 +7,9 @@ const TopNavigationFlexbox = () => {
   return (
     <nav style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '10px', backgroundColor: '#e0e0e0' }}>
       <div style={{ display: 'flex', alignItems: 'center' }}>
-        <img 
-          src="https://upload.wikimedia.org/wikipedia/commons/8/81/UTM-LOGO.png" 
-          alt="UTM Logo" 
-          style={{ height: '40px', marginRight: '10px' }}
-        />
+        <img src="https://upload.wikimedia.org/wikipedia/commons/8/81/UTM-LOGO.png" alt="UTM Logo" style={{ height: '40px', marginRight: '10px' }}/>
         <div>
-          <h1 style={{ margin: 0, fontSize: '18px' }}>UTM ResearchHub</h1>
+          <h1 style={{ margin: 0, fontSize: '18px' }}><b>UTM ResearchHub</b></h1>
           
         </div>
       </div>
@@ -37,34 +33,59 @@ const HomePage = () => {
       <NavigationFlexbox />
 
       {/* Achievements */}
+     
       <section className="py-12 bg-gray-50">
-        <div className="container mx-auto px-4">
-          <h2 className="text-3xl font-bold mb-8 text-center">Our Achievements</h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {[1, 2, 3].map((item) => (
-              <div key={item} className="bg-white rounded-lg shadow-md overflow-hidden">
-                <div className="h-48 relative">
-                  <Image 
-                    src={`/news-${item}.jpg`} 
-                    alt={`News ${item}`} 
-                    fill 
-                    style={{ objectFit: 'cover' }} 
-                  />
-                </div>
-                <div className="p-6">
-                  <p className="text-sm text-gray-500 mb-2">Posted: October 15, 2023</p>
-                  <h3 className="text-xl font-semibold mb-2">Achievement Announcement</h3>
-                  <p className="text-gray-600 mb-4">Congratulations to Dr. ..... for receiving the Highly cited researcher award...</p>
-                  <Link href="/news/1" className="text-blue-600 hover:text-blue-800 font-medium">
-                    Read more →
-                  </Link>
-                </div>
-              </div>
-            ))}
+  <div className="container mx-auto px-4">
+    <h2 className="text-3xl font-bold mb-8 text-center">Our Achievements</h2>
+    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      {[
+        {
+          id: 1,
+          image: '/news-1.jpg',
+          date: 'October 15, 2023',
+          title: 'Achievement Announcement 1',
+          description: 'Congratulations to Dr. Smith for receiving the Highly Cited Researcher award...',
+          link: '/news/1',
+        },
+        {
+          id: 2,
+          image: '/news-2.jpg',
+          date: 'November 10, 2023',
+          title: 'Achievement Announcement 2',
+          description: 'Our team has published a groundbreaking paper on AI advancements...',
+          link: '/news/2',
+        },
+        {
+          id: 3,
+          image: '/news-3.jpg',
+          date: 'December 5, 2023',
+          title: 'Achievement Announcement 3',
+          description: 'We secured a major research grant for renewable energy projects...',
+          link: '/news/3',
+        },
+      ].map((item) => (
+        <div key={item.id} className="bg-white rounded-lg shadow-md overflow-hidden">
+          <div className="h-48 relative">
+            <Image 
+              src={item.image} 
+              alt={item.title} 
+              fill 
+              style={{ objectFit: 'cover' }} 
+            />
+          </div>
+          <div className="p-6">
+            <p className="text-sm text-gray-500 mb-2">Posted: {item.date}</p>
+            <h3 className="text-xl font-semibold mb-2">{item.title}</h3>
+            <p className="text-gray-600 mb-4">{item.description}</p>
+            <Link href={item.link} className="text-blue-600 hover:text-blue-800 font-medium">
+              Read more →
+            </Link>
           </div>
         </div>
-      </section>
-
+      ))}
+    </div>
+  </div>
+</section>
 
       {/* Announcements */}
       <section className="py-12 bg-gray-50">
@@ -231,18 +252,43 @@ const Dashboard = () => {
   );
 };
 
+/*
 const NavigationFlexbox = () => {
   return (
-    <nav style={{ display: 'flex', justifyContent: 'space-around', padding: '10px', backgroundColor: '#f4f4f4' }}>
-      <a href="/" style={{ textDecoration: 'none', color: '#333' }}>Home</a>
-      <a href="/about" style={{ textDecoration: 'none', color: '#333' }}>About</a>
-      <a href="/labs" style={{ textDecoration: 'none', color: '#333' }}>Our Labs</a>
-      <a href="/publications" style={{ textDecoration: 'none', color: '#333' }}>Publications</a>
-      <a href="/grant" style={{ textDecoration: 'none', color: '#333' }}>Grants</a>
-      <a href="/announcements" style={{ textDecoration: 'none', color: '#333' }}>Announcements</a>
+    <nav style={{ display: 'flex', justifyContent: 'space-evenly', alignItems: 'center', padding: '10px', backgroundColor: '#2941ba' }}>
+      <a href="/" style={{ textDecoration: 'none', color: 'white' }}>Home</a>
+      <a href="/about" style={{ textDecoration: 'none', color: 'white' }}>About</a>
+      <a href="/labs" style={{ textDecoration: 'none', color: 'white' }}>Our Labs</a>
+      <a href="/publications" style={{ textDecoration: 'none', color: 'white' }}>Publications</a>
+      <a href="/grant" style={{ textDecoration: 'none', color: 'white' }}>Grants</a>
+      <a href="/announcements" style={{ textDecoration: 'none', color: 'white' }}>Announcements</a>
     </nav>
   );
 };
+*/
+
+const NavigationFlexbox = () => {
+  return (
+    <header className="bg-blue-800 text-white p-4">
+      <div className="container mx-auto flex justify-between items-center">
+        <div className="flex items-center space-x-4">
+       
+          <nav className="flex space-x-6">
+            <a href="/" className="hover:underline">Home</a>
+            <a href="/about" className="hover:underline">About</a>
+            <a href="/labs" className="hover:underline">Our Labs</a>
+            <a href="/publications" className="hover:underline">Publications</a>
+            <a href="/grant" className="hover:underline">Grants</a>
+            <a href="/announcements" className="hover:underline">Announcements</a>
+          </nav>
+        </div>
+        
+      </div>
+    </header>
+  );
+};
+
+
 
 export default HomePage;
 export { Dashboard, NavigationFlexbox };
