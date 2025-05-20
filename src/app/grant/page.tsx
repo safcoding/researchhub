@@ -43,11 +43,18 @@ export default function GrantsDashboard() {
               alt="UTM Logo"
               width={40}
               height={40}
-              className="mr-3"
-            />
+              className="mr-3"            />
             <div>
-              <h1 className="text-lg font-semibold">UTM ResearchHub</h1>
-             
+              {/* 
+                Grants page navigation - Making ResearchHub title clickable
+                - Uses Next.js Link component for client-side navigation
+                - className="text-inherit no-underline": Maintains the original text color and removes underline
+                - cursor-pointer: Changes the cursor to indicate the text is clickable
+                - This is more consistent with Tailwind CSS approach used in this file
+              */}
+              <Link href="/" className="text-inherit no-underline">
+                <h1 className="text-lg font-semibold cursor-pointer">ResearchHub</h1>
+              </Link>
             </div>
           </div>
           <div className="flex gap-6">
@@ -155,7 +162,7 @@ export default function GrantsDashboard() {
             </div>
           </div>
           <div className="border-t border-gray-800 mt-8 pt-6 text-center text-gray-400">
-            <p>&copy; {new Date().getFullYear()} UTM ResearchHub. All rights reserved.</p>
+            <p>&copy; {new Date().getFullYear()} ResearchHub. All rights reserved.</p>
           </div>
         </div>
       </footer>

@@ -5,12 +5,17 @@ import React from 'react';
 
 const TopNavigationFlexbox = () => {
   return (
-    <nav style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '10px', backgroundColor: '#e0e0e0' }}>
-      <div style={{ display: 'flex', alignItems: 'center' }}>
-        <img src="https://upload.wikimedia.org/wikipedia/commons/8/81/UTM-LOGO.png" alt="UTM Logo" style={{ height: '40px', marginRight: '10px' }}/>
+    <nav style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '10px', backgroundColor: '#e0e0e0' }}>      <div style={{ display: 'flex', alignItems: 'center' }}>        <img src="https://upload.wikimedia.org/wikipedia/commons/8/81/UTM-LOGO.png" alt="UTM Logo" style={{ height: '40px', marginRight: '10px' }}/>
         <div>
-          <h1 style={{ margin: 0, fontSize: '18px' }}><b>UTM ResearchHub</b></h1>
-          
+          {/* 
+            Home page navigation - Link component to make ResearchHub title clickable
+            - Clicking on this will navigate to the home page (/)
+            - Removes default link styling and maintains the current text color
+          */}
+          <Link href="/" style={{ textDecoration: 'none', color: 'inherit' }}>
+            {/* Cursor: pointer gives visual feedback that this is clickable */}
+            <h1 style={{ margin: 0, fontSize: '18px', cursor: 'pointer' }}><b>ResearchHub</b></h1>
+          </Link>
         </div>
       </div>
       <div style={{ display: 'flex', gap: '100px' }}>
