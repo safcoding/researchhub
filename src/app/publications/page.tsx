@@ -91,7 +91,7 @@ const PublicationsDashboard: React.FC = () => {
 
   return (
     <div className="min-h-screen flex flex-col">
-          <Navbar /> {/* Make sure this is the first element */}
+      <Navbar />
 
       <main className="flex-grow container mx-auto px-4 py-8 bg-gray-50">
         <h1 className="text-3xl font-bold text-gray-800 mb-8">Publications Dashboard</h1>
@@ -146,12 +146,36 @@ const PublicationsDashboard: React.FC = () => {
 
         <div className="bg-white p-6 rounded-xl shadow-md">
           <div className="flex justify-between items-center mb-4">
-            <h3 className="text-lg font-semibold">
-              All Publications 
-              <span className="text-sm bg-blue-200 text-blue-800 px-2 py-1 rounded-full ml-2">
-                {filteredPublications.length}
-              </span>
-            </h3>
+            <div className="flex items-center">
+              <h3 className="text-lg font-semibold">
+                All Publications 
+                <span className="text-sm bg-blue-200 text-blue-800 px-2 py-1 rounded-full ml-2">
+                  {filteredPublications.length}
+                </span>
+              </h3>
+
+              {/* Add Publication button */}  
+              <Link 
+                href="/publication-add" //edit this link to the correct path
+                className="ml-4 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded text-sm flex items-center transition-colors"
+              >
+                <svg 
+                  xmlns="http://www.w3.org/2000/svg" 
+                  className="h-4 w-4 mr-2" 
+                  fill="none" 
+                  viewBox="0 0 24 24" 
+                  stroke="currentColor"
+                >
+                  <path 
+                    strokeLinecap="round" 
+                    strokeLinejoin="round" 
+                    strokeWidth={2} 
+                    d="M12 4v16m8-8H4" 
+                  />
+                </svg>
+                Add Publication
+              </Link>
+            </div>
             
             <div className="flex gap-2">
               <select 
