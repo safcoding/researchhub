@@ -281,11 +281,24 @@ const NavigationFlexbox = () => {
           <nav className="flex space-x-6">
             <a href="/" className="hover:underline">Home</a>
             <a href="/about" className="hover:underline">About</a>
-            <a href="/labs" className="hover:underline">Our Labs</a>
-            <a href="/publications" className="hover:underline">Publications</a>
-            <a href="/grant" className="hover:underline">Grants</a>
+            <a href="/labs" className="hover:underline">Our Labs</a>            <a href="/publications" className="hover:underline">Publications</a>
+            
+            {/* Grants dropdown with hover functionality */}
+            <div className="relative group">
+              <div className="flex items-center hover:underline cursor-pointer">
+                <a href="/grant" className="hover:no-underline">Grants</a>
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                </svg>
+              </div>
+              <div className="absolute left-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 text-gray-700 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 z-10">
+                <a href="/grant-db" className="block px-4 py-2 hover:bg-gray-100 text-sm">
+                  Add Grant
+                </a>
+              </div>
+            </div>
+            
             <a href="/announcements" className="hover:underline">Announcements</a>
-            <a href="/grant-db" className="hover:underline">Grant Add</a>
           </nav>
         </div>
         

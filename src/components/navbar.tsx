@@ -31,12 +31,24 @@ export function Navbar() {
           <div className="flex items-center space-x-4">
             <nav className="flex space-x-6">
               <Link href="/" className="hover:underline">Home</Link>
-              <Link href="/about" className="hover:underline">About</Link>
-              <Link href="/labs" className="hover:underline">Our Labs</Link>
+              <Link href="/about" className="hover:underline">About</Link>              <Link href="/labs" className="hover:underline">Our Labs</Link>
               <Link href="/publications" className="hover:underline">Publications</Link>
-              <Link href="/grant" className="hover:underline">Grants</Link>
+                {/* Grants dropdown with hover functionality */}
+              <div className="relative group">
+                <div className="flex items-center hover:underline cursor-pointer">
+                  <Link href="/grant" className="hover:no-underline">Grants</Link>
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                  </svg>
+                </div>
+                <div className="absolute left-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 text-gray-700 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 z-10">
+                  <Link href="/grant-db" className="block px-4 py-2 hover:bg-gray-100 text-sm">
+                    Add Grant
+                  </Link>
+                </div>
+              </div>
+              
               <Link href="/announcements" className="hover:underline">Announcements</Link>
-              <Link href="/grant-db" className="hover:underline">Grant Add</Link>
             </nav>
           </div>
         </div>
