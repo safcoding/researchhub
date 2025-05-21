@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import Navbar from '@/components/navbar';
 
 const GrantUpload = () => {
   const [file, setFile] = useState(null);
@@ -23,6 +24,7 @@ const GrantUpload = () => {
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-gray-100">
+            <Navbar /> {/* Make sure this is the first element */}
       <h1 className="text-3xl font-bold mb-6">Grant File Upload</h1>
       <div className="bg-white p-6 rounded-lg shadow-md w-96">
         <input

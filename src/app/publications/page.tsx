@@ -4,6 +4,7 @@ import React, { useState, useMemo } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import '../../styles/publications.css';
+import Navbar from '@/components/navbar';
 
 import {
   LineChart,
@@ -90,44 +91,7 @@ const PublicationsDashboard: React.FC = () => {
 
   return (
     <div className="min-h-screen flex flex-col">
-      <header>
-        <nav className="flex items-center justify-between p-3 bg-gray-200">
-          <div className="flex items-center">
-            <Image
-              src="https://upload.wikimedia.org/wikipedia/commons/8/81/UTM-LOGO.png"
-              alt="UTM Logo"
-              width={40}
-              height={40}
-              className="mr-3"
-            />
-            <div>
-              <h1 className="text-lg font-semibold">UTM ResearchHub</h1>
-            </div>
-          </div>
-          <div className="flex gap-6">
-            <Link href="https://www.utm.my/" target="_blank" className="text-gray-700 hover:text-blue-600">
-              UTM
-            </Link>
-            <Link href="https://mjiit.utm.my/" target="_blank" className="text-gray-700 hover:text-blue-600">
-              UTM MJIIT
-            </Link>
-            <Link href="/login" className="text-gray-700 hover:text-blue-600">
-              Login
-            </Link>
-          </div>
-        </nav>
-
-        <nav className="bg-blue-800 text-white p-2">
-          <div className="container mx-auto flex justify-center gap-8">
-            <Link href="/" className="hover:underline">Home</Link>
-            <Link href="/about" className="hover:underline">About</Link>
-            <Link href="/labs" className="hover:underline">Our Labs</Link>
-            <Link href="/publications" className="font-medium underline">Publications</Link>
-            <Link href="/grants" className="hover:underline">Grants</Link>
-            <Link href="/announcements" className="hover:underline">Announcements</Link>
-          </div>
-        </nav>
-      </header>
+          <Navbar /> {/* Make sure this is the first element */}
 
       <main className="flex-grow container mx-auto px-4 py-8 bg-gray-50">
         <h1 className="text-3xl font-bold text-gray-800 mb-8">Publications Dashboard</h1>

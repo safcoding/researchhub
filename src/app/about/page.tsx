@@ -1,43 +1,13 @@
 import React from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { NavigationFlexbox } from '../page';
-
-const TopNavigationFlexbox = () => {
-  return (
-    <nav style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '10px', backgroundColor: '#e0e0e0' }}>
-      <div style={{ display: 'flex', alignItems: 'center' }}>        <img 
-          src="https://upload.wikimedia.org/wikipedia/commons/8/81/UTM-LOGO.png" 
-          alt="UTM Logo" 
-          style={{ height: '40px', marginRight: '10px' }}
-        />
-        <div>
-          {/* 
-            About page navigation - Making ResearchHub title clickable
-            - The Link component creates a client-side navigation to the home page
-            - style attributes ensure the link appears as normal text without decoration
-            - This creates a consistent navigation experience across the site
-          */}
-          <Link href="/" style={{ textDecoration: 'none', color: 'inherit' }}>
-            <h1 style={{ margin: 0, fontSize: '18px', cursor: 'pointer' }}>ResearchHub</h1>
-          </Link>
-        </div>
-      </div>
-      <div style={{ display: 'flex', gap: '100px' }}>
-        <a href="https://www.utm.my/" target="_blank" style={{ textDecoration: 'none', color: '#333' }}>UTM</a>
-        <a href="https://mjiit.utm.my/" target="_blank" style={{ textDecoration: 'none', color: '#333' }}>UTM MJIIT</a>
-        <a href="/login" style={{ textDecoration: 'none', color: '#333' }}>Login</a>
-      </div>
-    </nav>
-  );
-};
+import Navbar from '@/components/navbar';
 
 export default function AboutPage() {
   return (
     <div>
-      <TopNavigationFlexbox />
-      <NavigationFlexbox />
-      
+      <Navbar /> {/* Make sure this is the first element */}
+
       <main className="container mx-auto px-4 py-12">
         <div className="max-w-4xl mx-auto">
           <h1 className="text-4xl font-bold mb-8 text-center">About the MJIIT Research Portal</h1>
