@@ -6,11 +6,8 @@ import { NavigationFlexbox } from '../page';
 const TopNavigationFlexbox = () => {
   return (
     <nav style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '10px', backgroundColor: '#e0e0e0' }}>
-      <div style={{ display: 'flex', alignItems: 'center' }}>        <img 
-          src="https://upload.wikimedia.org/wikipedia/commons/8/81/UTM-LOGO.png" 
-          alt="UTM Logo" 
-          style={{ height: '40px', marginRight: '10px' }}
-        />
+      <div style={{ display: 'flex', alignItems: 'center' }}>        
+        <img src="https://upload.wikimedia.org/wikipedia/commons/8/81/UTM-LOGO.png" alt="UTM Logo" style={{ height: '40px', marginRight: '10px' }}/>
         <div>
           {/* 
             About page navigation - Making ResearchHub title clickable

@@ -22,74 +22,137 @@ export interface Grant {
 export function GrantLogic() {
     const [grants, setGrants] = useState<Grant[]>([]);
     const [loading, setLoading] = useState(false);
-    const [error, setError] = useState<string | null>(null);
-
-    const fetchGrants = async () => {
+    const [error, setError] = useState<string | null>(null);    const fetchGrants = async () => {
         try {
             setLoading(true);
+            setError(null);
+            console.log('Fetching grants from database...');
+            
             const { data, error } = await supabase.from('grant').select('*');
-            if (error) throw error;
+            
+            if (error) {
+                console.error('Error fetching grants:', error);
+                throw error;
+            }
+            
+            console.log(`Successfully fetched ${data?.length || 0} grants`);
             setGrants(data || []);
         } catch (e) {
+            console.error('Error in fetchGrants:', e);
             setError(e instanceof Error ? e.message : 'Unknown error');
         } finally {
             setLoading(false);
         }
-    };
-
-    const addGrant = async (newGrant: Omit<Grant, 'PROJECTID'>) => {
+    };const addGrant = async (newGrant: Partial<Grant>) => {
         try {
-            const { error: insertError } = await supabase
+            setLoading(true);
+            console.log('Adding new grant:', newGrant);
+            
+            // Ensure PROJECTID is provided or generate a new one
+            if (!newGrant.PROJECTID) {
+                // Generate a unique PROJECTID if not provided
+                newGrant.PROJECTID = `PRJ-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
+                console.log('Generated PROJECTID:', newGrant.PROJECTID);
+            }
+            
+            const { data, error: insertError } = await supabase
                 .from('grant')
-                .insert([newGrant]);
-            if (insertError) throw insertError;
+                .insert([newGrant])
+                .select();
+                
+            if (insertError) {
+                console.error('Error adding grant:', insertError);
+                throw insertError;
+            }
+            
+            console.log('Grant added successfully:', data);
             await fetchGrants();
         } catch (e) {
+            console.error('Error in addGrant:', e);
             setError(e instanceof Error ? e.message : 'Unknown error');
+            throw e;
+        } finally {
+            setLoading(false);
         }
     };    const addBulkGrants = async (grants: Omit<Grant, 'PROJECTID'>[], filePath?: string) => {
         try {
+            setLoading(true);
+            console.log(`Adding ${grants.length} grants with file path:`, filePath);
+            
             // Create a new array with optional file path
             const grantsWithFilePath = grants.map(grant => ({
                 ...grant,
                 file_path: filePath ?? null
             }));
 
-            const { error: insertError } = await supabase
+            const { data, error: insertError } = await supabase
                 .from('grant')
-                .insert(grantsWithFilePath);
+                .insert(grantsWithFilePath)
+                .select();
                 
-            if (insertError) throw insertError;
+            if (insertError) {
+                console.error('Error adding bulk grants:', insertError);
+                throw insertError;
+            }
+            
+            console.log(`${data?.length || 0} grants added successfully`);
             await fetchGrants();
         } catch (e) {
-            setError(e instanceof Error ? e.message : 'Unknown error');
-        }
-    };
-
-    const updateGrant = async (projectId: string, updatedData: Partial<Grant>) => {
-        try {
-            const { error: updateError } = await supabase
-                .from('grant')
-                .update(updatedData)
-                .eq('PROJECTID', projectId);
-            if (updateError) throw updateError;
-            await fetchGrants();
-        } catch (e) {
-            setError(e instanceof Error ? e.message : 'Unknown error');
-        }
-    };
-
-    const deleteGrant = async (projectId: string) => {
-        try {
-            const { error: deleteError } = await supabase
-                .from('grant')
-                .delete()
-                .eq('PROJECTID', projectId);
-            if (deleteError) throw deleteError;
-            await fetchGrants();
-        } catch (e) {
+            console.error('Error in addBulkGrants:', e);
             setError(e instanceof Error ? e.message : 'Unknown error');
             throw e;
+        } finally {
+            setLoading(false);
+        }
+    };    const updateGrant = async (projectId: string, updatedData: Partial<Grant>) => {
+        try {
+            setLoading(true);
+            console.log(`Updating grant with ID ${projectId}:`, updatedData);
+            
+            const { data, error: updateError } = await supabase
+                .from('grant')
+                .update(updatedData)
+                .eq('PROJECTID', projectId)
+                .select();
+                
+            if (updateError) {
+                console.error('Error updating grant:', updateError);
+                throw updateError;
+            }
+            
+            console.log('Grant updated successfully:', data);
+            await fetchGrants();
+        } catch (e) {
+            console.error('Error in updateGrant:', e);
+            setError(e instanceof Error ? e.message : 'Unknown error');
+            throw e;
+        } finally {
+            setLoading(false);
+        }
+    };    const deleteGrant = async (projectId: string) => {
+        try {
+            setLoading(true);
+            console.log(`Deleting grant with ID ${projectId}`);
+            
+            const { data, error: deleteError } = await supabase
+                .from('grant')
+                .delete()
+                .eq('PROJECTID', projectId)
+                .select();
+                
+            if (deleteError) {
+                console.error('Error deleting grant:', deleteError);
+                throw deleteError;
+            }
+            
+            console.log('Grant deleted successfully:', data);
+            await fetchGrants();
+        } catch (e) {
+            console.error('Error in deleteGrant:', e);
+            setError(e instanceof Error ? e.message : 'Unknown error');
+            throw e;
+        } finally {
+            setLoading(false);
         }
     };    const getFileUrl = (filePath: string | null | undefined, bucket = 'grants'): string => {
         if (!filePath) {
@@ -102,8 +165,13 @@ export function GrantLogic() {
                 .from(bucket)
                 .getPublicUrl(filePath);
             
-            console.log('Generated public URL:', data?.publicUrl);    
-            return data?.publicUrl || '';
+            if (!data?.publicUrl) {
+                console.warn('No public URL returned for file:', filePath);
+                return '';
+            }
+            
+            console.log('Generated public URL:', data.publicUrl);    
+            return data.publicUrl;
         } catch (e) {
             console.error('Error getting file URL:', e);
             return '';

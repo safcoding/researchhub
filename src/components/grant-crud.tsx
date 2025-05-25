@@ -1,5 +1,5 @@
 import type { Grant } from '@/hooks/grant-logic';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 interface GrantModalProps {
     grant?: Grant;
@@ -8,7 +8,9 @@ interface GrantModalProps {
 }
 
 export function GrantModal({ grant, onSave, onClose }: GrantModalProps) {
-    const [formData, setFormData] = useState<Partial<Grant>>(grant || {});    const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+    const [formData, setFormData] = useState<Partial<Grant>>(grant || {});
+    const [errors, setErrors] = useState<Record<string, string>>({});
+    const [isSubmitting, setIsSubmitting] = useState(false);const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
         const { name, value } = e.target;
         // For numeric fields, convert string to number
         const numericFields = ['PL_STAFF_NO', 'PRO_APPROVED'];

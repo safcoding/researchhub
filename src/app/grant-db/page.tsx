@@ -2,8 +2,8 @@
 
 import type { Grant } from '@/hooks/grant-logic';
 import { GrantLogic } from '@/hooks/grant-logic';
-import { GrantTable } from '@/components/grant-table';
-import { GrantModal } from '@/components/grant-crud';
+import { GrantTable } from '@/components/grant-table-enhanced';
+import { GrantModal } from '@/components/grant-crud-enhanced';
 import { GrantFileUpload } from '@/components/grant-file-upload';
 import { UploadedFilesModal } from '@/components/uploaded-files-modal';
 import { Navbar } from '@/components/navbar';
@@ -24,10 +24,8 @@ export default function GrantDBPage() {
     const [sortOrder, setSortOrder] = useState<{
         field: 'PRO_DATESTART' | 'PRO_APPROVED';
         direction: 'asc' | 'desc';
-    }>({ field: 'PRO_DATESTART', direction: 'desc' });
-
-    const handleAddGrant = async (newGrant: Partial<Grant>) => {
-        await addGrant(newGrant as Omit<Grant, 'PROJECTID'>);
+    }>({ field: 'PRO_DATESTART', direction: 'desc' });    const handleAddGrant = async (newGrant: Partial<Grant>) => {
+        await addGrant(newGrant);
         setShowAddModal(false);
     };
 

@@ -40,8 +40,10 @@ export function Navbar() {
                   <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                   </svg>
-                </div>
-                <div className="absolute left-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 text-gray-700 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 z-10">
+                </div>                <div className="absolute left-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 text-gray-700 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 z-10">
+                  <Link href="/grant" className="block px-4 py-2 hover:bg-gray-100 text-sm">
+                    View Grants
+                  </Link>
                   <Link href="/grant-db" className="block px-4 py-2 hover:bg-gray-100 text-sm">
                     Add Grant
                   </Link>
