@@ -11,6 +11,7 @@ export interface Grant {
     PROJECT_TITLE: string;
     PRO_DATESTART: string;
     PRO_DATEEND: string;
+    PROJECT_YEAR?: string;
     GRANT_TYPE: string;
     PROJECT_STATUS: string;
     SPONSOR_CATEGORY: string;

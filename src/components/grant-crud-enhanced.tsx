@@ -1,5 +1,5 @@
 import type { Grant } from '@/hooks/grant-logic';
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 
 interface GrantModalProps {
     grant?: Grant;
@@ -13,8 +13,7 @@ export function GrantModal({ grant, onSave, onClose }: GrantModalProps) {
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [isTouched, setIsTouched] = useState<Record<string, boolean>>({});
     const [successMessage, setSuccessMessage] = useState('');
-    
-    // Grant type options
+      // Grant type options
     const grantTypeOptions = [
         "University Grant",
         "Government Grant",
@@ -28,6 +27,13 @@ export function GrantModal({ grant, onSave, onClose }: GrantModalProps) {
         "Scholarship",
         "Other"
     ];
+
+    // Generate year options (current year ± 10 years)
+    const currentYear = new Date().getFullYear();
+    const yearOptions = [];
+    for (let year = currentYear - 10; year <= currentYear + 10; year++) {
+        yearOptions.push(year);
+    }
 
     // Required fields
     const requiredFields = [
@@ -46,10 +52,10 @@ export function GrantModal({ grant, onSave, onClose }: GrantModalProps) {
         "PL_STAFF_NO": "Staff identification number of the principal investigator",
         "PL_NAME": "Full name of the principal investigator",
         "PTJ_RESEARCH_ALLIANCE": "Research alliance or department associated with this grant",
-        "RESEARCH_GROUP": "Specific research group working on this project",
-        "PROJECT_TITLE": "Official title of the research project",
+        "RESEARCH_GROUP": "Specific research group working on this project",        "PROJECT_TITLE": "Official title of the research project",
         "PRO_DATESTART": "Date when the project officially begins",
         "PRO_DATEEND": "Expected completion date of the project",
+        "PROJECT_YEAR": "Year associated with this grant project",
         "GRANT_TYPE": "Category or type of funding for this grant",
         "PROJECT_STATUS": "Current status of the project",
         "SPONSOR_CATEGORY": "General category of the sponsoring organization",
@@ -73,15 +79,14 @@ export function GrantModal({ grant, onSave, onClose }: GrantModalProps) {
         if (formData.PRO_DATESTART && formData.PRO_DATEEND) {
             const startDate = new Date(formData.PRO_DATESTART);
             const endDate = new Date(formData.PRO_DATEEND);
-            
-            if (endDate < startDate) {
-                newErrors['PRO_DATEEND'] = 'End date cannot be before start date';
+              if (endDate < startDate) {
+                newErrors.PRO_DATEEND = 'End date cannot be before start date';
                 isValid = false;
             }
         }
         
         if (formData.PRO_APPROVED !== undefined && formData.PRO_APPROVED <= 0) {
-            newErrors['PRO_APPROVED'] = 'Amount must be greater than 0';
+            newErrors.PRO_APPROVED = 'Amount must be greater than 0';
             isValid = false;
         }
         
@@ -135,9 +140,8 @@ export function GrantModal({ grant, onSave, onClose }: GrantModalProps) {
         
         setIsSubmitting(true);
         setSuccessMessage('');
-        
-        try {
-            await onSave(formData);
+          try {
+            onSave(formData);
             setSuccessMessage('Grant saved successfully!');
             
             // Reset form after successful submission if this is a new grant
@@ -167,7 +171,7 @@ export function GrantModal({ grant, onSave, onClose }: GrantModalProps) {
             hasError(fieldName) 
                 ? 'border-red-500 bg-red-50' 
                 : 'border-gray-300'
-        }`;
+    }`;
     };
 
     return (
@@ -314,6 +318,26 @@ export function GrantModal({ grant, onSave, onClose }: GrantModalProps) {
                             {hasError('PRO_DATEEND') && (
                                 <p className="mt-1 text-sm text-red-600">{errors.PRO_DATEEND}</p>
                             )}
+                        </div>
+
+                        {/* Project Year */}
+                        <div className="mb-4">
+                            <label htmlFor="PROJECT_YEAR" className="block text-sm font-medium text-gray-700 mb-1">
+                                Project Year
+                                <span className="ml-1 text-xs text-gray-500">(Year associated with this grant)</span>
+                            </label>
+                            <select
+                                id="PROJECT_YEAR"
+                                name="PROJECT_YEAR"
+                                value={formData.PROJECT_YEAR ?? ''}
+                                onChange={handleChange}
+                                className={getInputClass('PROJECT_YEAR')}
+                            >
+                                <option value="">Select Year</option>
+                                {yearOptions.map((year) => (
+                                    <option key={year} value={year.toString()}>{year}</option>
+                                ))}
+                            </select>
                         </div>
                         
                         {/* Grant Type */}

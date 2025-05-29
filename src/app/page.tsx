@@ -2,44 +2,15 @@ import Image from 'next/image';
 import Link from 'next/link';
 
 import React from 'react';
+import Navbar from '@/components/navbar';
 
-const TopNavigationFlexbox = () => {
-  return (
-    <nav style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '10px', backgroundColor: '#e0e0e0' }}>      <div style={{ display: 'flex', alignItems: 'center' }}>        <img src="https://upload.wikimedia.org/wikipedia/commons/8/81/UTM-LOGO.png" alt="UTM Logo" style={{ height: '40px', marginRight: '10px' }}/>
-        <div>
-          {/* 
-            Home page navigation - Link component to make ResearchHub title clickable
-            - Clicking on this will navigate to the home page (/)
-            - Removes default link styling and maintains the current text color
-          */}
-          <Link href="/" style={{ textDecoration: 'none', color: 'inherit' }}>
-            {/* Cursor: pointer gives visual feedback that this is clickable */}
-            <h1 style={{ margin: 0, fontSize: '18px', cursor: 'pointer' }}><b>ResearchHub</b></h1>
-          </Link>
-        </div>
-      </div>
-      <div style={{ display: 'flex', gap: '100px' }}>
-
-      <a href="https://www.utm.my/" target="_blank" style={{ textDecoration: 'none', color: '#333' }}>UTM</a>
-        <a href="https://mjiit.utm.my/" target="_blank" style={{ textDecoration: 'none', color: '#333' }}>UTM MJIIT</a>
-        
-        <a href="/login" style={{ textDecoration: 'none', color: '#333' }}>Login</a>
-      </div>
-    </nav>
-  );
-};
 
 const HomePage = () => {
   return (
     <div>
-      <TopNavigationFlexbox />
-    
-      
-      <NavigationFlexbox />
-
-      {/* Achievements */}
-     
+      <Navbar /> {/* Make sure this is the first element */}
       <section className="py-12 bg-gray-50">
+    
   <div className="container mx-auto px-4">
     <h2 className="text-3xl font-bold mb-8 text-center">Our Achievements</h2>
     <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -272,42 +243,4 @@ const NavigationFlexbox = () => {
 };
 */
 
-const NavigationFlexbox = () => {
-  return (
-    <header className="bg-blue-800 text-white p-4">
-      <div className="container mx-auto flex justify-between items-center">
-        <div className="flex items-center space-x-4">
-       
-          <nav className="flex space-x-6">
-            <a href="/" className="hover:underline">Home</a>
-            <a href="/about" className="hover:underline">About</a>
-            <a href="/labs" className="hover:underline">Our Labs</a>            <a href="/publications" className="hover:underline">Publications</a>
-            
-            {/* Grants dropdown with hover functionality */}
-            <div className="relative group">
-              <div className="flex items-center hover:underline cursor-pointer">
-                <a href="/grant" className="hover:no-underline">Grants</a>
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                </svg>
-              </div>
-              <div className="absolute left-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 text-gray-700 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 z-10">
-                <a href="/grant-db" className="block px-4 py-2 hover:bg-gray-100 text-sm">
-                  Add Grant
-                </a>
-              </div>
-            </div>
-            
-            <a href="/announcements" className="hover:underline">Announcements</a>
-          </nav>
-        </div>
-        
-      </div>
-    </header>
-  );
-};
-
-
-
 export default HomePage;
-export { Dashboard, NavigationFlexbox };

@@ -5,6 +5,7 @@ import Image from 'next/image';
 import StatsCard from './statcards';
 import GrantsPie from './gantchart1';
 import LineChart from './linechart';
+import Navbar from '@/components/navbar';
 
 interface GrantType {
   type: string;
@@ -33,57 +34,7 @@ export default function GrantsDashboard() {
 
   return (
     <div className="min-h-screen flex flex-col">
-      {/* Header matching about page */}
-      <header>
-        {/* Top Navigation */}
-        <nav className="flex items-center justify-between p-3 bg-gray-200">
-          <div className="flex items-center">
-            <Image
-              src="https://upload.wikimedia.org/wikipedia/commons/8/81/UTM-LOGO.png"
-              alt="UTM Logo"
-              width={40}
-              height={40}
-              className="mr-3"            />
-            <div>
-              {/* 
-                Grants page navigation - Making ResearchHub title clickable
-                - Uses Next.js Link component for client-side navigation
-                - className="text-inherit no-underline": Maintains the original text color and removes underline
-                - cursor-pointer: Changes the cursor to indicate the text is clickable
-                - This is more consistent with Tailwind CSS approach used in this file
-              */}
-              <Link href="/" className="text-inherit no-underline">
-                <h1 className="text-lg font-semibold cursor-pointer">ResearchHub</h1>
-              </Link>
-            </div>
-          </div>
-          <div className="flex gap-6">
-            <Link href="https://www.utm.my/" target="_blank" className="text-gray-700 hover:text-blue-600">
-              UTM
-            </Link>
-            <Link href="https://mjiit.utm.my/" target="_blank" className="text-gray-700 hover:text-blue-600">
-              UTM MJIIT
-            </Link>
-            <Link href="/login" className="text-gray-700 hover:text-blue-600">
-              Login
-            </Link>
-          </div>
-        </nav>
-
-        {/* Main Navigation */}
-        <nav className="bg-blue-800 text-white p-2">
-          <div className="container mx-auto flex justify-center gap-8">
-            <Link href="/" className="hover:underline">Home</Link>
-            <Link href="/about" className="hover:underline">About</Link>
-            <Link href="/labs" className="hover:underline">Our Labs</Link>
-            <Link href="/publications" className="hover:underline">Publications</Link>
-            <Link href="/grants" className="font-medium underline">Grants</Link>
-            <Link href="/announcements" className="hover:underline">Announcements</Link>
-          </div>
-        </nav>
-      </header>
-      
-      {/* Main Content - Keeping your existing dashboard */}
+    <Navbar />
       <main className="flex-grow container mx-auto px-4 py-8 bg-gray-50">
         <h1 className="text-3xl font-bold text-gray-800 mb-8">Grants Dashboard</h1>
         
