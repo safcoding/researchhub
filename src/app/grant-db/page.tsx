@@ -2,8 +2,8 @@
 
 import type { Grant } from '@/hooks/grant-logic';
 import { GrantLogic } from '@/hooks/grant-logic';
-import { GrantTable } from '@/components/grant-table';
-import { GrantModal } from '@/components/grant-crud';
+import { GrantTable } from '@/components/grant-table-enhanced';
+import { GrantModal } from '@/components/grant-crud-enhanced';
 import { GrantFileUpload } from '@/components/grant-file-upload';
 import { UploadedFilesModal } from '@/components/uploaded-files-modal';
 import Navbar from '@/components/navbar';
@@ -18,16 +18,14 @@ export default function GrantDBPage() {
     const [showUploadedFilesModal, setShowUploadedFilesModal] = useState(false);
     const [showChartModal, setShowChartModal] = useState(false);
     const [selectedGrant, setSelectedGrant] = useState<Grant | null>(null);
-    
-    // Search and filter states, this is only the logic behind the thing
+      // Search and filter states, this is only the logic behind the thing
     const [searchQuery, setSearchQuery] = useState('');
+    const [selectedYear, setSelectedYear] = useState<string>('');
     const [sortOrder, setSortOrder] = useState<{
         field: 'PRO_DATESTART' | 'PRO_APPROVED';
         direction: 'asc' | 'desc';
-    }>({ field: 'PRO_DATESTART', direction: 'desc' });
-
-    const handleAddGrant = async (newGrant: Partial<Grant>) => {
-        await addGrant(newGrant as Omit<Grant, 'PROJECTID'>);
+    }>({ field: 'PRO_DATESTART', direction: 'desc' });const handleAddGrant = async (newGrant: Partial<Grant>) => {
+        await addGrant(newGrant);
         setShowAddModal(false);
     };
 
@@ -47,9 +45,7 @@ export default function GrantDBPage() {
     const handleEditClick = (grant: Grant) => {
         setSelectedGrant(grant);
         setShowEditModal(true);
-    };
-
-    // Filter and sort grants
+    };    // Filter and sort grants
     const filteredAndSortedGrants = () => {
         // First filter by search query
         let filtered = [...grants];
@@ -59,6 +55,22 @@ export default function GrantDBPage() {
                 grant.PROJECT_TITLE?.toLowerCase().includes(query) || 
                 grant.PL_NAME?.toLowerCase().includes(query)
             );
+        }
+        
+        // Filter by selected year
+        if (selectedYear && selectedYear !== '') {
+            filtered = filtered.filter(grant => {
+                // Check PROJECT_YEAR field first
+                if (grant.PROJECT_YEAR === selectedYear) {
+                    return true;
+                }
+                // Fallback to extracting year from PRO_DATESTART
+                if (grant.PRO_DATESTART) {
+                    const grantYear = new Date(grant.PRO_DATESTART).getFullYear().toString();
+                    return grantYear === selectedYear;
+                }
+                return false;
+            });
         }
         
         // Then sort
@@ -77,6 +89,22 @@ export default function GrantDBPage() {
                     : amountB - amountA;
             }
         });
+    };
+
+    // Get available years from grants for the filter dropdown
+    const getAvailableYears = () => {
+        const years = new Set<string>();
+        grants.forEach(grant => {
+            // Check PROJECT_YEAR field first
+            if (grant.PROJECT_YEAR) {
+                years.add(grant.PROJECT_YEAR);
+            } else if (grant.PRO_DATESTART) {
+                // Fallback to extracting year from PRO_DATESTART
+                const year = new Date(grant.PRO_DATESTART).getFullYear().toString();
+                years.add(year);
+            }
+        });
+        return Array.from(years).sort((a, b) => parseInt(b) - parseInt(a)); // Sort descending
     };
 
     return (
@@ -128,6 +156,17 @@ export default function GrantDBPage() {
                             </svg>
                         </div>
                     </div>                    <div className="flex gap-2">
+                        <select 
+                            className="p-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            value={selectedYear}
+                            onChange={(e) => setSelectedYear(e.target.value)}
+                            aria-label="Filter by year"
+                        >
+                            <option value="">All Years</option>
+                            {getAvailableYears().map(year => (
+                                <option key={year} value={year}>{year}</option>
+                            ))}
+                        </select>
                         <select 
                             className="p-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
                             value={`${sortOrder.field}-${sortOrder.direction}`}

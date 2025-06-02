@@ -4,7 +4,7 @@ import { supabase } from '@/lib/db-connect';
 const DEFAULT_BUCKET = 'grants';
 
 // This function will be used directly by components
-export async function uploadFile(file: File): Promise<{datapath:string,status:string}> {
+export async function uploadFile(file: File): Promise<string> {
   try {
     console.log(`Attempting to upload file: ${file.name} to bucket: ${DEFAULT_BUCKET}`);
     
@@ -30,7 +30,7 @@ export async function uploadFile(file: File): Promise<{datapath:string,status:st
     }
     
     console.log('File uploaded successfully:', data.path);
-    return  {datapath :data.path, status:"Success"}; //return an object
+    return data.path;
 
   } catch (err) {
     console.error('Error in uploadFile:', err);
