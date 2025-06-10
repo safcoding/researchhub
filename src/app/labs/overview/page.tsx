@@ -1,26 +1,65 @@
 'use client';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Navbar from '@/components/navbar';
 import { useRouter } from 'next/navigation';
-import { labsData } from '@/lib/labData';
+import { LabLogic, type Lab } from '@/hooks/lab-logic';
+import { supabase } from '@/lib/db-connect';
+
+
 
 // Define category keys type
 type CategoryKey = 'Materials Science' | 'Computer Science' | 'Biotechnology';
 
-// Group labs by category
-const categories: Record<CategoryKey, typeof labsData> = {
-  'Materials Science': labsData.filter(lab => lab.department === 'Materials Science'),
-  'Computer Science': labsData.filter(lab => lab.department === 'Computer Science'),
-  'Biotechnology': labsData.filter(lab => lab.department === 'Biotechnology')
-};
-
 const OurLabs = () => {
   const [selectedCategory, setSelectedCategory] = useState<CategoryKey>('Materials Science');
+  const [labs, setLabs] = useState<Lab[]>([]);
+  const [loading, setLoading] = useState(true);
   const router = useRouter();
 
-  const handleLabClick = (labId: number) => {
-    router.push(`/labs/view-more?id=${labId}`); // Navigate to lab details page, not working
+  // Fetch labs from Supabase
+  useEffect(() => {
+    const fetchLabs = async () => {
+      try {
+        const { data, error } = await supabase
+          .from('labs')
+          .select('*')
+          .order('LAB_NAME');
+        
+        if (error) throw error;
+        setLabs(data || []);
+      } catch (error) {
+        console.error('Error fetching labs:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchLabs();
+  }, []);
+
+
+      // Group labs by category
+    const categories: Record<CategoryKey, Lab[]> = {
+      'Materials Science': labs.filter(lab => lab.DEPARTMENT === 'Materials Science'),
+      'Computer Science': labs.filter(lab => lab.DEPARTMENT === 'Computer Science'),
+      'Biotechnology': labs.filter(lab => lab.DEPARTMENT === 'Biotechnology')
+    };
+
+      const handleLabClick = (labId: string) => {
+    router.push(`/labs/view-more?id=${labId}`);
+  };
+
+  if (loading) {
+    return (
+      <>
+        <Navbar />
+        <div className="flex justify-center items-center min-h-screen">
+          <div>Loading labs...</div>
+        </div>
+      </>
+    );
   }
+
 
   return (
     <>
@@ -73,22 +112,22 @@ const OurLabs = () => {
               <tbody className="divide-y divide-gray-200">
                 {categories[selectedCategory]?.map((lab) => (
                   <tr 
-                    key={lab.id}
-                    onClick={() => handleLabClick(lab.id)}
+                    key={lab.LABID}
+                    onClick={() => handleLabClick(lab.LABID)}
                     className="hover:bg-blue-50 cursor-pointer transition-colors group"
                   >
                     <td className="px-4 py-3">
                       <div className="font-medium text-gray-900 group-hover:text-blue-600">
-                        {lab.name}
+                        {lab.LAB_NAME}
                         <p className="text-xs text-gray-500 mt-1 line-clamp-1">
-                          {lab.description.substring(0, 60)}...
+                          {lab.LAB_DESCRIPTION ? lab.LAB_DESCRIPTION.substring(0, 60) + '...' : 'No description available'}
                         </p>
                       </div>
                     </td>
-                    <td className="px-4 py-3 text-gray-700">{lab.labHead}</td>
-                    <td className="px-4 py-3 text-gray-700">{lab.department}</td>
-                    <td className="px-4 py-3 text-gray-700 line-clamp-2">{lab.researchArea}</td>
-                    <td className="px-4 py-3 text-gray-700">{lab.location}</td>
+                    <td className="px-4 py-3 text-gray-700">{lab.LAB_HEAD}</td>
+                    <td className="px-4 py-3 text-gray-700">{lab.DEPARTMENT}</td>
+                    <td className="px-4 py-3 text-gray-700 line-clamp-2">{lab.RESEARCH_AREA}</td>
+                    <td className="px-4 py-3 text-gray-700">{lab.LOCATION}</td>
                   </tr>
                 ))}
               </tbody>

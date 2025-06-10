@@ -1,7 +1,6 @@
 'use client';
 
-import type { Lab } from '@/hooks/lab-logic';
-import { LabLogic } from '@/hooks/lab-logic';
+import { LabLogic, type Lab } from '@/hooks/lab-logic';
 import { LabTable } from '@/components/lab-table-enhanced';
 import { LabModal } from '@/components/lab-crud-enhanced';
 import Navbar from '@/components/navbar';
@@ -23,7 +22,7 @@ export default function LabsPage() {
     const [sortOrder, setSortOrder] = useState<{
         field: 'ESTABLISHED_DATE' | 'LAB_NAME' | 'BUDGET';
         direction: 'asc' | 'desc';
-    }>({ field: 'ESTABLISHED_DATE', direction: 'desc' });
+    }>({ field: 'LAB_NAME', direction: 'asc' });
 
     const handleAddLab = async (newLab: Partial<Lab>) => {
         await addLab(newLab);
@@ -64,29 +63,14 @@ export default function LabsPage() {
         if (selectedLabType && selectedLabType !== '') {
             filtered = filtered.filter(lab => lab.LAB_TYPE === selectedLabType);
         }
-        
-        // Then sort
+
+            // Apply sorting
         return filtered.sort((a, b) => {
-            if (sortOrder.field === 'ESTABLISHED_DATE') {
-                const dateA = new Date(a.ESTABLISHED_DATE || '');
-                const dateB = new Date(b.ESTABLISHED_DATE || '');
-                return sortOrder.direction === 'asc' 
-                    ? dateA.getTime() - dateB.getTime() 
-                    : dateB.getTime() - dateA.getTime();
-            } else if (sortOrder.field === 'LAB_NAME') {
-                const nameA = a.LAB_NAME || '';
-                const nameB = b.LAB_NAME || '';
-                return sortOrder.direction === 'asc' 
-                    ? nameA.localeCompare(nameB)
-                    : nameB.localeCompare(nameA);
-            } else {
-                const budgetA = a.BUDGET || 0;
-                const budgetB = b.BUDGET || 0;
-                return sortOrder.direction === 'asc' 
-                    ? budgetA - budgetB 
-                    : budgetB - budgetA;
-            }
-        });
+        const direction = sortOrder.direction === 'asc' ? 1 : -1;
+        const aValue = String(a[sortOrder.field] || '');
+        const bValue = String(b[sortOrder.field] || '');
+        return direction * aValue.localeCompare(bValue);
+    });
     };
 
     // Get available departments from labs for the filter dropdown
@@ -192,7 +176,7 @@ export default function LabsPage() {
                             onChange={(e) => {
                                 const [field, direction] = e.target.value.split('-');
                                 setSortOrder({ 
-                                    field: field as 'ESTABLISHED_DATE' | 'LAB_NAME' | 'BUDGET',
+                                    field: field as  'LAB_NAME' | 'LAB_TYPE',
                                     direction: direction as 'asc' | 'desc'
                                 });
                             }}
@@ -200,10 +184,6 @@ export default function LabsPage() {
                         >
                             <option value="LAB_NAME-asc">Name (A-Z)</option>
                             <option value="LAB_NAME-desc">Name (Z-A)</option>
-                            <option value="ESTABLISHED_DATE-asc">Date (Oldest First)</option>
-                            <option value="ESTABLISHED_DATE-desc">Date (Newest First)</option>
-                            <option value="BUDGET-asc">Budget (Low to High)</option>
-                            <option value="BUDGET-desc">Budget (High to Low)</option>
                         </select>
                     </div>
                 </div>
