@@ -1,289 +1,326 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import { useState } from 'react';
 import Navbar from '@/components/navbar';
-import { supabase } from '@/lib/db-connect';
+import { EventLogic, type Event } from '@/hooks/event-logic';
+import { EventModal, DeleteConfirmationModal } from '@/components/event-crud';
 
-type Event = {
-  id?: number;
-  title: string;
-  date: string;
-  location: string;
-  time: string;
-  registration_link: string;
-  image_url?: string;
-  details: string;
-  category: string;
-  deadline?: string;
-};
+export default function AnnouncementCRUDPage() {
+  const { events, loading, error, addEvent, updateEvent, deleteEvent } = EventLogic();
+  
+  const [showEventModal, setShowEventModal] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);  const [selectedEvent, setSelectedEvent] = useState<Event | null>(null);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState<string>('');  const [sortConfig, setSortConfig] = useState<{
+    key: 'id' | 'date' | 'status' | 'category';
+    direction: 'asc' | 'desc';
+  } | null>(null);
 
-const AdminEventsPage: React.FC = () => {
-  const [events, setEvents] = useState<Event[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [formData, setFormData] = useState<Event>({
-    title: '',
-    date: '',
-    location: '',
-    time: '',
-    registration_link: '',
-    image_url: '',
-    details: '',
-    category: '',
-    deadline: '',
+  // Handle adding new event
+  const handleAddEvent = async (newEvent: Omit<Event, 'id' | 'created_at' | 'updated_at'>) => {
+    await addEvent(newEvent);
+    setShowEventModal(false);
+  };
+
+  // Handle updating event
+  const handleUpdateEvent = async (updatedEvent: Omit<Event, 'id' | 'created_at' | 'updated_at'>) => {
+    if (selectedEvent?.id) {
+      await updateEvent(selectedEvent.id, updatedEvent);
+      setShowEventModal(false);
+      setSelectedEvent(null);
+    }
+  };
+
+  // Handle edit click
+  const handleEditClick = (event: Event) => {
+    setSelectedEvent(event);
+    setShowEventModal(true);
+  };
+
+  // Handle delete click
+  const handleDeleteClick = (event: Event) => {
+    setSelectedEvent(event);
+    setShowDeleteModal(true);
+  };
+  // Handle delete confirmation
+  const handleDeleteConfirm = async () => {
+    if (selectedEvent?.id) {
+      await deleteEvent(selectedEvent.id);
+      setShowDeleteModal(false);
+      setSelectedEvent(null);
+    }
+  };
+  // Handle sorting
+  const handleSort = (key: 'id' | 'date' | 'status' | 'category') => {
+    let direction: 'asc' | 'desc' = 'asc';
+    if (sortConfig && sortConfig.key === key && sortConfig.direction === 'asc') {
+      direction = 'desc';
+    }
+    setSortConfig({ key, direction });
+  };
+  // Sort events
+  const sortedEvents = [...events].sort((a, b) => {
+    if (!sortConfig) return 0;
+
+    const { key, direction } = sortConfig;
+    let aValue: string | number = a[key] || '';
+    let bValue: string | number = b[key] || '';    // Handle date sorting
+    if (key === 'date') {
+      aValue = new Date(aValue).getTime();
+      bValue = new Date(bValue).getTime();
+    }
+
+    // Handle ID sorting (numeric)
+    if (key === 'id') {
+      aValue = Number(aValue) || 0;
+      bValue = Number(bValue) || 0;
+    }
+
+    // Handle string sorting (status, category)
+    if (typeof aValue === 'string' && typeof bValue === 'string') {
+      aValue = aValue.toLowerCase();
+      bValue = bValue.toLowerCase();
+    }
+
+    if (aValue < bValue) {
+      return direction === 'asc' ? -1 : 1;
+    }
+    if (aValue > bValue) {
+      return direction === 'asc' ? 1 : -1;
+    }
+    return 0;
   });
-  const [editingId, setEditingId] = useState<number | null>(null);
 
-  // Handle form input changes
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
-  };
-
-  // Fetch events
-  const fetchEvents = async () => {
-    const { data, error } = await supabase.from('events').select('*').order('date', { ascending: true });
-    if (error) {
-      console.error('Error fetching events:', error);
-    } else {
-      setEvents(data || []);
-    }
-    setLoading(false);
-  };
-
-  useEffect(() => {
-    fetchEvents();
-  }, []);
-
-  const resetForm = () => {
-    setFormData({
-      title: '',
-      date: '',
-      location: '',
-      time: '',
-      registration_link: '',
-      image_url: '',
-      details: '',
-      category: '',
-      deadline: '',
-    });
-    setEditingId(null);
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-
-    try {
-      if (editingId) {
-        const { error } = await supabase
-          .from('events')
-          .update(formData)
-          .eq('id', editingId);
-        
-        if (error) throw error;
-        alert('Event updated successfully!');
-      } else {
-        const { error } = await supabase
-          .from('events')
-          .insert(formData);
-        
-        if (error) throw error;
-        alert('Event created successfully!');
-      }
-      
-      await fetchEvents();
-      resetForm();
-    } catch (error) {
-      console.error('Error handling event:', error);
-      alert('An error occurred while saving the event');
-    }
-  };
-
-  const handleDelete = async (id: number) => {
-    if (window.confirm('Are you sure you want to delete this event?')) {
-      try {
-        const { error } = await supabase
-          .from('events')
-          .delete()
-          .eq('id', id);
-        
-        if (error) throw error;
-        alert('Event deleted successfully!');
-        await fetchEvents();
-      } catch (error) {
-        console.error('Error deleting event:', error);
-        alert('An error occurred while deleting the event');
-      }
-    }
-  };
-
-  const handleEdit = (event: Event) => {
-    setFormData(event);
-    setEditingId(event.id || null);
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  };
+  // Filter events based on search and category
+  const filteredEvents = sortedEvents.filter(event => {
+    const matchesSearch = event.title?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                         event.description?.toLowerCase().includes(searchQuery.toLowerCase());
+    const matchesCategory = selectedCategory === '' || event.category === selectedCategory;
+    return matchesSearch && matchesCategory;
+  });
 
   if (loading) {
-    return <div className="text-center py-8">Loading...</div>;
+    return (
+      <div className="min-h-screen bg-gray-50">
+        <Navbar />
+        <div className="container mx-auto px-4 py-8">
+          <div className="text-center py-8">Loading...</div>
+        </div>
+      </div>
+    );
   }
 
   return (
     <div className="min-h-screen bg-gray-50">
       <Navbar />
       <div className="container mx-auto px-4 py-8">
-        <h1 className="text-3xl font-bold text-gray-800 mb-6">Admin: Manage Events</h1>
+        <div className="flex justify-between items-center mb-6">
+          <h1 className="text-3xl font-bold text-gray-800">Admin: Manage Announcements</h1>
+          <button
+            onClick={() => {
+              setSelectedEvent(null);
+              setShowEventModal(true);
+            }}
+            className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors"
+          >
+            Add Announcement
+          </button>
+        </div>
 
-        <form onSubmit={handleSubmit} className="bg-white shadow-md rounded-lg p-6 mb-8">
-          <h2 className="text-xl font-semibold mb-4">{editingId ? 'Edit Event' : 'Add New Event'}</h2>
+        {/* Search and Filter Controls */}
+        <div className="bg-white shadow-md rounded-lg p-6 mb-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <select
-              name="category"
-              value={formData.category}
-              onChange={handleInputChange}
-              className="p-2 border rounded"
-              required
-            >
-              <option value="">Select Category</option>
-              <option value="Event">Event</option>
-              <option value="Available Grant">Available Grant</option>
-            </select>
-
-            <input
-              type="text"
-              name="title"
-              value={formData.title}
-              onChange={handleInputChange}
-              placeholder="Title"
-              className="p-2 border rounded"
-              required
-            />
-
-            {formData.category === 'Event' ? (
-              <>
-                <input
-                  type="date"
-                  name="date"
-                  value={formData.date}
-                  onChange={handleInputChange}
-                  className="p-2 border rounded"
-                  required
-                />
-                <input
-                  type="text"
-                  name="location"
-                  value={formData.location}
-                  onChange={handleInputChange}
-                  placeholder="Location"
-                  className="p-2 border rounded"
-                  required
-                />
-                <input
-                  type="time"
-                  name="time"
-                  value={formData.time}
-                  onChange={handleInputChange}
-                  className="p-2 border rounded"
-                  required
-                />
-              </>
-            ) : formData.category === 'Available Grant' ? (
+            <div>
+              <label htmlFor="search" className="block text-sm font-medium text-gray-700 mb-2">
+                Search Announcements
+              </label>
               <input
-                type="date"
-                name="deadline"
-                value={formData.deadline || ''}
-                onChange={handleInputChange}
-                placeholder="Application Deadline"
-                className="p-2 border rounded"
-                required
+                id="search"
+                type="text"
+                placeholder="Search by title or description..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
-            ) : null}
-
-            <input
-              type="url"
-              name="registration_link"
-              value={formData.registration_link}
-              onChange={handleInputChange}
-              placeholder={formData.category === 'Available Grant' ? 'Application Link' : 'Registration Link'}
-              className="p-2 border rounded"
-              required
-            />
-
-            <textarea
-              name="details"
-              value={formData.details}
-              onChange={handleInputChange}
-              placeholder="Details"
-              className="p-2 border rounded col-span-2"
-              rows={4}
-              required
-            />
-          </div>
-
-          <div className="mt-4 flex justify-between">
-            {editingId && (
-              <button
-                type="button"
-                onClick={resetForm}
-                className="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600"
+            </div>
+            <div>
+              <label htmlFor="category" className="block text-sm font-medium text-gray-700 mb-2">
+                Filter by Category
+              </label>
+              <select
+                id="category"
+                value={selectedCategory}
+                onChange={(e) => setSelectedCategory(e.target.value)}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
               >
-                Cancel Edit
-              </button>
-            )}
-            <button
-              type="submit"
-              className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
-            >
-              {editingId ? 'Update Event' : 'Add Event'}
-            </button>
-          </div>
-        </form>
-
-        <div className="bg-white shadow-md rounded-lg p-6">
-          <h2 className="text-xl font-semibold mb-4">All Events</h2>
-          <div className="overflow-x-auto">
-            <table className="w-full text-sm">
-              <thead className="bg-gray-100">
-                <tr>
-                  <th className="text-left px-4 py-2">Category</th>
-                  <th className="text-left px-4 py-2">Title</th>
-                  <th className="text-left px-4 py-2">Date/Deadline</th>
-                  <th className="text-left px-4 py-2">Location</th>
-                  <th className="text-left px-4 py-2">Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {events.map(event => (
-                  <tr key={event.id} className="border-b hover:bg-gray-50">
-                    <td className="px-4 py-2">{event.category}</td>
-                    <td className="px-4 py-2">{event.title}</td>
-                    <td className="px-4 py-2">
-                      {event.category === 'Available Grant' ? event.deadline : event.date}
-                    </td>
-                    <td className="px-4 py-2">
-                      {event.category === 'Available Grant' ? 'N/A' : event.location}
-                    </td>
-                    <td className="px-4 py-2">
-                      <button
-                        onClick={() => handleEdit(event)}
-                        className="text-blue-600 hover:underline mr-4"
-                      >
-                        Edit
-                      </button>
-                      <button
-                        onClick={() => handleDelete(event.id!)}
-                        className="text-red-600 hover:underline"
-                      >
-                        Delete
-                      </button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+                <option value="">All Categories</option>
+                <option value="Conference">Conference</option>
+                <option value="Workshop">Workshop</option>
+                <option value="Seminar">Seminar</option>
+                <option value="Grant">Grant</option>
+                <option value="Competition">Competition</option>
+                <option value="Networking">Networking</option>
+              </select>
+            </div>
           </div>
         </div>
+
+        {/* Events Table */}
+        <div className="bg-white shadow-md rounded-lg overflow-hidden">
+          <div className="px-6 py-4 border-b border-gray-200">
+            <h2 className="text-xl font-semibold text-gray-800">All Announcements</h2>
+          </div>
+          
+          {filteredEvents.length === 0 ? (
+            <div className="text-center py-8 text-gray-500">
+              <p>No announcements found</p>
+            </div>
+          ) : (
+            <div className="overflow-x-auto">
+              <table className="w-full">                <thead className="bg-gray-50">
+                  <tr>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      <button
+                        onClick={() => handleSort('id')}
+                        className="flex items-center space-x-1 hover:text-gray-700 transition-colors"
+                      >
+                        <span>Event ID</span>
+                        <span className="text-gray-400">
+                          {sortConfig?.key === 'id' ? (
+                            sortConfig.direction === 'asc' ? '↑' : '↓'
+                          ) : '↕'}
+                        </span>
+                      </button>
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Title
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      <button
+                        onClick={() => handleSort('category')}
+                        className="flex items-center space-x-1 hover:text-gray-700 transition-colors"
+                      >
+                        <span>Category</span>
+                        <span className="text-gray-400">
+                          {sortConfig?.key === 'category' ? (
+                            sortConfig.direction === 'asc' ? '↑' : '↓'
+                          ) : '↕'}
+                        </span>
+                      </button>
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      <button
+                        onClick={() => handleSort('date')}
+                        className="flex items-center space-x-1 hover:text-gray-700 transition-colors"
+                      >
+                        <span>Date</span>
+                        <span className="text-gray-400">
+                          {sortConfig?.key === 'date' ? (
+                            sortConfig.direction === 'asc' ? '↑' : '↓'
+                          ) : '↕'}
+                        </span>
+                      </button>
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      <button
+                        onClick={() => handleSort('status')}
+                        className="flex items-center space-x-1 hover:text-gray-700 transition-colors"
+                      >
+                        <span>Status</span>
+                        <span className="text-gray-400">
+                          {sortConfig?.key === 'status' ? (
+                            sortConfig.direction === 'asc' ? '↑' : '↓'
+                          ) : '↕'}
+                        </span>
+                      </button>
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Actions
+                    </th>
+                  </tr>
+                </thead>                <tbody className="bg-white divide-y divide-gray-200">
+                  {filteredEvents.map((event) => (
+                    <tr key={event.id} className="hover:bg-gray-50">
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                        #{event.id}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <div className="text-sm font-medium text-gray-900">{event.title}</div>
+                        <div className="text-sm text-gray-500 truncate max-w-xs">
+                          {event.description}
+                        </div>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <span className="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-blue-100 text-blue-800">
+                          {event.category}
+                        </span>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                        {event.date}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
+                          event.status === 'Upcoming' ? 'bg-green-100 text-green-800' :
+                          event.status === 'Registration Open' ? 'bg-yellow-100 text-yellow-800' :
+                          event.status === 'Registration Closed' ? 'bg-red-100 text-red-800' :
+                          'bg-gray-100 text-gray-800'
+                        }`}>
+                          {event.status}
+                        </span>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                        <button
+                          onClick={() => handleEditClick(event)}
+                          className="text-blue-600 hover:text-blue-900 mr-4"
+                        >
+                          Edit
+                        </button>
+                        <button
+                          onClick={() => handleDeleteClick(event)}
+                          className="text-red-600 hover:text-red-900"
+                        >
+                          Delete
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </div>
+
+        {/* Error Display */}
+        {error && (
+          <div className="mt-4 p-4 bg-red-100 border border-red-400 text-red-700 rounded">
+            Error: {error}
+          </div>
+        )}
       </div>
+
+      {/* Event Modal */}
+      {showEventModal && (
+        <EventModal
+          event={selectedEvent ?? undefined}
+          onSave={selectedEvent ? handleUpdateEvent : handleAddEvent}
+          onClose={() => {
+            setShowEventModal(false);
+            setSelectedEvent(null);
+          }}
+        />
+      )}
+
+      {/* Delete Confirmation Modal */}
+      {showDeleteModal && selectedEvent && (
+        <DeleteConfirmationModal
+          event={selectedEvent}
+          onConfirm={handleDeleteConfirm}
+          onCancel={() => {
+            setShowDeleteModal(false);
+            setSelectedEvent(null);
+          }}
+        />
+      )}
     </div>
   );
-};
-
-export default AdminEventsPage;
+}

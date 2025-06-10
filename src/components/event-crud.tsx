@@ -88,9 +88,28 @@ export function EventModal({ event, onSave, onClose }: EventModalProps) {    con
                     <h2 className="text-2xl font-bold text-gray-900">
                         {event ? 'Edit Event' : 'Add New Event'}
                     </h2>
-                </div>
+                </div>                <form onSubmit={handleSubmit} className="p-6 space-y-6">
+                    {/* Event ID */}
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                            Event ID
+                            <span className="ml-1 text-xs text-gray-500">
+                                {event ? '(Cannot be changed)' : '(Optional - auto-generated if empty)'}
+                            </span>
+                        </label>
+                        <input
+                            type="text"
+                            name="id"
+                            value={formData.id || ''}
+                            onChange={handleChange}
+                            className={`w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+                                event ? 'bg-gray-100 cursor-not-allowed' : 'border-gray-300'
+                            }`}
+                            placeholder={event ? "Event ID (cannot be changed)" : "Enter event ID or leave blank for auto-generation"}
+                            disabled={!!event} // Disable editing for existing events
+                        />
+                    </div>
 
-                <form onSubmit={handleSubmit} className="p-6 space-y-6">
                     {/* Title */}
                     <div>
                         <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -266,21 +285,6 @@ export function EventModal({ event, onSave, onClose }: EventModalProps) {    con
                             placeholder="Enter contact email"
                         />
                         {errors.contact_email && <p className="text-red-500 text-sm mt-1">{errors.contact_email}</p>}
-                    </div>
-
-                    {/* Image URL */}
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
-                            Image URL
-                        </label>
-                        <input
-                            type="url"
-                            name="image"
-                            value={formData.image || ''}
-                            onChange={handleChange}
-                            className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                            placeholder="Enter image URL (optional)"
-                        />
                     </div>                    {/* Registration Required */}
                     <div className="flex items-center">
                         <input

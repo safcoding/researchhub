@@ -10,6 +10,7 @@ const OurLabs = () => {
   const [labs, setLabs] = useState<Lab[]>([]);
   const [loading, setLoading] = useState(true);
   const router = useRouter();
+
   // Fetch labs from Supabase
   useEffect(() => {
     const fetchLabs = async () => {
@@ -20,13 +21,13 @@ const OurLabs = () => {
           .order('LAB_NAME');
         
         if (error) throw error;
-        const labsData = (data as Lab[]) || [];
-        setLabs(labsData);
+        setLabs(data || []);
         
         // Set the first available department as default selected category
-        if (labsData && labsData.length > 0) {
-          const departments = [...new Set(labsData.map(lab => lab.DEPARTMENT).filter(Boolean))];          if (departments.length > 0 && !selectedDepartment) {
-            setSelectedDepartment(departments[0]!);
+        if (data && data.length > 0) {
+          const departments = [...new Set(data.map(lab => lab.DEPARTMENT).filter(Boolean))];
+          if (departments.length > 0 && !selectedDepartment) {
+            setSelectedDepartment(departments[0]);
           }
         }
       } catch (error) {
@@ -37,7 +38,7 @@ const OurLabs = () => {
     };
 
     void fetchLabs();
-  }, [selectedDepartment]);
+  }, []);
 
   // Get unique departments from labs data
   const getAvailableDepartments = () => {

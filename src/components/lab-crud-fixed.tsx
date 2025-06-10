@@ -3,7 +3,7 @@ import { useState } from 'react';
 
 interface LabModalProps {
     lab?: Lab;
-    onSave: (lab: Partial<Lab>) => Promise<void>;
+    onSave: (lab: Partial<Lab>) => void;
     onClose: () => void;
 }
 
@@ -128,7 +128,9 @@ export function LabModal({ lab, onSave, onClose }: LabModalProps) {
         
         if (!validateForm()) {
             return;
-        }        setIsSubmitting(true);
+        }
+
+        setIsSubmitting(true);
         setSuccessMessage('');
         
         try {
@@ -277,11 +279,11 @@ export function LabModal({ lab, onSave, onClose }: LabModalProps) {
                         <div>
                             <label className="block text-sm font-medium text-gray-700 mb-1">
                                 Department *
-                            </label>                            <select
+                            </label>
+                            <select
                                 name="DEPARTMENT"
                                 value={formData.DEPARTMENT ?? ''}
                                 onChange={handleChange}
-                                title="Select department"
                                 className={`w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500 ${
                                     errors.DEPARTMENT ? 'border-red-500' : 'border-gray-300'
                                 }`}
@@ -340,11 +342,11 @@ export function LabModal({ lab, onSave, onClose }: LabModalProps) {
                         <div>
                             <label className="block text-sm font-medium text-gray-700 mb-1">
                                 Lab Status *
-                            </label>                            <select
+                            </label>
+                            <select
                                 name="LAB_STATUS"
                                 value={formData.LAB_STATUS ?? ''}
                                 onChange={handleChange}
-                                title="Select lab status"
                                 className={`w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500 ${
                                     errors.LAB_STATUS ? 'border-red-500' : 'border-gray-300'
                                 }`}
@@ -363,11 +365,11 @@ export function LabModal({ lab, onSave, onClose }: LabModalProps) {
                         <div>
                             <label className="block text-sm font-medium text-gray-700 mb-1">
                                 Lab Type *
-                            </label>                            <select
+                            </label>
+                            <select
                                 name="LAB_TYPE"
                                 value={formData.LAB_TYPE ?? ''}
                                 onChange={handleChange}
-                                title="Select lab type"
                                 className={`w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500 ${
                                     errors.LAB_TYPE ? 'border-red-500' : 'border-gray-300'
                                 }`}
