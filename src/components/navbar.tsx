@@ -38,10 +38,10 @@ const Navbar = () => {
             <nav className="flex space-x-6">
               <Link href="/" className="hover:underline">Home</Link>
               <Link href="/about" className="hover:underline">About</Link>
-              <Link href="/" className="hover:underline">Announcements</Link>
-              <Link href="/about" className="hover:underline">Labs</Link>
-              <Link href="/" className="hover:underline">Publications</Link>
-              <Link href="/about" className="hover:underline">Grants</Link>
+              <Link href="/announcements" className="hover:underline">Announcements</Link>
+              <Link href="/labs/overview" className="hover:underline">Labs</Link>
+              <Link href="/publications" className="hover:underline">Publications</Link>
+              <Link href="/grant" className="hover:underline">Grants</Link>
    
               {/*Admin Tab*/}
             <SignedIn>
