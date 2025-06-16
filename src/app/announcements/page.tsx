@@ -20,7 +20,7 @@ export default function AnnouncementsPage() {
   const [currentPage, setCurrentPage] = useState(1);
   const eventsPerPage = 5;
 
-  const categories = ['All', 'Conference', 'Workshop', 'Seminar', 'Grant', 'Competition', 'Networking'];
+  const categories = ['All', 'Conference', 'Workshop', 'Seminar', 'Grant', 'Competition', 'Networking', 'Others'];
   const filteredEvents = events.filter(event => {
     const matchesCategory = selectedCategory === 'All' || event.category === selectedCategory;
     const matchesSearch = event.title.toLowerCase().includes(searchQuery.toLowerCase()) ||

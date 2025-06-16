@@ -19,7 +19,7 @@ export default function AnnouncementsPage() {
   const [selectedEvent, setSelectedEvent] = useState<Event | null>(null);
   const [isEditing, setIsEditing] = useState(false);
 
-  const categories = ['All', 'Conference', 'Workshop', 'Seminar', 'Grant', 'Competition', 'Networking'];
+  const categories = ['All', 'Conference', 'Workshop', 'Seminar', 'Grant', 'Competition', 'Networking', 'Others'];
 
   const filteredEvents = events.filter(event => {
     const matchesCategory = selectedCategory === 'All' || event.category === selectedCategory;
