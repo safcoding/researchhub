@@ -3,7 +3,6 @@
 import { LabLogic, type Lab } from '@/hooks/lab-logic';
 import { LabTable } from '@/components/lab-table-enhanced';
 import { LabModal } from '@/components/lab-crud-enhanced';
-import { LabChartModal } from '@/components/lab-chart-modal';
 import Navbar from '@/components/navbar';
 import { useState } from 'react';
 
@@ -19,29 +18,22 @@ export default function LabsPage() {
     // Search and filter states
     const [searchQuery, setSearchQuery] = useState('');
     const [selectedDepartment, setSelectedDepartment] = useState<string>('');
-    const [selectedLabType, setSelectedLabType] = useState<string>('');    const [sortOrder, setSortOrder] = useState<{
-        field: 'LAB_NAME' | 'LAB_TYPE';
+    const [selectedLabType, setSelectedLabType] = useState<string>('');
+    const [sortOrder, setSortOrder] = useState<{
+        field: 'LAB_NAME';
         direction: 'asc' | 'desc';
-    }>({ field: 'LAB_NAME', direction: 'asc' });const handleAddLab = async (newLab: Partial<Lab>) => {
-        try {
-            await addLab(newLab);
-            setShowAddModal(false);
-        } catch (error) {
-            console.error('Error adding lab:', error);
-            // Error will be handled by the modal component
-        }
+    }>({ field: 'LAB_NAME', direction: 'asc' });
+
+    const handleAddLab = async (newLab: Partial<Lab>) => {
+        await addLab(newLab);
+        setShowAddModal(false);
     };
 
     const handleUpdateLab = async (updatedLab: Partial<Lab>) => {
         if (selectedLab?.LABID) {
-            try {
-                await updateLab(selectedLab.LABID, updatedLab);
-                setShowEditModal(false);
-                setSelectedLab(null);
-            } catch (error) {
-                console.error('Error updating lab:', error);
-                // Error will be handled by the modal component
-            }
+            await updateLab(selectedLab.LABID, updatedLab);
+            setShowEditModal(false);
+            setSelectedLab(null);
         }
     };
       const handleEditClick = (lab: Lab) => {
@@ -61,7 +53,8 @@ export default function LabsPage() {
                 lab.RESEARCH_AREA?.toLowerCase().includes(query)
             );
         }
-          // Filter by selected department
+        
+        // Filter by selected department
         if (selectedDepartment && selectedDepartment !== '') {
             filtered = filtered.filter(lab => lab.DEPARTMENT === selectedDepartment);
         }
@@ -71,13 +64,13 @@ export default function LabsPage() {
             filtered = filtered.filter(lab => lab.LAB_TYPE === selectedLabType);
         }
 
-        // Apply sorting
-        return filtered.sort((a, b) => {
-            const direction = sortOrder.direction === 'asc' ? 1 : -1;
-            const aValue = String(a[sortOrder.field] ?? '');
-            const bValue = String(b[sortOrder.field] ?? '');
-            return direction * aValue.localeCompare(bValue);
-        });
+            // Apply sorting
+    return filtered.sort((a, b) => {
+        const direction = sortOrder.direction === 'asc' ? 1 : -1;
+        const aValue = String(a.LAB_NAME || '');
+        const bValue = String(b.LAB_NAME || '');
+        return direction * aValue.localeCompare(bValue);
+    });
     };
 
     // Get available departments from labs for the filter dropdown
@@ -181,9 +174,9 @@ export default function LabsPage() {
                             className="p-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
                             value={`${sortOrder.field}-${sortOrder.direction}`}
                             onChange={(e) => {
-                                const [field, direction] = e.target.value.split('-');
+                                const [, direction] = e.target.value.split('-');
                                 setSortOrder({ 
-                                    field: field as  'LAB_NAME' | 'LAB_TYPE',
+                                    field: 'LAB_NAME',
                                     direction: direction as 'asc' | 'desc'
                                 });
                             }}
@@ -258,11 +251,21 @@ export default function LabsPage() {
                             </button>
                         </div>
                     </div>
-                )}                {showChartModal && (
-                    <LabChartModal
-                        labs={labs}
-                        onClose={() => setShowChartModal(false)}
-                    />
+                )}
+
+                {showChartModal && (
+                    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+                        <div className="bg-white rounded-lg p-6 max-w-md w-full">
+                            <h2 className="text-xl font-bold mb-4">Lab Charts</h2>
+                            <p className="text-gray-600 mb-4">Lab charts modal will be implemented next.</p>
+                            <button
+                                onClick={() => setShowChartModal(false)}
+                                className="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600"
+                            >
+                                Close
+                            </button>
+                        </div>
+                    </div>
                 )}
             </div>
         </>
