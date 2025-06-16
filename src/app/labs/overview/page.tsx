@@ -28,7 +28,7 @@ const OurLabs = () => {
       <div className="flex min-h-screen">
         {/* Sidebar Navigation */}
         <div className="w-80 bg-gray-100 p-4 border-r border-gray-200">
-          <h2 className="text-lg font-bold mb-4">Research Categories</h2>
+          <h2 className="text-lg font-bold mb-4">MJIIT Laboratories</h2>
           <div className="space-y-2">
             {Object.keys(categories).map((category) => (
               <button
@@ -65,7 +65,7 @@ const OurLabs = () => {
                 <tr>
                   <th className="px-4 py-3 text-left font-medium text-white uppercase tracking-wider w-1/4">Lab Name</th>
                   <th className="px-4 py-3 text-left font-medium text-white uppercase tracking-wider w-1/6">Lab Head</th>
-                  <th className="px-4 py-3 text-left font-medium text-white uppercase tracking-wider w-1/6">Department</th>
+                  <th className="px-4 py-3 text-left font-medium text-white uppercase tracking-wider w-1/6">Lab Types</th>
                   <th className="px-4 py-3 text-left font-medium text-white uppercase tracking-wider w-1/4">Research Focus</th>
                   <th className="px-4 py-3 text-left font-medium text-white uppercase tracking-wider w-1/6">Location</th>
                 </tr>
