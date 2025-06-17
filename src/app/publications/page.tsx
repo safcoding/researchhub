@@ -174,6 +174,8 @@ const monthlyData = useMemo(() => {
                 </span>
               </h3>
 
+            {/* Add Publication Button */}
+            {/*
               <Link 
                 href="/publication-add"
                 className="ml-4 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded text-sm flex items-center transition-colors"
@@ -194,7 +196,7 @@ const monthlyData = useMemo(() => {
                   />
                 </svg>
                 Add Publication
-              </Link>
+              </Link>*/}
             </div>
             
             <div className="flex gap-2">
