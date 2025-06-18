@@ -85,11 +85,10 @@ export default function GrantsDashboard() {
             period="Annual Total" 
           />
         </div>
-
         {/* Charts Section */}
-        <div className="grid grid-cols-1 xl:grid-cols-3 gap-8 mb-8">
-          {/* Line Chart - Full Width on Large Screens */}
-          <div className="xl:col-span-2 bg-white p-6 rounded-xl shadow-md">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+          {/* Line Chart - Spans full width */}
+          <div className="lg:col-span-2 bg-white p-6 rounded-xl shadow-md">
             <h2 className="text-xl font-semibold mb-4">Grants Timeline (Last 12 Months)</h2>
             <p className="text-sm text-gray-600 mb-4">Values in thousands (RM '000)</p>
             <div className="h-80">
@@ -104,10 +103,7 @@ export default function GrantsDashboard() {
               <GrantsPie data={grantTypeData} />
             </div>
           </div>
-        </div>
 
-        {/* Second Row of Charts */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           {/* Sponsor Categories */}
           <div className="bg-white p-6 rounded-xl shadow-md">
             <h2 className="text-xl font-semibold mb-4">Sponsor Categories</h2>
@@ -115,7 +111,6 @@ export default function GrantsDashboard() {
               <GrantsPie data={sponsorData} />
             </div>
           </div>
-
         </div>
       </main>
     </div>

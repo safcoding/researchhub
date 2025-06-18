@@ -41,28 +41,42 @@ export interface TimelineData {
 export function GrantLogic() {
     const [grants, setGrants] = useState<Grant[]>([]);
     const [loading, setLoading] = useState(false);
-    const [error, setError] = useState<string | null>(null);    const fetchGrants = async () => {
-        try {
-            setLoading(true);
-            setError(null);
-            console.log('Fetching grants from database...');
-            
-            const { data, error } = await supabase.from('grant').select('*');
-            
-            if (error) {
-                console.error('Error fetching grants:', error);
-                throw error;
+    const [error, setError] = useState<string | null>(null);    
+
+        const fetchGrants = async () => {
+            try {
+                setLoading(true);
+                setError(null);
+                console.log('Fetching grants from database...');
+                
+                // Simple fix: increase the limit
+                const { data, error, count } = await supabase
+                    .from('grant')
+                    .select('*', { count: 'exact' })
+                    .limit(5000) // Increased from default 1000
+                    .order('PRO_DATESTART', { ascending: false });
+                
+                if (error) {
+                    console.error('Error fetching grants:', error);
+                    throw error;
+                }
+                
+                console.log(`Successfully fetched ${data?.length || 0} grants out of ${count} total`);
+                
+                // Log warning if we're hitting the limit
+                if (data && count && data.length >= 5000 && count > 5000) {
+                    console.warn(`Warning: Only showing ${data.length} out of ${count} grants. Consider implementing pagination.`);
+                }
+                
+                setGrants(data || []);
+            } catch (e) {
+                console.error('Error in fetchGrants:', e);
+                setError(e instanceof Error ? e.message : 'Unknown error');
+            } finally {
+                setLoading(false);
             }
-            
-            console.log(`Successfully fetched ${data?.length || 0} grants`);
-            setGrants(data || []);
-        } catch (e) {
-            console.error('Error in fetchGrants:', e);
-            setError(e instanceof Error ? e.message : 'Unknown error');
-        } finally {
-            setLoading(false);
-        }
-    };const addGrant = async (newGrant: Partial<Grant>) => {
+        };
+    const addGrant = async (newGrant: Partial<Grant>) => {
         try {
             setLoading(true);
             console.log('Adding new grant:', newGrant);
@@ -319,6 +333,7 @@ export function GrantLogic() {
         updateGrant,
         deleteGrant,
         getFileUrl,
+        // Add new analytics functions
         getGrantStats,
         getGrantTypeData,
         getSponsorCategoryData,
