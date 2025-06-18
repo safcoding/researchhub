@@ -4,6 +4,8 @@ import React, { useState, useMemo } from 'react';
 import Link from 'next/link';
 import Navbar from '@/components/navbar';
 import { PublicationLogic } from '@/hooks/publication-logic';
+import { PublicationPieChart } from '@/components/pub-piechart';
+// Importing the Pie chart component for publication types
 import {
   LineChart,
   Line,
@@ -123,51 +125,60 @@ const monthlyData = useMemo(() => {
       <main className="flex-grow container mx-auto px-4 py-8 bg-gray-50">
         <h1 className="text-3xl font-bold text-gray-800 mb-8">Publications Dashboard</h1>
 
-        {/* Statistics Cards */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8">
-          <div className="lg:col-span-2 bg-white p-6 rounded-xl shadow-md">
-            <div className="flex justify-between items-center mb-4">
-              <h3 className="text-xl font-semibold">Monthly Publications</h3>
-              <select
-                value={selectedChartYear}
-                onChange={(e) => setSelectedChartYear(e.target.value)}
-                className="p-2 border border-gray-300 rounded text-sm"
-              >
-                {availableYears.map(year => (
-                  <option key={year} value={year}>{year}</option>
-                ))}
-              </select>
-            </div>
-            <div className="h-80">
-              <ResponsiveContainer width="100%" height="100%">
-                <LineChart data={chartData} margin={{ top: 10, right: 30, left: 20, bottom: 10 }}>
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="month" />
-                  <YAxis label={{ value: 'Publications', angle: -90, position: 'insideLeft' }} />
-                  <Tooltip />
-                  <Line type="monotone" dataKey="publications" stroke="#0056b3" strokeWidth={2} />
-                </LineChart>
-              </ResponsiveContainer>
-            </div>
-          </div>
+        {/* Statistics Row Above Charts */}
+<div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+  <div className="bg-white p-6 rounded-xl shadow-md flex flex-col items-center justify-center h-40">
+    <h3 className="text-lg font-semibold mb-2">Total Publications</h3>
+    <div className="text-4xl font-bold">{totalPublications}</div>
+  </div>
+  
+  <div className="bg-white p-6 rounded-xl shadow-md flex flex-col items-center justify-center h-40">
+    <h3 className="text-lg font-semibold mb-2">Publications This Year</h3>
+    <div className="text-4xl font-bold">{publicationsThisYear}</div>
+  </div>
+  
+  <div className="bg-white p-6 rounded-xl shadow-md flex flex-col items-center justify-center h-40">
+    <h3 className="text-lg font-semibold mb-2">Publications This Quarter</h3>
+    <div className="text-4xl font-bold">{publicationsThisQuarter}</div>
+  </div>
+</div>
 
-          <div className="space-y-4">
-            <div className="bg-white p-6 rounded-xl shadow-md flex flex-col items-center justify-center h-40">
-              <h3 className="text-lg font-semibold mb-2">Total Publications</h3>
-              <div className="text-4xl font-bold">{totalPublications}</div>
-            </div>
-            
-            <div className="bg-white p-6 rounded-xl shadow-md flex flex-col items-center justify-center h-40">
-              <h3 className="text-lg font-semibold mb-2">Publications This Year</h3>
-              <div className="text-4xl font-bold">{publicationsThisYear}</div>
-            </div>
-            
-            <div className="bg-white p-6 rounded-xl shadow-md flex flex-col items-center justify-center h-40">
-              <h3 className="text-lg font-semibold mb-2">Publications This Quarter</h3>
-              <div className="text-4xl font-bold">{publicationsThisQuarter}</div>
-            </div>
-          </div>
-        </div>
+{/* Charts Row */}
+<div className="flex flex-col lg:flex-row gap-8 mb-8">
+  {/* Line Chart */}
+  <div className="w-full lg:w-2/3 bg-white p-6 rounded-xl shadow-md">
+    <div className="flex justify-between items-center mb-4">
+      <h3 className="text-xl font-semibold">Monthly Publications</h3>
+      <select
+        value={selectedChartYear}
+        onChange={(e) => setSelectedChartYear(e.target.value)}
+        className="p-2 border border-gray-300 rounded text-sm"
+      >
+        {availableYears.map(year => (
+          <option key={year} value={year}>{year}</option>
+        ))}
+      </select>
+    </div>
+    <div className="h-80">
+      <ResponsiveContainer width="100%" height="100%">
+        <LineChart data={chartData} margin={{ top: 10, right: 30, left: 20, bottom: 10 }}>
+          <CartesianGrid strokeDasharray="3 3" />
+          <XAxis dataKey="month" />
+          <YAxis label={{ value: 'Publications', angle: -90, position: 'insideLeft' }} />
+          <Tooltip />
+          <Line type="monotone" dataKey="publications" stroke="#0056b3" strokeWidth={2} />
+        </LineChart>
+      </ResponsiveContainer>
+    </div>
+  </div>
+
+  {/* Pie Chart */}
+  <div className="w-full lg:w-1/3 bg-white p-6 rounded-xl shadow-md">
+    <h3 className="text-xl font-semibold mb-4">Publication Distribution</h3>
+<PublicationPieChart publications={filteredPublications} />
+  </div>
+</div>
+
 
         {/* Publications Table */}
         <div className="bg-white p-6 rounded-xl shadow-md">
