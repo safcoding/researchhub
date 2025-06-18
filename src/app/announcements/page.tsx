@@ -7,6 +7,7 @@ import { useUser } from '@clerk/nextjs';
 import Navbar from '@/components/navbar';
 import { EventLogic, type Event } from '@/hooks/event-logic';
 import { EventModal, DeleteConfirmationModal } from '@/components/event-crud';
+import Footer from '@/components/Footer';
 
 export default function AnnouncementsPage() {
   const { user, isLoaded } = useUser();
@@ -445,45 +446,7 @@ export default function AnnouncementsPage() {
       )}
       
       {/* Footer */}
-      <footer className="bg-gray-900 text-white py-10 mt-16">
-        <div className="container mx-auto px-4">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-            <div>
-              <h3 className="text-xl font-bold mb-4">Research Hub</h3>
-              <p className="text-gray-400">Advancing knowledge through innovation and collaboration</p>
-            </div>
-            <div>
-              <h4 className="text-lg font-semibold mb-4">Quick Links</h4>
-              <ul className="space-y-2">
-                <li><Link href="/about" className="text-gray-400 hover:text-white">About Us</Link></li>
-                <li><Link href="/publications" className="text-gray-400 hover:text-white">Publications</Link></li>
-                <li><Link href="/grant" className="text-gray-400 hover:text-white">Grants</Link></li>
-              </ul>
-            </div>
-            <div>
-              <h4 className="text-lg font-semibold mb-4">Resources</h4>
-              <ul className="space-y-2">
-                <li><Link href="/announcements" className="text-gray-400 hover:text-white">Announcements</Link></li>
-                <li><Link href="/grant-db" className="text-gray-400 hover:text-white">Grant Database</Link></li>
-                <li><Link href="/publication-add" className="text-gray-400 hover:text-white">Add Publication</Link></li>
-              </ul>
-            </div>
-            <div>
-              <h4 className="text-lg font-semibold mb-4">Contact Us</h4>
-              <address className="not-italic text-gray-400">
-                <p>MJIIT Building</p>
-                <p>UTM Kuala Lumpur Campus</p>
-                <p>Malaysia</p>
-                <p>research.mjiit@utm.my</p>
-                <p>+60 3-2203-1200</p>
-              </address>
-            </div>
-          </div>
-          <div className="border-t border-gray-800 mt-8 pt-6 text-center text-gray-400">
-            <p>&copy; {new Date().getFullYear()} UTM Research Hub. All rights reserved.</p>
-          </div>
-        </div>
-      </footer>
+      <Footer />
     </div>
   );
 }
