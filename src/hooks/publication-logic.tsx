@@ -14,7 +14,8 @@ export type Publication = {
   impact: number;
   date: string;
   level: string;
-  author_id: number;
+  author_name: string;//added this
+  author_id: number 
   research_alliance: string;
   rg_name: string;
 };
@@ -30,32 +31,32 @@ export function PublicationLogic() {
       setError(null);
       const { data, error } = await supabase
         .from('publications')
-        .select('*')
+        .select('*') //changed back 
         .order('date', { ascending: false });
-      
+
       if (error) throw error;
       setPublications(data || []);
     } catch (e) {
-      console.error('Error fetching publications:', e);
+      console.error('Error fetching publications!', e);
       setError(e instanceof Error ? e.message : 'Unknown error');
     } finally {
       setLoading(false);
     }
   };
 
-  const addPublication = async (newPublication: Omit<Publication, 'id'>, file?: File) => {
+  const addPublication = async (newPublication: Omit<Publication, 'id'>) => {
     try {
       setError(null);
-      const { data, error: insertError } = await supabase
+      const { data, error } = await supabase
         .from('publications')
         .insert([newPublication])
-        .select()
+        .select();
 
-      if (insertError) throw insertError;
+      if (error) throw error;
       await fetchPublications();
       return data;
     } catch (e) {
-      console.error('Error adding publication:', e);
+      console.error('Error adding publication!', e);
       setError(e instanceof Error ? e.message : 'Unknown error');
       throw e;
     }
@@ -64,15 +65,15 @@ export function PublicationLogic() {
   const updatePublication = async (id: number, updatedData: Partial<Publication>) => {
     try {
       setError(null);
-      const { error: updateError } = await supabase
+      const { error } = await supabase
         .from('publications')
         .update(updatedData)
         .eq('id', id);
 
-      if (updateError) throw updateError;
+      if (error) throw error;
       await fetchPublications();
     } catch (e) {
-      console.error('Error updating publication:', e);
+      console.error('Error updating publication!', e);
       setError(e instanceof Error ? e.message : 'Unknown error');
       throw e;
     }
@@ -81,15 +82,15 @@ export function PublicationLogic() {
   const deletePublication = async (id: number) => {
     try {
       setError(null);
-      const { error: deleteError } = await supabase
+      const { error } = await supabase
         .from('publications')
         .delete()
         .eq('id', id);
 
-      if (deleteError) throw deleteError;
+      if (error) throw error;
       await fetchPublications();
     } catch (e) {
-      console.error('Error deleting publication:', e);
+      console.error('Error deleting publication!', e);
       setError(e instanceof Error ? e.message : 'Unknown error');
       throw e;
     }
@@ -99,13 +100,14 @@ export function PublicationLogic() {
     void fetchPublications();
   }, []);
 
- return {
+  return {
     publications,
     loading,
     error,
     addPublication,
     updatePublication,
     deletePublication,
-    refreshPublications: fetchPublications
+    refreshPublications: fetchPublications,
   };
 }
+
