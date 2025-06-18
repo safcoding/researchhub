@@ -1,5 +1,6 @@
 import type {Grant} from '@/hooks/grant-logic';
 import { GrantLogic } from '@/hooks/grant-logic';
+import { useState } from 'react';
 
 export interface GrantsTableProps {
     grants: Grant[];
@@ -9,8 +10,23 @@ export interface GrantsTableProps {
 
 export function GrantTable({ grants, onEdit, onDelete }: GrantsTableProps) {
     const { getFileUrl } = GrantLogic();
+    const [currentPage, setCurrentPage] = useState(1);
+    const [expandedRow, setExpandedRow] = useState<string | null>(null);
     
-    return (
+    // Pagination settings
+    const itemsPerPage = 10;
+    const totalPages = Math.ceil(grants.length / itemsPerPage);
+    const indexOfLastItem = currentPage * itemsPerPage;
+    const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+    const currentGrants = grants.slice(indexOfFirstItem, indexOfLastItem);
+    
+    const handleRowClick = (projectId: string) => {
+        if (expandedRow === projectId) {
+            setExpandedRow(null);
+        } else {
+            setExpandedRow(projectId);
+        }
+    };return (
         <div className="overflow-x-auto">
             <table className="min-w-full bg-white">
                 <thead className="bg-gray-100">

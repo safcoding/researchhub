@@ -38,51 +38,45 @@ const PublicationsUpload: React.FC = () => {
   };
 
   const handleSubmit = async () => {
-  try {
-    if (!publicationData.title || !publicationData.author || !publicationData.date) {
-      alert('Please fill in all required fields.');
-      return;
-    }
-
-    if (editingId !== null) {
-      // Update existing publication
-      await updatePublication(editingId, publicationData);
-      if (file) {
-        try {
-          await uploadPDF(file, editingId);
-        } catch (uploadErr) {
-          console.error('Error uploading PDF:', uploadErr);
-          alert('Publication updated but PDF upload failed. Please try uploading the PDF again.');
-        }
-      }
-    } else {
-      // Add new publication
-      if (!file) {
-        alert('Please select a PDF file.');
+    try {
+      if (!publicationData.title || !publicationData.author || !publicationData.date) {
+        alert('Please fill in all required fields.');
         return;
       }
 
-      try {
-        // First create the publication
+      if (editingId !== null) {
+        await updatePublication(editingId, publicationData);
+        if (file) {
+          try {
+            await uploadPDF(file, editingId);
+          } catch (uploadErr) {
+            console.error('Error uploading PDF:', uploadErr);
+            alert('Publication updated but PDF upload failed. Please try uploading the PDF again.');
+          }
+        }
+      } else {
         const newPub = await addPublication(publicationData);
         if (!newPub || !newPub.id) {
           throw new Error('Failed to create publication');
         }
-        // Then upload the PDF
-        await uploadPDF(file, newPub.id);
-      } catch (err) {
-        console.error('Error in publication creation or PDF upload:', err);
-        throw err;
-      }
-    }
 
-    resetForm();
-    alert(`Publication ${editingId !== null ? 'updated' : 'added'} successfully!`);
-  } catch (err) {
-    console.error('Error handling publication:', err);
-    alert('Error: ' + (err instanceof Error ? err.message : 'An error occurred'));
-  }
-};
+        if (file) {
+          try {
+            await uploadPDF(file, newPub.id);
+          } catch (uploadErr) {
+            console.error('Error uploading PDF:', uploadErr);
+            alert('Publication added but PDF upload failed. You can try again by editing.');
+          }
+        }
+      }
+
+      resetForm();
+      alert(`Publication ${editingId !== null ? 'updated' : 'added'} successfully!`);
+    } catch (err) {
+      console.error('Error handling publication:', err);
+      alert('Error: ' + (err instanceof Error ? err.message : 'An error occurred'));
+    }
+  };
 
   const handleEdit = (publication: Publication) => {
     setPublicationData({
@@ -147,7 +141,7 @@ const PublicationsUpload: React.FC = () => {
   return (
     <div className="min-h-screen bg-gray-50">
       <Navbar />
-      
+
       <div className="container mx-auto px-4 py-8">
         <div className="flex-1">
           {/* Form Section */}
@@ -155,7 +149,7 @@ const PublicationsUpload: React.FC = () => {
             <h1 className="text-2xl font-bold text-gray-800 mb-6">
               {editingId !== null ? 'Edit Publication' : 'Add New Publication'}
             </h1>
-            
+
             <div className="space-y-6">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {/* Title Input */}
@@ -228,7 +222,7 @@ const PublicationsUpload: React.FC = () => {
                 {/* File Input */}
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
-                    PDF File {!editingId && '*'}
+                    PDF File
                   </label>
                   <input
                     type="file"
@@ -262,7 +256,7 @@ const PublicationsUpload: React.FC = () => {
           {/* Publications Table */}
           <div className="bg-white p-6 rounded-lg shadow-md">
             <h2 className="text-xl font-bold text-gray-800 mb-4">Current Publications</h2>
-            
+
             <div className="overflow-auto">
               <table className="w-full text-sm">
                 <thead className="bg-gray-100">
@@ -287,24 +281,24 @@ const PublicationsUpload: React.FC = () => {
                         <td className="px-4 py-2">{pub.date}</td>
                         <td className="px-4 py-2">
                           {pub.file_url ? (
-                            <a 
+                            <a
                               href={pub.file_url}
                               target="_blank"
                               rel="noopener noreferrer"
                               className="text-blue-600 hover:underline flex items-center"
                             >
-                              <svg 
-                                xmlns="http://www.w3.org/2000/svg" 
-                                className="h-5 w-5 mr-1" 
-                                fill="none" 
-                                viewBox="0 0 24 24" 
+                              <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                className="h-5 w-5 mr-1"
+                                fill="none"
+                                viewBox="0 0 24 24"
                                 stroke="currentColor"
                               >
-                                <path 
-                                  strokeLinecap="round" 
-                                  strokeLinejoin="round" 
-                                  strokeWidth={2} 
-                                  d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" 
+                                <path
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                  strokeWidth={2}
+                                  d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"
                                 />
                               </svg>
                               View PDF

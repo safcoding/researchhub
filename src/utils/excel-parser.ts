@@ -10,6 +10,7 @@ interface ExcelRow {
   PROJECT_TITLE?: string;
   PRO_DATESTART?: string;
   PRO_DATEEND?: string;
+  PROJECT_YEAR?: string;
   GRANT_TYPE?: string;
   PROJECT_STATUS?: string;
   SPONSOR_CATEGORY?: string;
@@ -59,10 +60,10 @@ export async function parseExcelFile(file: File): Promise<Omit<Grant, 'PROJECTID
           PL_STAFF_NO: Number(row.PL_STAFF_NO ?? 0),
           PL_NAME: row.PL_NAME ?? '',
           PTJ_RESEARCH_ALLIANCE: row.PTJ_RESEARCH_ALLIANCE ?? '',
-          RESEARCH_GROUP: row.RESEARCH_GROUP ?? '',
-          PROJECT_TITLE: row.PROJECT_TITLE ?? '',
+          RESEARCH_GROUP: row.RESEARCH_GROUP ?? '',          PROJECT_TITLE: row.PROJECT_TITLE ?? '',
           PRO_DATESTART: row.PRO_DATESTART ?? '',
           PRO_DATEEND: row.PRO_DATEEND ?? '',
+          PROJECT_YEAR: row.PROJECT_YEAR ?? '',
           GRANT_TYPE: row.GRANT_TYPE ?? '',
           PROJECT_STATUS: row.PROJECT_STATUS ?? '',
           SPONSOR_CATEGORY: row.SPONSOR_CATEGORY ?? '',
