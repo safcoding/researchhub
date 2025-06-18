@@ -3,6 +3,14 @@ import Link from 'next/link';
 import Image from 'next/image';
 import Navbar from '@/components/navbar';
 
+import organizationChartImage from '@/images/organizationchart.png'; //added image
+import MrAifaa from '@/images/mraifaa.png'; //added image
+import MrShaiful from '@/images/mrshaiful.png'; //added image 
+import MrsAriffi from '@/images/mrsariffi.png'; //added image
+import DeputyDean from '@/images/deputydean.png'; //added image
+
+
+
 export default function AboutPage() {
   return (
     <div>
@@ -12,33 +20,40 @@ export default function AboutPage() {
         <div className="max-w-4xl mx-auto">
           <h1 className="text-4xl font-bold mb-8 text-center">About the MJIIT Research Portal</h1>
           
-          <div className="mb-12 relative h-64 md:h-96">
-            <Image 
-              src="/api/placeholder/1200/600" 
-              alt="MJIIT Research Center" 
-              fill
-              style={{ objectFit: 'cover' }}
-              className="rounded-lg shadow-md"
-            />
-          </div>
+          <div className="flex flex-col md:flex-row gap-8 items-center mb-12">
+
+                {/* DEPUTY DEAN REMARKS AND PHOTO */}
+                <div className="flex items-start gap-6 mb-12">
+                <Image
+                  src={DeputyDean}
+                  alt="Deputy Dean"
+                  width={250} 
+                  height={250}
+                  className="rounded-lg shadow-md object-cover flex-shrink-0"
+                />
+
+                {/* Text wrapping beside image */}
+                <div className="text-lg leading-relaxed">
+                  <p className="mb-4">
+                    Welcome to the MJIIT Research Portal – a centralized platform designed exclusively for the researchers of the Malaysia-Japan International Institute of Technology (MJIIT). This portal serves as a dedicated space to support and streamline research-related activities across the institute.
+                  </p>
+
+                  <p className="mb-4">
+                    Our goal is to foster a collaborative and productive research environment by providing easy access to essential information, resources, and tools. The portal includes up-to-date announcements on research grants, templates for proposal submissions, and guidelines for research documentation. Researchers can also share their progress, update achievements, and stay informed on matters related to publications, consultancies, community engagement projects, and intellectual property.
+                  </p>
+
+                  <p className="mb-4">
+                    Whether you're preparing a grant application, reporting research outcomes, or exploring collaborative opportunities, this platform aims to simplify and support your work. We are committed to making research at MJIIT more connected, transparent, and impactful.
+                  </p>
+
+                  <p className="font-semibold text-center">
+                    Together, let&apos;s advance innovation and excellence in research at MJIIT.
+                  </p>
+                </div>
+              </div>
+              </div>
           
-          <div className="prose prose-lg max-w-none">
-            <p className="text-xl mb-6">
-              Welcome to the MJIIT Research Portal – a centralized platform designed exclusively for the researchers of the Malaysia-Japan International Institute of Technology (MJIIT). This portal serves as a dedicated space to support and streamline research-related activities across the institute.
-            </p>
-            
-            <p className="mb-6">
-              Our goal is to foster a collaborative and productive research environment by providing easy access to essential information, resources, and tools. The portal includes up-to-date announcements on research grants, templates for proposal submissions, and guidelines for research documentation. Researchers can also share their progress, update achievements, and stay informed on matters related to publications, consultancies, community engagement projects, and intellectual property.
-            </p>
-            
-            <p className="mb-6">
-              Whether you're preparing a grant application, reporting research outcomes, or exploring collaborative opportunities, this platform aims to simplify and support your work. We are committed to making research at MJIIT more connected, transparent, and impactful.
-            </p>
-              <p className="text-xl font-semibold mb-8 text-center">
-              Together, let&apos;s advance innovation and excellence in research at MJIIT.
-            </p>
-          </div>
-          
+          <div>
           <div className="mt-16 grid grid-cols-1 md:grid-cols-3 gap-8">
             <div className="bg-white rounded-lg shadow-md p-6 flex flex-col items-center text-center">
               <div className="text-4xl mb-4">🔬</div>
@@ -58,43 +73,65 @@ export default function AboutPage() {
               <p className="text-gray-600">Share and showcase your research achievements and measure your impact.</p>
             </div>
           </div>
+        </div>
+        </div>
 
-          
-         {/*DEPUTY REMARKS AND PHOTO */} 
 
-         {/*ORGANIZATION CHART */} 
          {/*OUR TEAM SECTION */} 
-      <div className="mt-16">
+        <div className="mt-16">
         <h2 className="text-3xl font-bold mb-6">Our Team </h2>
-        <Image 
-              src="/api/placeholder/1200/600" 
-              alt="Dr Ariffi Picture" 
-              fill
-              style={{ objectFit: 'cover' }}
-              className="rounded-lg shadow-md"
-            />
-          <Image 
-              src="/api/placeholder/1200/600" 
-              alt="Mr Aifaa Picture" 
-              fill
-              style={{ objectFit: 'cover' }}
-              className="rounded-lg shadow-md"
-            />
+         {/*ORGANIZATION CHART */} 
 
-             <Image 
-              src="/api/placeholder/1200/600" 
-              alt="Mr Shaiful Picture" 
-              fill
-              style={{ objectFit: 'cover' }}
-              className="rounded-lg shadow-md"
+            <Image 
+              src={organizationChartImage}
+              alt="Organization Chart"
+              width={1200}
+              height={800}
+              className="rounded-lg shadow-md mx-auto"
             />
 
 
-
-
-
-
-
+            {/*HEADS OF RESEARCH ADMIN */} 
+          <div className="mt-12"> 
+            <h2 className="text-3xl font-bold mb-6">Staff of Research Administration</h2>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+              <div className="bg-white rounded-lg shadow-md p-6 text-center">
+                <Image 
+                  src={MrAifaa}
+                  alt="Mr Aifaa" 
+                  width={200} 
+                  height={200} 
+                  className="rounded-full mb-4 mx-auto"
+                />
+                <h3 className="text-xl font-semibold mb-2">MR. AIFAA NAZMI BIN ALI</h3>
+                <p className="text-gray-600">Assistant Registrar</p>
+                <p className="text-gray-600"><i>iKohza</i></p>
+              </div>
+              <div className="bg-white rounded-lg shadow-md p-6 text-center">
+                <Image 
+                  src={MrShaiful} 
+                  alt="Dr. Jane Smith" 
+                  width={200} 
+                  height={200} 
+                  className="rounded-full mb-4 mx-auto"
+                />
+                <h3 className="text-xl font-semibold mb-2">MR. MOHD SHAIFUL BIN ZAINAL</h3>
+                <p className="text-gray-600">Senior Administrative Assistant</p>
+                 <p className="text-gray-600"><i>iKohza</i></p>
+              </div>
+              <div className="bg-white rounded-lg shadow-md p-6 text-center">
+                <Image 
+                  src={MrsAriffi}
+                  alt="Dr. Emily Johnson" 
+                  width={200} 
+                  height={200} 
+                  className="rounded-full mb-4 mx-auto"
+                />
+                <h3 className="text-xl font-semibold mb-2">MRS. ARIFFI SURAYA BINTI RAHMANI</h3>
+                <p className="text-gray-600">Research Officer</p>
+                 <p className="text-gray-600"><i>iKohza</i></p>
+              </div>
+            </div>
       </div>
 
 
