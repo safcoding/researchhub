@@ -58,6 +58,57 @@ export default function AboutPage() {
               <p className="text-gray-600">Share and showcase your research achievements and measure your impact.</p>
             </div>
           </div>
+
+          
+         {/*DEPUTY REMARKS AND PHOTO */} 
+
+         {/*ORGANIZATION CHART */} 
+         {/*OUR TEAM SECTION */} 
+      <div className="mt-16">
+        <h2 className="text-3xl font-bold mb-6">Our Team </h2>
+        <Image 
+              src="/api/placeholder/1200/600" 
+              alt="Dr Ariffi Picture" 
+              fill
+              style={{ objectFit: 'cover' }}
+              className="rounded-lg shadow-md"
+            />
+          <Image 
+              src="/api/placeholder/1200/600" 
+              alt="Mr Aifaa Picture" 
+              fill
+              style={{ objectFit: 'cover' }}
+              className="rounded-lg shadow-md"
+            />
+
+             <Image 
+              src="/api/placeholder/1200/600" 
+              alt="Mr Shaiful Picture" 
+              fill
+              style={{ objectFit: 'cover' }}
+              className="rounded-lg shadow-md"
+            />
+
+
+
+
+
+
+
+      </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
           
           <div className="mt-16">
             <h2 className="text-3xl font-bold mb-6">Contact the Research Office</h2>
