@@ -11,21 +11,13 @@ export function LabModal({ lab, onSave, onClose }: LabModalProps) {
     const [formData, setFormData] = useState<Partial<Lab>>(lab ?? {});
     const [errors, setErrors] = useState<Record<string, string>>({});
     const [isSubmitting, setIsSubmitting] = useState(false);
-    const [successMessage, setSuccessMessage] = useState('');
-
-    // Lab type options
+    const [successMessage, setSuccessMessage] = useState('');    // Lab type options
     const labTypeOptions = [
+        "i-Kohza",
+        "Service Lab",
         "Research Lab",
-        "Teaching Lab", 
-        "Computer Lab",
-        "Chemistry Lab",
-        "Physics Lab",
-        "Biology Lab",
-        "Engineering Lab",
-        "Mixed Use Lab",
-        "Clean Room",
-        "Workshop",
-        "Other"
+        "Teaching Lab",
+        "Satellite Lab"
     ];
 
     // Lab status options
@@ -34,33 +26,12 @@ export function LabModal({ lab, onSave, onClose }: LabModalProps) {
         "Inactive", 
         "Under Maintenance",
         "Under Construction",
-        "Renovation",
-        "Planning"
-    ];
-
-    // Department options
-    const departmentOptions = [
-        "Computer Science",
-        "Electrical Engineering",
-        "Mechanical Engineering", 
-        "Chemical Engineering",
-        "Civil Engineering",
-        "Biomedical Engineering",
-        "Physics",
-        "Chemistry",
-        "Biology",
-        "Mathematics",
-        "Materials Science",
-        "Other"
-    ];
-
-    // Required fields - only fields that exist in Lab type
+        "Renovation",        "Planning"
+    ];    // Required fields - only fields that exist in Lab type
     const requiredFields: (keyof Lab)[] = [
         "LAB_NAME",
         "LAB_HEAD",
         "LAB_HEAD_EMAIL", 
-        "DEPARTMENT",
-        "RESEARCH_AREA",
         "LOCATION",
         "LAB_STATUS",
         "LAB_TYPE"
@@ -269,37 +240,11 @@ export function LabModal({ lab, onSave, onClose }: LabModalProps) {
                                 placeholder="Enter email address"
                             />
                             {errors.LAB_HEAD_EMAIL && (
-                                <p className="text-red-500 text-sm mt-1">{errors.LAB_HEAD_EMAIL}</p>
-                            )}
-                        </div>
-
-                        {/* Department */}
+                                <p className="text-red-500 text-sm mt-1">{errors.LAB_HEAD_EMAIL}</p>                            )}
+                        </div>                        {/* Research Area */}
                         <div>
                             <label className="block text-sm font-medium text-gray-700 mb-1">
-                                Department *
-                            </label>                            <select
-                                name="DEPARTMENT"
-                                value={formData.DEPARTMENT ?? ''}
-                                onChange={handleChange}
-                                title="Select department"
-                                className={`w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                                    errors.DEPARTMENT ? 'border-red-500' : 'border-gray-300'
-                                }`}
-                            >
-                                <option value="">Select department</option>
-                                {departmentOptions.map(dept => (
-                                    <option key={dept} value={dept}>{dept}</option>
-                                ))}
-                            </select>
-                            {errors.DEPARTMENT && (
-                                <p className="text-red-500 text-sm mt-1">{errors.DEPARTMENT}</p>
-                            )}
-                        </div>
-
-                        {/* Research Area */}
-                        <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1">
-                                Research Area *
+                                Research Area (Optional)
                             </label>
                             <input
                                 type="text"
@@ -313,6 +258,25 @@ export function LabModal({ lab, onSave, onClose }: LabModalProps) {
                             />
                             {errors.RESEARCH_AREA && (
                                 <p className="text-red-500 text-sm mt-1">{errors.RESEARCH_AREA}</p>
+                            )}
+                        </div>
+
+                        {/* Equipment List */}
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-1">
+                                Equipment List
+                            </label>                            <textarea
+                                name="EQUIPMENT_LIST"
+                                value={formData.EQUIPMENT_LIST ?? ''}
+                                onChange={handleChange}
+                                className={`w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+                                    errors.EQUIPMENT_LIST ? 'border-red-500' : 'border-gray-300'
+                                }`}
+                                placeholder="List equipment available in this lab (e.g., Microscopes, Centrifuge, PCR machines, etc.)"
+                                rows={3}
+                            />
+                            {errors.EQUIPMENT_LIST && (
+                                <p className="text-red-500 text-sm mt-1">{errors.EQUIPMENT_LIST}</p>
                             )}
                         </div>
 

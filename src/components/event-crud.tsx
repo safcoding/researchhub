@@ -7,22 +7,23 @@ interface EventModalProps {
     onClose: () => void;
 }
 
-export function EventModal({ event, onSave, onClose }: EventModalProps) {    const [formData, setFormData] = useState<Partial<Event>>(event ?? {
-        registration_required: false,
-        priority: 'Medium',
-        status: 'Upcoming',
-        category: 'Conference'
+export function EventModal({ event, onSave, onClose }: EventModalProps) {    const [formData, setFormData] = useState<Partial<Event>>(() => {
+        if (event) {
+            return event;
+        }
+        return {
+            registration_required: false,
+            priority: 'Medium',
+            status: 'Upcoming'
+            // Don't set a default category - force user to select one
+        };
     });
     const [errors, setErrors] = useState<Record<string, string>>({});
-    const [isSubmitting, setIsSubmitting] = useState(false);
-
-    const categoryOptions: Event['category'][] = ['Conference', 'Workshop', 'Seminar', 'Grant', 'Competition', 'Networking'];
+    const [isSubmitting, setIsSubmitting] = useState(false);    const categoryOptions: Event['category'][] = ['Conference', 'Workshop', 'Seminar', 'Grant', 'Competition', 'Networking', 'Others'];
     const priorityOptions: Event['priority'][] = ['High', 'Medium', 'Low'];
     const statusOptions: Event['status'][] = ['Upcoming', 'Registration Open', 'Registration Closed', 'Completed'];
 
-    const requiredFields = ['title', 'description', 'date', 'time', 'location', 'organizer', 'contact_email'];
-
-    const validateForm = () => {
+    const requiredFields = ['title', 'description', 'date', 'time', 'location', 'category', 'organizer', 'contact_email'];    const validateForm = () => {
         const newErrors: Record<string, string> = {};
         let isValid = true;
 
@@ -31,7 +32,11 @@ export function EventModal({ event, onSave, onClose }: EventModalProps) {    con
                 newErrors[field] = 'This field is required';
                 isValid = false;
             }
-        });        // Email validation
+        });        // Special validation for category since it might be undefined
+        if (!formData.category) {
+            newErrors.category = 'Please select a category';
+            isValid = false;
+        }// Email validation
         if (formData.contact_email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.contact_email)) {
             newErrors.contact_email = 'Please enter a valid email address';
             isValid = false;
@@ -49,11 +54,12 @@ export function EventModal({ event, onSave, onClose }: EventModalProps) {    con
 
         setErrors(newErrors);
         return isValid;
-    };
-
-    const handleSubmit = async (e: React.FormEvent) => {
+    };    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        if (!validateForm()) return;
+        
+        if (!validateForm()) {
+            return;
+        }
 
         setIsSubmitting(true);
         try {
@@ -61,6 +67,12 @@ export function EventModal({ event, onSave, onClose }: EventModalProps) {    con
             onClose();
         } catch (error) {
             console.error('Error saving event:', error);
+            // Show error to user
+            if (error instanceof Error) {
+                alert(`Error saving event: ${error.message}`);
+            } else {
+                alert('An unknown error occurred while saving the event');
+            }
         } finally {
             setIsSubmitting(false);
         }
@@ -100,7 +112,7 @@ export function EventModal({ event, onSave, onClose }: EventModalProps) {    con
                         <input
                             type="text"
                             name="id"
-                            value={formData.id || ''}
+                            value={formData.id ?? ''}
                             onChange={handleChange}
                             className={`w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${
                                 event ? 'bg-gray-100 cursor-not-allowed' : 'border-gray-300'
@@ -118,7 +130,7 @@ export function EventModal({ event, onSave, onClose }: EventModalProps) {    con
                         <input
                             type="text"
                             name="title"
-                            value={formData.title || ''}
+                            value={formData.title ?? ''}
                             onChange={handleChange}
                             className={`w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${
                                 errors.title ? 'border-red-500' : 'border-gray-300'
@@ -135,7 +147,7 @@ export function EventModal({ event, onSave, onClose }: EventModalProps) {    con
                         </label>
                         <textarea
                             name="description"
-                            value={formData.description || ''}
+                            value={formData.description ?? ''}
                             onChange={handleChange}
                             rows={4}
                             className={`w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${
@@ -155,7 +167,7 @@ export function EventModal({ event, onSave, onClose }: EventModalProps) {    con
                             <input
                                 type="date"
                                 name="date"
-                                value={formData.date || ''}
+                                value={formData.date ?? ''}
                                 onChange={handleChange}
                                 className={`w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${
                                     errors.date ? 'border-red-500' : 'border-gray-300'
@@ -171,7 +183,7 @@ export function EventModal({ event, onSave, onClose }: EventModalProps) {    con
                             <input
                                 type="text"
                                 name="time"
-                                value={formData.time || ''}
+                                value={formData.time ?? ''}
                                 onChange={handleChange}
                                 className={`w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${
                                     errors.time ? 'border-red-500' : 'border-gray-300'
@@ -191,7 +203,7 @@ export function EventModal({ event, onSave, onClose }: EventModalProps) {    con
                             <input
                                 type="text"
                                 name="location"
-                                value={formData.location || ''}
+                                value={formData.location ?? ''}
                                 onChange={handleChange}
                                 className={`w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${
                                     errors.location ? 'border-red-500' : 'border-gray-300'
@@ -208,7 +220,7 @@ export function EventModal({ event, onSave, onClose }: EventModalProps) {    con
                             <input
                                 type="text"
                                 name="organizer"
-                                value={formData.organizer || ''}
+                                value={formData.organizer ?? ''}
                                 onChange={handleChange}
                                 className={`w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${
                                     errors.organizer ? 'border-red-500' : 'border-gray-300'
@@ -224,17 +236,21 @@ export function EventModal({ event, onSave, onClose }: EventModalProps) {    con
                         <div>
                             <label className="block text-sm font-medium text-gray-700 mb-2">
                                 Category
-                            </label>
-                            <select
+                            </label>                            <select
                                 name="category"
-                                value={formData.category || 'Conference'}
+                                value={formData.category ?? ''}
                                 onChange={handleChange}
                                 className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                required
                             >
+                                <option value="" disabled>Select a category</option>
                                 {categoryOptions.map(option => (
                                     <option key={option} value={option}>{option}</option>
                                 ))}
                             </select>
+                            {errors.category && (
+                                <p className="mt-1 text-sm text-red-600">{errors.category}</p>
+                            )}
                         </div>
 
                         <div>
@@ -243,7 +259,7 @@ export function EventModal({ event, onSave, onClose }: EventModalProps) {    con
                             </label>
                             <select
                                 name="priority"
-                                value={formData.priority || 'Medium'}
+                                value={formData.priority ?? 'Medium'}
                                 onChange={handleChange}
                                 className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                             >
@@ -259,7 +275,7 @@ export function EventModal({ event, onSave, onClose }: EventModalProps) {    con
                             </label>
                             <select
                                 name="status"
-                                value={formData.status || 'Upcoming'}
+                                value={formData.status ?? 'Upcoming'}
                                 onChange={handleChange}
                                 className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                             >

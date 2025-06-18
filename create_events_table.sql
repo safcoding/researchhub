@@ -6,7 +6,7 @@ CREATE TABLE IF NOT EXISTS events (
     date DATE NOT NULL,
     time TEXT NOT NULL,
     location TEXT NOT NULL,
-    category TEXT NOT NULL CHECK (category IN ('Conference', 'Workshop', 'Seminar', 'Grant', 'Competition', 'Networking')),
+    category TEXT NOT NULL CHECK (category IN ('Conference', 'Workshop', 'Seminar', 'Grant', 'Competition', 'Networking', 'Others')),
     organizer TEXT NOT NULL,
     registration_required BOOLEAN NOT NULL DEFAULT false,
     registration_deadline DATE,

@@ -7,11 +7,13 @@ import { EventModal, DeleteConfirmationModal } from '@/components/event-crud';
 
 export default function AnnouncementCRUDPage() {
   const { events, loading, error, addEvent, updateEvent, deleteEvent } = EventLogic();
-  
   const [showEventModal, setShowEventModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);  const [selectedEvent, setSelectedEvent] = useState<Event | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState<string>('');  const [sortConfig, setSortConfig] = useState<{
+  const [selectedCategory, setSelectedCategory] = useState<string>('');
+  const [dateFilter, setDateFilter] = useState<'all' | 'upcoming' | 'past' | 'thisMonth' | 'nextMonth'>('all');
+  const [selectedYear, setSelectedYear] = useState<string>('');
+  const [selectedMonth, setSelectedMonth] = useState<string>('');  const [sortConfig, setSortConfig] = useState<{
     key: 'id' | 'date' | 'status' | 'category';
     direction: 'asc' | 'desc';
   } | null>(null);
@@ -89,15 +91,67 @@ export default function AnnouncementCRUDPage() {
       return direction === 'asc' ? 1 : -1;
     }
     return 0;
-  });
-
-  // Filter events based on search and category
+  });  // Filter events based on search, category, and date
   const filteredEvents = sortedEvents.filter(event => {
     const matchesSearch = event.title?.toLowerCase().includes(searchQuery.toLowerCase()) ||
                          event.description?.toLowerCase().includes(searchQuery.toLowerCase());
     const matchesCategory = selectedCategory === '' || event.category === selectedCategory;
-    return matchesSearch && matchesCategory;
+    
+    // Date filtering
+    const eventDate = new Date(event.date);
+    const today = new Date();
+    const currentMonth = today.getMonth();
+    const currentYear = today.getFullYear();
+    
+    let matchesDate = true;
+    switch (dateFilter) {
+      case 'upcoming':
+        matchesDate = eventDate >= today;
+        break;
+      case 'past':
+        matchesDate = eventDate < today;
+        break;
+      case 'thisMonth':
+        matchesDate = eventDate.getMonth() === currentMonth && eventDate.getFullYear() === currentYear;
+        break;
+      case 'nextMonth':
+        const nextMonth = currentMonth === 11 ? 0 : currentMonth + 1;
+        const nextMonthYear = currentMonth === 11 ? currentYear + 1 : currentYear;
+        matchesDate = eventDate.getMonth() === nextMonth && eventDate.getFullYear() === nextMonthYear;
+        break;
+      default:
+        matchesDate = true;
+    }
+    
+    // Year filtering
+    const matchesYear = selectedYear === '' || eventDate.getFullYear().toString() === selectedYear;
+    
+    // Month filtering (0-based index, so January = 0, December = 11)
+    const matchesMonth = selectedMonth === '' || eventDate.getMonth().toString() === selectedMonth;
+    
+    return matchesSearch && matchesCategory && matchesDate && matchesYear && matchesMonth;
   });
+
+  // Helper functions for filter options
+  const getAvailableYears = () => {
+    const years = [...new Set(events.map(event => new Date(event.date).getFullYear()))];
+    return years.sort((a, b) => b - a); // Sort descending (newest first)
+  };
+
+  const getMonthOptions = () => [
+    { value: '0', label: 'January' },
+    { value: '1', label: 'February' },
+    { value: '2', label: 'March' },
+    { value: '3', label: 'April' },
+    { value: '4', label: 'May' },
+    { value: '5', label: 'June' },
+    { value: '6', label: 'July' },
+    { value: '7', label: 'August' },
+    { value: '8', label: 'September' },
+    { value: '9', label: 'October' },
+    { value: '10', label: 'November' },
+    { value: '11', label: 'December' }
+  ];
 
   if (loading) {
     return (
@@ -125,11 +179,9 @@ export default function AnnouncementCRUDPage() {
           >
             Add Announcement
           </button>
-        </div>
-
-        {/* Search and Filter Controls */}
+        </div>        {/* Search and Filter Controls */}
         <div className="bg-white shadow-md rounded-lg p-6 mb-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
             <div>
               <label htmlFor="search" className="block text-sm font-medium text-gray-700 mb-2">
                 Search Announcements
@@ -160,6 +212,56 @@ export default function AnnouncementCRUDPage() {
                 <option value="Grant">Grant</option>
                 <option value="Competition">Competition</option>
                 <option value="Networking">Networking</option>
+                <option value="Others">Others</option>
+              </select>
+            </div>
+            <div>
+              <label htmlFor="dateFilter" className="block text-sm font-medium text-gray-700 mb-2">
+                Filter by Date
+              </label>
+              <select
+                id="dateFilter"
+                value={dateFilter}
+                onChange={(e) => setDateFilter(e.target.value as 'all' | 'upcoming' | 'past' | 'thisMonth' | 'nextMonth')}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              >
+                <option value="all">All Dates</option>
+                <option value="upcoming">Upcoming Events</option>
+                <option value="past">Past Events</option>
+                <option value="thisMonth">This Month</option>
+                <option value="nextMonth">Next Month</option>
+              </select>
+            </div>
+            <div>
+              <label htmlFor="yearFilter" className="block text-sm font-medium text-gray-700 mb-2">
+                Filter by Year
+              </label>
+              <select
+                id="yearFilter"
+                value={selectedYear}
+                onChange={(e) => setSelectedYear(e.target.value)}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              >
+                <option value="">All Years</option>
+                {getAvailableYears().map(year => (
+                  <option key={year} value={year.toString()}>{year}</option>
+                ))}
+              </select>
+            </div>
+            <div>
+              <label htmlFor="monthFilter" className="block text-sm font-medium text-gray-700 mb-2">
+                Filter by Month
+              </label>
+              <select
+                id="monthFilter"
+                value={selectedMonth}
+                onChange={(e) => setSelectedMonth(e.target.value)}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              >
+                <option value="">All Months</option>
+                {getMonthOptions().map(month => (
+                  <option key={month.value} value={month.value}>{month.label}</option>
+                ))}
               </select>
             </div>
           </div>
