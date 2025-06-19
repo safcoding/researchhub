@@ -8,16 +8,6 @@ import Navbar from '@/components/navbar';
 import { EventLogic, type Event } from '@/hooks/event-logic';
 import { EventModal, DeleteConfirmationModal } from '@/components/event-crud';
 
-'use client';
-
-import React, { useState } from 'react';
-import Link from 'next/link';
-import Image from 'next/image';
-import { useUser } from '@clerk/nextjs';
-import Navbar from '@/components/navbar';
-import { EventLogic, type Event } from '@/hooks/event-logic';
-import { EventModal, DeleteConfirmationModal } from '@/components/event-crud';
-
 export default function AnnouncementsPage() {
   const { user, isLoaded } = useUser();
   const { events, loading, error, addEvent, updateEvent, deleteEvent } = EventLogic();
