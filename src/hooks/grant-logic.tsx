@@ -22,6 +22,24 @@ export interface Grant {
     file_path?: string;
 }
 
+export interface GrantStats {
+    monthly: number;
+    quarterly: number;
+    yearly: number;
+}
+
+export interface GrantTypeData {
+    type: string;
+    percentage: number;
+    amount: number;
+    count: number;
+}
+
+export interface TimelineData {
+    labels: string[];
+    values: number[];
+}
+
 export function GrantLogic() {
     const [grants, setGrants] = useState<Grant[]>([]);
     const [loading, setLoading] = useState(false);
@@ -179,6 +197,115 @@ export function GrantLogic() {
         }
     };
 
+    // Analytics functions
+     const getGrantStats = (): GrantStats => {
+        const now = new Date();
+        const currentMonth = now.getMonth();
+        const currentYear = now.getFullYear();
+        const currentQuarter = Math.floor(currentMonth / 3);
+
+       const monthly = grants
+            .filter(grant => {
+                const grantDate = new Date(grant.PRO_DATESTART);
+                return grantDate.getMonth() === currentMonth && 
+                       grantDate.getFullYear() === currentYear;
+            })
+            .reduce((sum, grant) => sum + grant.PRO_APPROVED, 0);
+
+        const quarterly = grants
+            .filter(grant => {
+                const grantDate = new Date(grant.PRO_DATESTART);
+                const grantQuarter = Math.floor(grantDate.getMonth() / 3);
+                return grantQuarter === currentQuarter && 
+                       grantDate.getFullYear() === currentYear;
+            })
+            .reduce((sum, grant) => sum + grant.PRO_APPROVED, 0);
+
+        const yearly = grants
+            .filter(grant => {
+                const grantDate = new Date(grant.PRO_DATESTART);
+                return grantDate.getFullYear() === currentYear;
+            })
+            .reduce((sum, grant) => sum + grant.PRO_APPROVED, 0);
+
+        return { monthly, quarterly, yearly };
+    };
+
+       const getGrantTypeData = (): GrantTypeData[] => {
+        const totalAmount = grants.reduce((sum, grant) => sum + grant.PRO_APPROVED, 0);
+        const typeGroups = grants.reduce((acc, grant) => {
+            const type = grant.GRANT_TYPE || 'Unknown';
+            if (!acc[type]) {
+                acc[type] = { amount: 0, count: 0 };
+            }
+            acc[type].amount += grant.PRO_APPROVED;
+            acc[type].count += 1;
+            return acc;
+        }, {} as Record<string, { amount: number; count: number }>);
+
+        return Object.entries(typeGroups).map(([type, data]) => ({
+            type,
+            amount: data.amount,
+            count: data.count,
+            percentage: totalAmount > 0 ? (data.amount / totalAmount) * 100 : 0
+        }));
+    };
+
+     const getSponsorCategoryData = (): GrantTypeData[] => {
+        const totalAmount = grants.reduce((sum, grant) => sum + grant.PRO_APPROVED, 0);
+        const categoryGroups = grants.reduce((acc, grant) => {
+            const category = grant.SPONSOR_CATEGORY || 'Unknown';
+            if (!acc[category]) {
+                acc[category] = { amount: 0, count: 0 };
+            }
+            acc[category].amount += grant.PRO_APPROVED;
+            acc[category].count += 1;
+            return acc;
+        }, {} as Record<string, { amount: number; count: number }>);
+
+        return Object.entries(categoryGroups).map(([type, data]) => ({
+            type,
+            amount: data.amount,
+            count: data.count,
+            percentage: totalAmount > 0 ? (data.amount / totalAmount) * 100 : 0
+        }));
+    };
+
+        const getTimelineData = (): TimelineData => {
+        const months = [];
+        const values = [];
+        const now = new Date();
+
+        for (let i = 11; i >= 0; i--) {
+            const date = new Date(now.getFullYear(), now.getMonth() - i, 1);
+            const monthName = date.toLocaleDateString('en-US', { month: 'short', year: '2-digit' });
+            months.push(monthName);
+
+            const monthlyTotal = grants
+                .filter(grant => {
+                    const grantDate = new Date(grant.PRO_DATESTART);
+                    return grantDate.getMonth() === date.getMonth() && 
+                           grantDate.getFullYear() === date.getFullYear();
+                })
+                .reduce((sum, grant) => sum + grant.PRO_APPROVED, 0);
+
+            values.push(monthlyTotal / 1000); // Convert to thousands for display
+        }
+
+        return { labels: months, values };
+    };
+
+    const getActiveGrants = () => {
+        return grants.filter(grant => 
+            grant.PROJECT_STATUS?.toLowerCase() === 'active' || 
+            grant.PROJECT_STATUS?.toLowerCase() === 'ongoing'
+        );
+    };
+
+    const getTotalApprovedAmount = () => {
+        return grants.reduce((sum, grant) => sum + grant.PRO_APPROVED, 0);
+    };
+
     useEffect(() => {
         void fetchGrants();
     }, []);
@@ -191,6 +318,13 @@ export function GrantLogic() {
         addBulkGrants,
         updateGrant,
         deleteGrant,
-        getFileUrl
+        getFileUrl,
+        // Add new analytics functions
+        getGrantStats,
+        getGrantTypeData,
+        getSponsorCategoryData,
+        getTimelineData,
+        getActiveGrants,
+        getTotalApprovedAmount
     };
 }
