@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { supabase } from '@/lib/db-connect';
 
 export interface Grant {
+    grant_id?: string;
     PROJECTID: string;
     COST_CENTER_CODE: string;
     PL_STAFF_NO: number;
@@ -17,6 +18,7 @@ export interface Grant {
     SPONSOR_CATEGORY: string;
     SUBSPONSOR_NAME: string;
     PRO_APPROVED: number;
+    SPONSOR_NAME: string;
     file_path?: string;
 }
 
@@ -44,21 +46,17 @@ export function GrantLogic() {
         } finally {
             setLoading(false);
         }
-    };const addGrant = async (newGrant: Partial<Grant>) => {
+    };
+    
+    const addGrant = async (newGrant: Partial<Grant>) => {
         try {
             setLoading(true);
             console.log('Adding new grant:', newGrant);
-            
-            // Ensure PROJECTID is provided or generate a new one
-            if (!newGrant.PROJECTID) {
-                // Generate a unique PROJECTID if not provided
-                newGrant.PROJECTID = `PRJ-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
-                console.log('Generated PROJECTID:', newGrant.PROJECTID);
-            }
-            
+     
+            const { grant_id, ...grantData } = newGrant as Grant;
             const { data, error: insertError } = await supabase
                 .from('grant')
-                .insert([newGrant])
+                .insert([grantData])
                 .select();
                 
             if (insertError) {
@@ -75,7 +73,9 @@ export function GrantLogic() {
         } finally {
             setLoading(false);
         }
-    };    const addBulkGrants = async (grants: Omit<Grant, 'PROJECTID'>[], filePath?: string) => {
+    };    
+    
+    const addBulkGrants = async (grants: Omit<Grant, 'PROJECTID'>[], filePath?: string) => {
         try {
             setLoading(true);
             console.log(`Adding ${grants.length} grants with file path:`, filePath);
