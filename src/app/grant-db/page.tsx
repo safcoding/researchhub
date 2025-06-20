@@ -2,7 +2,7 @@
 
 import type { Grant } from '@/hooks/grant-logic';
 import { GrantLogic } from '@/hooks/grant-logic';
-import { GrantTable } from '@/components/grant-table-enhanced';
+import { GrantTable } from '@/components/grant-table';
 import { GrantModal } from '@/components/grant-crud';
 import { GrantFileUpload } from '@/components/grant-file-upload';
 import { UploadedFilesModal } from '@/components/uploaded-files-modal';
