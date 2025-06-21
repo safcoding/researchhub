@@ -4,8 +4,11 @@ import { Button } from '@/components/ui/button'
 import Link from 'next/link'
 
 export default function AdminDashboard() {
+
+
   return (
 
+    
       <div className="min-h-screen bg-gray-50">
         <div className="max-w-7xl mx-auto px-4 py-8">
           <div className="mb-8">
@@ -14,7 +17,7 @@ export default function AdminDashboard() {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            <Link href="/admin/publications">
+            <Link href="/admin/publication-admin">
               <Card className="hover:shadow-lg transition-shadow cursor-pointer">
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                   <CardTitle className="text-sm font-medium">Publications</CardTitle>
@@ -31,12 +34,12 @@ export default function AdminDashboard() {
                   <CardTitle className="text-sm font-medium">Labs</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <p className="text-xs text-muted-foreground">Manage laboratory information</p>
+                  <p className="text-xs text-muted-foreground">Manage MJIIT laboratory information</p>
                 </CardContent>
               </Card>
             </Link>
 
-            <Link href="/admin/announcements">
+            <Link href="/admin/announcement-admin">
               <Card className="hover:shadow-lg transition-shadow cursor-pointer">
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                   <CardTitle className="text-sm font-medium">Announcements</CardTitle>
@@ -58,9 +61,21 @@ export default function AdminDashboard() {
               </Card>
             </Link>
 
+            <Link href="/admin/grant-admin">
+              <Card className="hover:shadow-lg transition-shadow cursor-pointer">
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                  <CardTitle className="text-sm font-medium">Grants</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-xs text-muted-foreground">Manage Grants</p>
+                </CardContent>
+              </Card>
+            </Link>
+
             <button className="button block" type="submit">Sign out</button>
           </div>
         </div>
       </div>
+      
   )
 }
