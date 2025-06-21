@@ -12,21 +12,38 @@ import Footer from '@/components/Footer';
 export default function AnnouncementsPage() {
   const { user, isLoaded } = useUser();
   const { events, loading, error, addEvent, updateEvent, deleteEvent } = EventLogic();
-  
-  const [selectedCategory, setSelectedCategory] = useState<string>('All');
+    const [selectedCategory, setSelectedCategory] = useState<string>('All');
   const [searchQuery, setSearchQuery] = useState('');
   const [showEventModal, setShowEventModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);  const [selectedEvent, setSelectedEvent] = useState<Event | null>(null);
   const [isEditing, setIsEditing] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
-  const eventsPerPage = 5;
-
-  const categories = ['All', 'Conference', 'Workshop', 'Seminar', 'Grant', 'Competition', 'Networking', 'Others'];
+  const [showInfoModal, setShowInfoModal] = useState(false);
+  const [infoModalEvent, setInfoModalEvent] = useState<Event | null>(null);
+  const eventsPerPage = 5;  const categories = ['All', 'Conference', 'Workshop', 'Seminar', 'Grant', 'Competition', 'Networking', 'Others'];
+  
   const filteredEvents = events.filter(event => {
-    const matchesCategory = selectedCategory === 'All' || event.category === selectedCategory;
-    const matchesSearch = event.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                         event.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                         event.organizer.toLowerCase().includes(searchQuery.toLowerCase());
+    // Handle case sensitivity and potential data inconsistencies
+    const eventCategory = event.category?.toString().trim();
+    const selectedCategoryNormalized = selectedCategory.trim();
+    
+    // More robust category matching
+    let matchesCategory = false;
+    if (selectedCategoryNormalized === 'All') {
+      matchesCategory = true;
+    } else {
+      // Try exact match first
+      matchesCategory = eventCategory === selectedCategoryNormalized;
+      
+      // If no exact match, try case-insensitive match
+      if (!matchesCategory && eventCategory) {
+        matchesCategory = eventCategory.toLowerCase() === selectedCategoryNormalized.toLowerCase();
+      }
+    }
+      const matchesSearch = event.title?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                         event.description?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                         event.organizer?.toLowerCase().includes(searchQuery.toLowerCase());
+    
     return matchesCategory && matchesSearch;
   });
 
@@ -69,13 +86,6 @@ export default function AnnouncementsPage() {
       day: 'numeric'
     });
   };
-
-  const handleAddEvent = () => {
-    setSelectedEvent(null);
-    setIsEditing(false);
-    setShowEventModal(true);
-  };
-
   const handleEditEvent = (event: Event) => {
     setSelectedEvent(event);
     setIsEditing(true);
@@ -111,6 +121,11 @@ export default function AnnouncementsPage() {
         console.error('Error deleting event:', error);
       }
     }
+  };
+
+  const handleShowInfo = (event: Event) => {
+    setInfoModalEvent(event);
+    setShowInfoModal(true);
   };
 
   // Show loading state
@@ -151,26 +166,12 @@ export default function AnnouncementsPage() {
   return (
     <div>
       <Navbar />
-      
-      <main className="container mx-auto px-4 py-12">
-        <div className="max-w-6xl mx-auto">
-          {/* Header with Add Event Button for Authenticated Users */}
+        <main className="container mx-auto px-4 py-12">
+        <div className="max-w-6xl mx-auto">          {/* Header */}
           <div className="flex justify-between items-center mb-8">
             <div>
               <h1 className="text-4xl font-bold text-center">Announcements & Events</h1>
-            </div>
-            {user && (
-              <button
-                onClick={handleAddEvent}
-                className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors flex items-center gap-2"
-              >
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-                </svg>
-                Add Event
-              </button>
-            )}
-          </div>
+            </div>          </div>
           
           <div className="mb-12 text-center">
             <p className="text-lg text-gray-600 max-w-3xl mx-auto">
@@ -215,7 +216,9 @@ export default function AnnouncementsPage() {
                 ))}
               </div>
             </div>
-          </div>          {/* Events Grid */}
+          </div>
+
+          {/* Events Grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {currentEvents.map((event) => (
               <div key={event.id} className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow">
@@ -283,8 +286,7 @@ export default function AnnouncementsPage() {
                       </svg>
                       {event.location}
                     </div>
-                    
-                    <div className="flex items-center text-sm text-gray-600">
+                      <div className="flex items-center text-sm text-gray-600">
                       <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
                       </svg>
@@ -302,28 +304,19 @@ export default function AnnouncementsPage() {
                   </div>
                   
                   <div className="flex gap-2">
-                    <a 
-                      href={`mailto:${event.contact_email}?subject=Inquiry about ${event.title}`}
-                      className="flex-1 bg-blue-600 text-white text-center py-2 px-4 rounded hover:bg-blue-700 transition-colors text-sm"
-                    >
-                      {event.registration_required ? 'Register / Contact' : 'Contact'}
-                    </a>
                     <button 
-                      className="px-3 py-2 border border-gray-300 rounded hover:bg-gray-50 transition-colors"
-                      title="Share event"
+                      onClick={() => handleShowInfo(event)}
+                      className="w-full bg-blue-600 text-white text-center py-2 px-4 rounded hover:bg-blue-700 transition-colors text-sm"
                     >
-                      <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.367 2.684 3 3 0 00-5.367-2.684z" />
-                      </svg>
+                      More Info
                     </button>
-                  </div>
-                </div>
-              </div>            ))}
-          </div>
-
-          {/* Pagination Controls */}
+                  </div>                </div>
+              </div>
+            ))}
+          </div>{/* Pagination Controls */}
           {filteredEvents.length > 0 && totalPages > 1 && (
-            <div className="mt-8 flex justify-center items-center space-x-2">              <button
+            <div className="mt-8 flex justify-center items-center space-x-2">
+              <button
                 onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
                 disabled={currentPage === 1}
                 aria-label="Previous page"
@@ -356,7 +349,9 @@ export default function AnnouncementsPage() {
                     {pageNumber}
                   </button>
                 );
-              })}              <button
+              })}
+
+              <button
                 onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
                 disabled={currentPage === totalPages}
                 aria-label="Next page"
@@ -381,21 +376,12 @@ export default function AnnouncementsPage() {
             </div>
           )}
 
-          {currentEvents.length === 0 && filteredEvents.length === 0 && (
-            <div className="text-center py-12">
+          {currentEvents.length === 0 && filteredEvents.length === 0 && (            <div className="text-center py-12">
               <svg xmlns="http://www.w3.org/2000/svg" className="h-16 w-16 mx-auto text-gray-400 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
               </svg>
               <h3 className="text-xl font-semibold text-gray-600 mb-2">No Events Found</h3>
               <p className="text-gray-500">Try adjusting your search criteria or category filter.</p>
-              {user && (
-                <button
-                  onClick={handleAddEvent}
-                  className="mt-4 bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors"
-                >
-                  Add First Event
-                </button>
-              )}
             </div>
           )}
 
@@ -411,8 +397,7 @@ export default function AnnouncementsPage() {
                 className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors"
               >
                 Contact Research Office
-              </a>
-              <Link 
+              </a>              <Link 
                 href="/about"
                 className="border border-blue-600 text-blue-600 px-6 py-3 rounded-lg hover:bg-blue-50 transition-colors"
               >
@@ -421,7 +406,9 @@ export default function AnnouncementsPage() {
             </div>
           </div>
         </div>
-      </main>      {/* Event Modal */}
+      </main>
+
+      {/* Event Modal */}
       {showEventModal && (
         <EventModal
           event={selectedEvent ?? undefined}

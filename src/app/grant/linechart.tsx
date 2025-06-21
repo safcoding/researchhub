@@ -1,4 +1,3 @@
-// src/app/grant/LineChart.tsx
 'use client';
 import { Line } from 'react-chartjs-2';
 import {
@@ -10,7 +9,6 @@ import {
   Title,
   Tooltip,
   Legend,
-  Filler
 } from 'chart.js';
 
 ChartJS.register(
@@ -20,69 +18,54 @@ ChartJS.register(
   LineElement,
   Title,
   Tooltip,
-  Legend,
-  Filler
+  Legend
 );
 
-interface LineChartProps {
-  data: {
-    labels: string[];
-    values: number[];
-  };
+interface Props {
+  data: { labels: string[]; values: number[] };
 }
 
-export default function LineChart({ data }: LineChartProps) {
+export default function LineChart({ data }: Props) {
   const chartData = {
     labels: data.labels,
     datasets: [
       {
-        label: 'Grant Amount (RM)',
+        label: 'Grant Amount (RM \'000)',
         data: data.values,
         borderColor: '#1E40AF',
-        backgroundColor: 'rgba(30, 64, 175, 0.2)',
-        borderWidth: 2,
-        tension: 0.4,
+        backgroundColor: 'rgba(30, 64, 175, 0.1)',
+        borderWidth: 3,
         fill: true,
+        tension: 0.4,
         pointBackgroundColor: '#1E40AF',
-        pointRadius: 4,
-        pointHoverRadius: 6
-      }
-    ]
+        pointBorderColor: '#ffffff',
+        pointBorderWidth: 2,
+        pointRadius: 6,
+        pointHoverRadius: 8,
+      },
+    ],
   };
 
   const options = {
     responsive: true,
+    maintainAspectRatio: false,
     plugins: {
       legend: {
-        display: false
+        position: 'top' as const,
       },
       tooltip: {
         callbacks: {
           label: (context: any) => {
-            return `RM${context.raw.toLocaleString()}`;
+            return `RM${(context.parsed.y * 1000).toLocaleString()}`;
           }
         }
       }
     },
     scales: {
-      x: {
-        grid: {
-          display: false
-        },
-        ticks: {
-          color: '#6B7280'
-        }
-      },
       y: {
-        grid: {
-          color: '#E5E7EB'
-        },
+        beginAtZero: true,
         ticks: {
-          color: '#6B7280',
-          callback: function (tickValue: string | number) {
-            // Ensure tickValue is treated as a number
-            return `RM${Number(tickValue).toLocaleString()}K`;
-          }
+          callback: (value: any) => `${value}k`
         }
       }
     }
