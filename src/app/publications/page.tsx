@@ -5,6 +5,7 @@ import Link from 'next/link';
 import Navbar from '@/components/navbar';
 import Footer from '@/components/Footer';
 import { PublicationLogic } from '@/hooks/publication-logic';
+
 import {
   LineChart,
   Line,
@@ -99,7 +100,6 @@ const monthlyData = useMemo(() => {
       </div>
     );
   }
-
   if (error) {
     return (
       <div className="min-h-screen flex flex-col">
@@ -256,14 +256,12 @@ const monthlyData = useMemo(() => {
                       <td className="px-4 py-2">{pub.impact}</td>
                       <td className="px-4 py-2">{pub.date}</td>
                     </tr>
-                  ))
-                ) : (
-                  <tr>
-                    <td colSpan={6} className="px-4 py-4 text-center text-gray-500">
+                  ))                ) : (                  <tr>
+                    <td colSpan={7} className="px-4 py-4 text-center text-gray-500">
                       No publications found matching your criteria
                     </td>
                   </tr>
-                ))}
+                )}
               </tbody>
             </table>
           </div>
