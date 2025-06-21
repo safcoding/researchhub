@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import AdminNavbar from '@/components/admin-components/admin-navbar';
+import AdminNavbar from '@/components/navbar/admin-navbar';
 import { EventLogic, type Event } from '@/hooks/event-logic';
 import { EventModal, DeleteConfirmationModal } from '@/components/event-crud';
 

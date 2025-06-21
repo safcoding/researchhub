@@ -1,10 +1,9 @@
 'use client';
 import React, { useState, useEffect } from 'react';
-import Navbar from '@/components/navbar';
-import AdminNavbar from '@/components/admin-components/admin-navbar'
+import ConditionalNavbar from '@/components/navbar/conditional-navbar';
 import { useRouter } from 'next/navigation';
 import { type Lab } from '@/hooks/lab-logic';
-import { supabase } from '@/lib/db-connect';
+import { createClient } from '@/utils/supabase/client';
 
 const OurLabs = () => {
   const [selectedLabType, setSelectedLabType] = useState<string>('');  const [labs, setLabs] = useState<Lab[]>([]);
@@ -14,11 +13,11 @@ const OurLabs = () => {
   const [showEquipmentFilter, setShowEquipmentFilter] = useState(false);  const [selectedEquipment, setSelectedEquipment] = useState<string>('');
   const [selectedLab, setSelectedLab] = useState<Lab | null>(null);
   const [showLabModal, setShowLabModal] = useState(false);
-  const router = useRouter();
-  // Fetch labs from Supabase
+  const router = useRouter();  // Fetch labs from Supabase
   useEffect(() => {
     const fetchLabs = async () => {
       try {
+        const supabase = createClient();
         const { data, error } = await supabase
           .from('labs')
           .select('*')
@@ -171,11 +170,10 @@ const OurLabs = () => {
       </div>
     );
   };
-
   if (loading) {
     return (
       <>
-        <Navbar />
+        <ConditionalNavbar />
         <div className="flex justify-center items-center min-h-screen">
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
           <span className="ml-2">Loading labs...</span>
@@ -185,12 +183,11 @@ const OurLabs = () => {
   }
   const availableLabTypes = getAvailableLabTypes();
   const currentLabs = getLabsForSelectedType();
-
   // If no labs exist, show a message
   if (labs.length === 0) {
     return (
       <>
-        <Navbar />
+        <ConditionalNavbar />
         <div className="flex justify-center items-center min-h-screen">
           <div className="text-center">
             <h1 className="text-2xl font-bold text-gray-800 mb-4">No Labs Available</h1>
@@ -206,10 +203,9 @@ const OurLabs = () => {
       </>
     );
   }
-
   return (
     <>
-      <Navbar />
+      <ConditionalNavbar />
       <div className="flex min-h-screen">        {/* Sidebar Navigation */}
         <div className="w-80 bg-gray-100 p-4 border-r border-gray-200">
           <h2 className="text-lg font-bold mb-4">MJIIT Labs</h2>

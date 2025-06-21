@@ -3,7 +3,7 @@
 import { LabLogic, type Lab } from '@/hooks/lab-logic';
 import { LabTable } from '@/components/lab-table-enhanced';
 import { LabModal } from '@/components/lab-crud-enhanced';
-import AdminNavbar from '@/components/admin-components/admin-navbar';
+import AdminNavbar from '@/components/navbar/admin-navbar';
 import { useState } from 'react';
 
 export default function LabsPage() {

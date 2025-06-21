@@ -6,7 +6,7 @@ import { GrantTable } from '@/components/grant-table';
 import { GrantModal } from '@/components/grant-crud';
 import { GrantFileUpload } from '@/components/grant-file-upload';
 import { UploadedFilesModal } from '@/components/uploaded-files-modal';
-import AdminNavbar from '@/components/admin-components/admin-navbar';
+import AdminNavbar from '@/components/navbar/admin-navbar';
 import { GrantChartModal } from '@/components/grant-chart-modal';
 import { useState } from 'react';
 

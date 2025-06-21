@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import Navbar from '@/components/navbar';
+import Navbar from '@/components/navbar/navbar';
 import { PublicationLogic, type Publication } from '@/hooks/publication-logic';
 
 const PublicationsUpload: React.FC = () => {

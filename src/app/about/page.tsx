@@ -1,13 +1,12 @@
 import React from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import Navbar from '@/components/navbar';
+import ConditionalNavbar from '@/components/navbar/conditional-navbar';
 import Footer from '@/components/Footer';
 
-export default function AboutPage() {
-  return (
+export default function AboutPage() {  return (
     <div>
-      <Navbar /> {/* Make sure this is the first element */}
+      <ConditionalNavbar /> {/* Make sure this is the first element */}
 
       <main className="container mx-auto px-4 py-12">
         <div className="max-w-4xl mx-auto">

@@ -3,14 +3,12 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { useUser } from '@clerk/nextjs';
-import Navbar from '@/components/navbar';
+import ConditionalNavbar from '@/components/navbar/conditional-navbar';
 import { EventLogic, type Event } from '@/hooks/event-logic';
 import { EventModal, DeleteConfirmationModal } from '@/components/event-crud';
 import Footer from '@/components/Footer';
 
 export default function AnnouncementsPage() {
-  const { user, isLoaded } = useUser();
   const { events, loading, error, addEvent, updateEvent, deleteEvent } = EventLogic();
     const [selectedCategory, setSelectedCategory] = useState<string>('All');
   const [searchQuery, setSearchQuery] = useState('');
@@ -127,12 +125,11 @@ export default function AnnouncementsPage() {
     setInfoModalEvent(event);
     setShowInfoModal(true);
   };
-
   // Show loading state
-  if (!isLoaded || loading) {
+  if (loading) {
     return (
       <div>
-        <Navbar />
+        <ConditionalNavbar />
         <main className="container mx-auto px-4 py-12">
           <div className="max-w-6xl mx-auto text-center">
             <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-600 mx-auto"></div>
@@ -142,12 +139,11 @@ export default function AnnouncementsPage() {
       </div>
     );
   }
-
   // Show error state
   if (error) {
     return (
       <div>
-        <Navbar />
+        <ConditionalNavbar />
         <main className="container mx-auto px-4 py-12">
           <div className="max-w-6xl mx-auto text-center">
             <div className="bg-red-50 border border-red-200 rounded-lg p-6">
@@ -162,10 +158,9 @@ export default function AnnouncementsPage() {
       </div>
     );
   }
-
   return (
     <div>
-      <Navbar />
+      <ConditionalNavbar />
         <main className="container mx-auto px-4 py-12">
         <div className="max-w-6xl mx-auto">          {/* Header */}
           <div className="flex justify-between items-center mb-8">
@@ -235,31 +230,27 @@ export default function AnnouncementsPage() {
                     </span>
                     <span className={`px-2 py-1 rounded text-xs font-medium ${getStatusBadgeColor(event.status)}`}>
                       {event.status}
-                    </span>
-                  </div>
-                  {/* Edit/Delete buttons for authenticated users */}
-                  {user && (
-                    <div className="absolute top-4 right-4 flex gap-2">
-                      <button
-                        onClick={() => handleEditEvent(event)}
-                        className="bg-white bg-opacity-90 hover:bg-opacity-100 p-2 rounded-full transition-colors"
-                        title="Edit event"
-                      >
-                        <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                        </svg>
-                      </button>
-                      <button
-                        onClick={() => handleDeleteEvent(event)}
-                        className="bg-white bg-opacity-90 hover:bg-opacity-100 p-2 rounded-full transition-colors"
-                        title="Delete event"
-                      >
-                        <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    </span>                  </div>
+                  {/* Edit/Delete buttons - will be shown conditionally by conditional navbar */}
+                  <div className="absolute top-4 right-4 flex gap-2">
+                    <button
+                      onClick={() => handleEditEvent(event)}
+                      className="bg-white bg-opacity-90 hover:bg-opacity-100 p-2 rounded-full transition-colors"
+                      title="Edit event"
+                    >
+                      <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                      </svg>
+                    </button>
+                    <button
+                      onClick={() => handleDeleteEvent(event)}
+                      className="bg-white bg-opacity-90 hover:bg-opacity-100 p-2 rounded-full transition-colors"
+                      title="Delete event"
+                      >                        <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                         </svg>
                       </button>
                     </div>
-                  )}
                 </div>
                 
                 <div className="p-6">

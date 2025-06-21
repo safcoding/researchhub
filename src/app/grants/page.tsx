@@ -3,7 +3,7 @@ import Link from 'next/link';
 import StatsCard from './statcards';
 import GrantsPie from './gantchart1';
 import LineChart from './linechart';
-import Navbar from '@/components/navbar';
+import ConditionalNavbar from '@/components/navbar/conditional-navbar'; // ✅ Changed
 import Footer from '@/components/Footer';
 import { GrantLogic } from '@/hooks/grant-logic';
 
@@ -22,7 +22,7 @@ export default function GrantsDashboard() {
   if (loading) {
     return (
       <div className="min-h-screen flex flex-col">
-        <Navbar />
+        <ConditionalNavbar />
         <main className="flex-grow container mx-auto px-4 py-8 bg-gray-50">
           <div className="flex justify-center items-center h-64">
             <div className="text-xl">Loading grant data...</div>
@@ -31,11 +31,10 @@ export default function GrantsDashboard() {
       </div>
     );
   }
-
   if (error) {
     return (
       <div className="min-h-screen flex flex-col">
-        <Navbar />
+        <ConditionalNavbar />
         <main className="flex-grow container mx-auto px-4 py-8 bg-gray-50">
           <div className="flex justify-center items-center h-64">
             <div className="text-xl text-red-600">Error: {error}</div>
@@ -50,10 +49,9 @@ export default function GrantsDashboard() {
   const sponsorData = getSponsorCategoryData();
   const timelineData = getTimelineData();
   const totalAmount = getTotalApprovedAmount();
-
   return (
     <div className="min-h-screen flex flex-col">
-    <Navbar />
+    <ConditionalNavbar />
       <main className="flex-grow container mx-auto px-4 py-8 bg-gray-50">
         <div className="flex justify-between items-center mb-8">
           <h1 className="text-3xl font-bold text-gray-800">Grants Dashboard</h1>
