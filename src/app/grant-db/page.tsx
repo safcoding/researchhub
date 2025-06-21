@@ -2,8 +2,8 @@
 
 import type { Grant } from '@/hooks/grant-logic';
 import { GrantLogic } from '@/hooks/grant-logic';
-import { GrantTable } from '@/components/grant-table-enhanced';
-import { GrantModal } from '@/components/grant-crud-enhanced';
+import { GrantTable } from '@/components/grant-table';
+import { GrantModal } from '@/components/grant-crud';
 import { GrantFileUpload } from '@/components/grant-file-upload';
 import { UploadedFilesModal } from '@/components/uploaded-files-modal';
 import Navbar from '@/components/navbar';
@@ -45,67 +45,62 @@ export default function GrantDBPage() {
     const handleEditClick = (grant: Grant) => {
         setSelectedGrant(grant);
         setShowEditModal(true);
-    };    // Filter and sort grants
-    const filteredAndSortedGrants = () => {
-        // First filter by search query
-        let filtered = [...grants];
-        if (searchQuery.trim() !== '') {
-            const query = searchQuery.toLowerCase();
-            filtered = filtered.filter(grant => 
-                grant.PROJECT_TITLE?.toLowerCase().includes(query) || 
-                grant.PL_NAME?.toLowerCase().includes(query)
-            );
-        }
-        
-        // Filter by selected year
-        if (selectedYear && selectedYear !== '') {
-            filtered = filtered.filter(grant => {
-                // Check PROJECT_YEAR field first
-                if (grant.PROJECT_YEAR === selectedYear) {
-                    return true;
-                }
-                // Fallback to extracting year from PRO_DATESTART
-                if (grant.PRO_DATESTART) {
-                    const grantYear = new Date(grant.PRO_DATESTART).getFullYear().toString();
-                    return grantYear === selectedYear;
-                }
-                return false;
-            });
-        }
-        
-        // Then sort
-        return filtered.sort((a, b) => {
-            if (sortOrder.field === 'PRO_DATESTART') {
-                const dateA = new Date(a.PRO_DATESTART || '');
-                const dateB = new Date(b.PRO_DATESTART || '');
-                return sortOrder.direction === 'asc' 
-                    ? dateA.getTime() - dateB.getTime() 
-                    : dateB.getTime() - dateA.getTime();
-            } else {
-                const amountA = a.PRO_APPROVED || 0;
-                const amountB = b.PRO_APPROVED || 0;
-                return sortOrder.direction === 'asc' 
-                    ? amountA - amountB 
-                    : amountB - amountA;
+    };   
+    
+// Filter and sort grants
+const filteredAndSortedGrants = () => {
+    // First filter by search query
+    let filtered = [...grants];
+    if (searchQuery.trim() !== '') {
+        const query = searchQuery.toLowerCase();
+        filtered = filtered.filter(grant => 
+            grant.PROJECT_TITLE?.toLowerCase().includes(query) || 
+            grant.PL_NAME?.toLowerCase().includes(query)
+        );
+    }
+    
+    // ✅ FIXED: Filter by selected year (removed PROJECT_YEAR reference)
+    if (selectedYear && selectedYear !== '') {
+        filtered = filtered.filter(grant => {
+            // Only use PRO_DATESTART since PROJECT_YEAR doesn't exist
+            if (grant.PRO_DATESTART) {
+                const grantYear = new Date(grant.PRO_DATESTART).getFullYear().toString();
+                return grantYear === selectedYear;
             }
+            return false;
         });
-    };
+    }
+    
+    // Then sort
+    return filtered.sort((a, b) => {
+        if (sortOrder.field === 'PRO_DATESTART') {
+            const dateA = new Date(a.PRO_DATESTART || '');
+            const dateB = new Date(b.PRO_DATESTART || '');
+            return sortOrder.direction === 'asc' 
+                ? dateA.getTime() - dateB.getTime() 
+                : dateB.getTime() - dateA.getTime();
+        } else {
+            const amountA = a.PRO_APPROVED || 0;
+            const amountB = b.PRO_APPROVED || 0;
+            return sortOrder.direction === 'asc' 
+                ? amountA - amountB 
+                : amountB - amountA;
+        }
+    });
+};
 
-    // Get available years from grants for the filter dropdown
-    const getAvailableYears = () => {
-        const years = new Set<string>();
-        grants.forEach(grant => {
-            // Check PROJECT_YEAR field first
-            if (grant.PROJECT_YEAR) {
-                years.add(grant.PROJECT_YEAR);
-            } else if (grant.PRO_DATESTART) {
-                // Fallback to extracting year from PRO_DATESTART
-                const year = new Date(grant.PRO_DATESTART).getFullYear().toString();
-                years.add(year);
-            }
-        });
-        return Array.from(years).sort((a, b) => parseInt(b) - parseInt(a)); // Sort descending
-    };
+// ✅ FIXED: Get available years (removed PROJECT_YEAR reference)
+const getAvailableYears = () => {
+    const years = new Set<string>();
+    grants.forEach(grant => {
+        // Only extract year from PRO_DATESTART since PROJECT_YEAR doesn't exist
+        if (grant.PRO_DATESTART) {
+            const year = new Date(grant.PRO_DATESTART).getFullYear().toString();
+            years.add(year);
+        }
+    });
+    return Array.from(years).sort((a, b) => parseInt(b) - parseInt(a)); // Sort descending
+};
 
     return (
         <>

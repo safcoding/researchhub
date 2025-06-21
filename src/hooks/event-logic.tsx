@@ -10,7 +10,7 @@ export interface Event {
   date: string;
   time: string;
   location: string;
-  category: 'Conference' | 'Workshop' | 'Seminar' | 'Grant' | 'Competition' | 'Networking';
+  category: 'Conference' | 'Workshop' | 'Seminar' | 'Grant' | 'Competition' | 'Networking' | 'Others';
   organizer: string;
   registration_required: boolean;
   registration_deadline?: string;

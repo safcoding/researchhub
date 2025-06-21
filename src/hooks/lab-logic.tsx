@@ -1,37 +1,46 @@
+'use client';
+
 import { useState, useEffect } from 'react';
 import { supabase } from '@/lib/db-connect';
 
-export interface Lab {
+export type Lab = {
     LABID: string;
     LAB_NAME: string;
     LAB_HEAD: string;
     LAB_HEAD_EMAIL: string;
-    DEPARTMENT: string;
-    RESEARCH_AREA: string;
+    RESEARCH_AREA?: string;
     LAB_DESCRIPTION: string;
     LOCATION: string;
-    ESTABLISHED_DATE: string;
     LAB_STATUS: string;
-    EQUIPMENT_COUNT: number;
-    STUDENT_CAPACITY: number;
-    BUDGET: number;
     LAB_TYPE: string;
     CONTACT_PHONE: string;
-    file_path?: string;
+    EQUIPMENT_LIST?: string;
 }
 
 export function LabLogic() {
     const [labs, setLabs] = useState<Lab[]>([]);
     const [loading, setLoading] = useState(false);
-    const [error, setError] = useState<string | null>(null);
-
-    const fetchLabs = async () => {
+    const [error, setError] = useState<string | null>(null);    const fetchLabs = async () => {
         try {
             setLoading(true);
             setError(null);
             console.log('Fetching labs from database...');
             
-            const { data, error } = await supabase.from('labs').select('*');
+            const { data, error } = await supabase
+                .from('labs')
+                .select(`
+                    LABID,
+                    LAB_NAME,
+                    LAB_HEAD,
+                    LAB_HEAD_EMAIL,
+                    RESEARCH_AREA,
+                    LAB_DESCRIPTION,
+                    LOCATION,
+                    LAB_STATUS,
+                    LAB_TYPE,
+                    CONTACT_PHONE,
+                    EQUIPMENT_LIST
+                `);
             
             if (error) {
                 console.error('Error fetching labs:', error);
@@ -46,7 +55,9 @@ export function LabLogic() {
         } finally {
             setLoading(false);
         }
-    };    const addLab = async (newLab: Partial<Lab>) => {
+    };
+    
+    const addLab = async (newLab: Partial<Lab>) => {
         try {
             setLoading(true);
             console.log('Adding new lab:', newLab);
@@ -162,9 +173,40 @@ export function LabLogic() {
         }
     };
 
-    useEffect(() => {
-        fetchLabs();
-    }, []);
+useEffect(() => {
+    const fetchLabs = async () => {
+      try {
+        const { data, error } = await supabase
+          .from('labs')
+          .select(`
+            LABID,
+            LAB_NAME,
+            LAB_HEAD,
+            LAB_HEAD_EMAIL,
+            RESEARCH_AREA,
+            LAB_DESCRIPTION,
+            LOCATION,
+            LAB_STATUS,
+            LAB_TYPE,
+            CONTACT_PHONE,            EQUIPMENT_LIST
+          `)
+          .order('LAB_NAME');
+        
+        if (error) {
+          console.error('Supabase error:', error);
+          throw error;
+        }
+        console.log('Fetched labs:', data); // Debug log
+        setLabs(data || []);
+      } catch (error) {
+        console.error('Error fetching labs:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchLabs();
+}, []);
 
     return {
         labs,

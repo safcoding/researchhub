@@ -4,6 +4,7 @@ import { type Metadata } from "next";
 import { Geist } from "next/font/google";
 
 import { ClerkProvider } from '@clerk/nextjs';  // Adds ClerkProvider
+import { StorageInitializer } from "@/components/storage-initializer";
 
 export const metadata: Metadata = {
   title: "Create T3 App",
@@ -22,6 +23,7 @@ export default function RootLayout({
     <ClerkProvider> {/* Wrap the app with ClerkProvider */}
       <html lang="en" className={`${geist.variable}`}>
         <body className={`antialiased ${geist.variable}`}>
+          <StorageInitializer />
           {children}
         </body>
       </html>
