@@ -17,6 +17,7 @@ const PublicationsUpload: React.FC = () => {
     impact: 0,
     date: '',
     level: '',
+    author_name: '', // Added author_name, made it an array
     author_id: 0,
     research_alliance: '',
     rg_name: ''
@@ -34,13 +35,14 @@ const PublicationsUpload: React.FC = () => {
     setPublicationData({
       pub_refno: '',
       status: 'Published',
-      type: 'Article',
+      type: 'Book Chapter', //changed this to default to Book Chapter
       category: 'Journal',
       journal: '',
       title: '',
       impact: 0,
       date: '',
       level: 'International',
+      author_name: '',
       author_id: 0,
       research_alliance: '',
       rg_name: ''
@@ -72,8 +74,25 @@ const PublicationsUpload: React.FC = () => {
     }
   };
 
+  
+//Changed this
+// This function handles the edit action for a publication
   const handleEdit = (publication: Publication) => {
-    setPublicationData(publication);
+    setPublicationData({
+      pub_refno: publication.pub_refno ?? '',
+      status: publication.status ?? '',
+      type: publication.type ?? '',
+      category: publication.category ?? '',
+      journal: publication.journal ?? '',
+      title: publication.title ?? '',
+      impact: publication.impact ?? 0,
+      date: publication.date ?? '',
+      level: publication.level ?? '',
+      author_name: publication.author_name ?? '',
+      author_id: publication.author_id ?? 0,
+      research_alliance: publication.research_alliance ?? '',
+      rg_name: publication.rg_name ?? ''
+    });
     setEditingId(publication.id ?? null);
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
@@ -101,148 +120,170 @@ const PublicationsUpload: React.FC = () => {
             {editingId ? 'Edit Publication' : 'Add New Publication'}
           </h1>
           
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Reference Number*</label>
-              <input
-                type="text"
-                name="pub_refno"
-                value={publicationData.pub_refno}
-                onChange={handleInputChange}
-                className="w-full p-2 border rounded"
-                required
-              />
-            </div>
+          {/* ========== Section: Basic Info ========== */}
+<div className="mb-8">
+  <h2 className="text-lg font-semibold text-gray-800 mb-4 border-b pb-1">Basic Info</h2>
+  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+    <div>
+      <label className="block text-sm font-medium text-gray-700 mb-1">Reference Number*</label>
+      <input
+        type="text"
+        name="pub_refno"
+        value={publicationData.pub_refno}
+        onChange={handleInputChange}
+        className="w-full p-2 border rounded"
+        required
+      />
+    </div>
+    <div>
+      <label className="block text-sm font-medium text-gray-700 mb-1">Title*</label>
+      <input
+        type="text"
+        name="title"
+        value={publicationData.title}
+        onChange={handleInputChange}
+        className="w-full p-2 border rounded"
+        required
+      />
+    </div>
+    <div>
+      <label className="block text-sm font-medium text-gray-700 mb-1">Journal*</label>
+      <input
+        type="text"
+        name="journal"
+        value={publicationData.journal}
+        onChange={handleInputChange}
+        className="w-full p-2 border rounded"
+        required
+      />
+    </div>
+    <div>
+      <label className="block text-sm font-medium text-gray-700 mb-1">Impact Factor</label>
+      <input
+        type="number"
+        name="impact"
+        value={publicationData.impact}
+        onChange={handleInputChange}
+        className="w-full p-2 border rounded"
+        step="0.01"
+        min="0"
+      />
+    </div>
+    <div>
+      <label className="block text-sm font-medium text-gray-700 mb-1">Date*</label>
+      <input
+        type="date"
+        name="date"
+        value={publicationData.date}
+        onChange={handleInputChange}
+        className="w-full p-2 border rounded"
+        required
+      />
+    </div>
+    <div>
+      <label className="block text-sm font-medium text-gray-700 mb-1">Level*</label>
+      <select
+        name="level"
+        value={publicationData.level}
+        onChange={handleInputChange}
+        className="w-full p-2 border rounded"
+        required
+      >
+        <option value="International">International</option>
+        <option value="National">National</option>
+        <option value="Local">Local</option>
+      </select>
+    </div>
+  </div>
+</div>
 
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Title*</label>
-              <input
-                type="text"
-                name="title"
-                value={publicationData.title}
-                onChange={handleInputChange}
-                className="w-full p-2 border rounded"
-                required
-              />
-            </div>
+{/* ========== Section: Publication Details ========== */}
+<div className="mb-8">
+  <h2 className="text-lg font-semibold text-gray-800 mb-4 border-b pb-1">Publication Details</h2>
+  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+    <div>
+      <label className="block text-sm font-medium text-gray-700 mb-1">Type*</label>
+      <select
+        name="type"
+        value={publicationData.type}
+        onChange={handleInputChange}
+        className="w-full p-2 border rounded"
+        required
+      >
+        <option value="Book Chapter">Book Chapter</option>
+        <option value="Research Book">Research Book</option>
+        <option value="Scopus">Scopus</option>
+        <option value="Web of Science">Web of Science</option>
+        <option value="Conference/Proceeding">Conference/Proceeding</option>
+        <option value="Others">Others</option>
+      </select>
+    </div>
+    <div>
+      <label className="block text-sm font-medium text-gray-700 mb-1">Category*</label>
+      <select
+        name="category"
+        value={publicationData.category}
+        onChange={handleInputChange}
+        className="w-full p-2 border rounded"
+        required
+      >
+        <option value="Journal">Journal</option>
+        <option value="Conference">Conference</option>
+        <option value="Book">Book</option>
+      </select>
+    </div>
+    <div>
+      <label className="block text-sm font-medium text-gray-700 mb-1">Research Alliance</label>
+      <input
+        type="text"
+        name="research_alliance"
+        value={publicationData.research_alliance}
+        onChange={handleInputChange}
+        className="w-full p-2 border rounded"
+      />
+    </div>
+    <div>
+      <label className="block text-sm font-medium text-gray-700 mb-1">Research Group</label>
+      <input
+        type="text"
+        name="rg_name"
+        value={publicationData.rg_name}
+        onChange={handleInputChange}
+        className="w-full p-2 border rounded"
+      />
+    </div>
+  </div>
+</div>
 
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Journal*</label>
-              <input
-                type="text"
-                name="journal"
-                value={publicationData.journal}
-                onChange={handleInputChange}
-                className="w-full p-2 border rounded"
-                required
-              />
-            </div>
+{/* ========== Section: Author Info ========== */}
+<div className="mb-8">
+  <h2 className="text-lg font-semibold text-gray-800 mb-4 border-b pb-1">Author Info</h2>
+  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+    <div>
+      <label className="block text-sm font-medium text-gray-700 mb-1">Author Name*</label>
+      <input
+        type="text"
+        name="author_name"
+        value={publicationData.author_name}
+        onChange={handleInputChange}
+        className="w-full p-2 border rounded"
+        required
+      />
+    </div>
+    <div>
+      <label className="block text-sm font-medium text-gray-700 mb-1">Author ID*</label>
+      <input
+        type="number"
+        name="author_id"
+        value={publicationData.author_id}
+        onChange={handleInputChange}
+        className="w-full p-2 border rounded"
+        required
+      />
+    </div>
+  </div>
+</div>
 
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Type*</label>
-              <select
-                name="type"
-                value={publicationData.type}
-                onChange={handleInputChange}
-                className="w-full p-2 border rounded"
-                required
-              >
-                <option value="Article">Article</option>
-                <option value="Conference">Conference</option>
-                <option value="Book Chapter">Book Chapter</option>
-                <option value="Book">Book</option>
-              </select>
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Category*</label>
-              <select
-                name="category"
-                value={publicationData.category}
-                onChange={handleInputChange}
-                className="w-full p-2 border rounded"
-                required
-              >
-                <option value="Journal">Journal</option>
-                <option value="Conference">Conference</option>
-                <option value="Book">Book</option>
-              </select>
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Impact Factor</label>
-              <input
-                type="number"
-                name="impact"
-                value={publicationData.impact}
-                onChange={handleInputChange}
-                className="w-full p-2 border rounded"
-                step="0.01"
-                min="0"
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Date*</label>
-              <input
-                type="date"
-                name="date"
-                value={publicationData.date}
-                onChange={handleInputChange}
-                className="w-full p-2 border rounded"
-                required
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Level*</label>
-              <select
-                name="level"
-                value={publicationData.level}
-                onChange={handleInputChange}
-                className="w-full p-2 border rounded"
-                required
-              >
-                <option value="International">International</option>
-                <option value="National">National</option>
-                <option value="Local">Local</option>
-              </select>
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Author ID*</label>
-              <input
-                type="number"
-                name="author_id"
-                value={publicationData.author_id}
-                onChange={handleInputChange}
-                className="w-full p-2 border rounded"
-                required
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Research Alliance</label>
-              <input
-                type="text"
-                name="research_alliance"
-                value={publicationData.research_alliance}
-                onChange={handleInputChange}
-                className="w-full p-2 border rounded"
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Research Group</label>
-              <input
-                type="text"
-                name="rg_name"
-                value={publicationData.rg_name}
-                onChange={handleInputChange}
-                className="w-full p-2 border rounded"
-              />
-            </div>
-          </div>
 
           <div className="mt-6 flex justify-end space-x-4">
             {editingId && (
@@ -271,6 +312,7 @@ const PublicationsUpload: React.FC = () => {
                 <tr>
                   <th className="text-left px-4 py-2">Ref No</th>
                   <th className="text-left px-4 py-2">Title</th>
+                  <th className="text-left px-4 py-2">Author</th> {/* Added author_name field */}
                   <th className="text-left px-4 py-2">Journal</th>
                   <th className="text-left px-4 py-2">Type</th>
                   <th className="text-left px-4 py-2">Date</th>
@@ -282,6 +324,7 @@ const PublicationsUpload: React.FC = () => {
                   <tr key={pub.id} className="border-b hover:bg-gray-50">
                     <td className="px-4 py-2">{pub.pub_refno}</td>
                     <td className="px-4 py-2">{pub.title}</td>
+                    <td className="px-4 py-2">{pub.author_name}</td> {/* Added author_name field */}
                     <td className="px-4 py-2">{pub.journal}</td>
                     <td className="px-4 py-2">{pub.type}</td>
                     <td className="px-4 py-2">{pub.date}</td>

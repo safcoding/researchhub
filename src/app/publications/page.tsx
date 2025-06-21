@@ -59,9 +59,15 @@ const monthlyData = useMemo(() => {
       const matchesYear = filterYear === '' || 
         new Date(pub.date).getFullYear().toString() === filterYear;
       
-      const matchesType = filterType === '' || 
-        pub.type.toLowerCase() === filterType.toLowerCase();
+      //const matchesType = filterType === '' || 
+       // pub.type.toLowerCase() === filterType.toLowerCase();
 
+       // Updated to include more types
+      const matchesType = filterType === '' || 
+      filterType === 'All Types' || 
+      pub.type.toLowerCase() === filterType.toLowerCase();
+
+      
       return matchesSearch && matchesCategory && matchesYear && matchesType;
     });
   }, [publications, searchText, filterCategory, filterYear, filterType]);
@@ -173,6 +179,8 @@ const monthlyData = useMemo(() => {
                 </span>
               </h3>
 
+            {/* Add Publication Button */}
+            {/*
               <Link 
                 href="/publication-add"
                 className="ml-4 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded text-sm flex items-center transition-colors"
@@ -193,7 +201,7 @@ const monthlyData = useMemo(() => {
                   />
                 </svg>
                 Add Publication
-              </Link>
+              </Link>*/}
             </div>
 
             <div className="flex gap-2">
@@ -214,12 +222,19 @@ const monthlyData = useMemo(() => {
                   <option key={year} value={year}>{year}</option>
                 ))}
               </select>
-              <select value={filterType} onChange={(e) => setFilterType(e.target.value)} className="border px-3 py-2 rounded text-sm">
-                <option value="">All Types</option>
-                <option value="Article">Article</option>
-                <option value="Conference">Conference</option>
+              <select 
+                value={filterType} 
+                onChange={(e) => setFilterType(e.target.value)} 
+                className="border px-3 py-2 rounded text-sm"
+              >
+                 {/* Changed this to include more options */}
+                <option value="All Types">All Types</option>
                 <option value="Book Chapter">Book Chapter</option>
-                <option value="Book">Book</option>
+                <option value="Research Book">Research Book</option>
+                <option value="Scopus">Scopus</option>
+                <option value="Web of Science">Web of Science</option>
+                <option value="Conference/Proceeding">Conference/Proceeding</option>
+                <option value="Others">Others</option>
               </select>
               <input
                 type="text"
@@ -233,37 +248,43 @@ const monthlyData = useMemo(() => {
 
           <div className="overflow-auto max-h-96">
             <table className="w-full text-sm">
-              <thead className="bg-gray-100 sticky top-0">
-                <tr>
-                  <th className="text-left px-4 py-2">Ref No</th>
-                  <th className="text-left px-4 py-2">Title</th>
-                  <th className="text-left px-4 py-2">Journal</th>
-                  <th className="text-left px-4 py-2">Type</th>
-                  <th className="text-left px-4 py-2">Category</th>
-                  <th className="text-left px-4 py-2">Impact</th>
-                  <th className="text-left px-4 py-2">Date</th>
-                </tr>
-              </thead>
-              <tbody>
-                {filteredPublications.length > 0 ? (
-                  filteredPublications.map(pub => (
-                    <tr key={pub.id} className="border-b hover:bg-gray-50">
-                      <td className="px-4 py-2">{pub.pub_refno}</td>
-                      <td className="px-4 py-2">{pub.title}</td>
-                      <td className="px-4 py-2">{pub.journal}</td>
-                      <td className="px-4 py-2">{pub.type}</td>
-                      <td className="px-4 py-2">{pub.category}</td>
-                      <td className="px-4 py-2">{pub.impact}</td>
-                      <td className="px-4 py-2">{pub.date}</td>
-                    </tr>
-                  ))                ) : (                  <tr>
-                    <td colSpan={7} className="px-4 py-4 text-center text-gray-500">
-                      No publications found matching your criteria
-                    </td>
-                  </tr>
-                )}
-              </tbody>
-            </table>
+  <thead className="bg-gray-100 sticky top-0">
+    <tr>
+      <th className="text-left px-4 py-2">Ref No</th>
+      <th className="text-left px-4 py-2">Title</th>
+      <th className="text-left px-4 py-2">Author</th>{/*added author*/}
+      <th className="text-left px-4 py-2">Journal</th>
+      <th className="text-left px-4 py-2">Type</th>
+      <th className="text-left px-4 py-2">Category</th>
+      <th className="text-left px-4 py-2">Impact</th>
+      <th className="text-left px-4 py-2">Date</th>
+    </tr>
+  </thead>
+  <tbody>
+    {filteredPublications.length > 0 ? (
+      filteredPublications.map(pub => (
+        <tr key={pub.id} className="border-b hover:bg-gray-50">
+          <td className="px-4 py-2">{pub.pub_refno}</td>
+          <td className="px-4 py-2">{pub.title}</td>
+          <td className="px-4 py-2">{pub.author_name}</td>
+          <td className="px-4 py-2">{pub.journal}</td>
+          <td className="px-4 py-2">{pub.type}</td>
+          <td className="px-4 py-2">{pub.category}</td>
+          <td className="px-4 py-2">{pub.impact}</td>
+          <td className="px-4 py-2">{new Date(pub.date).toLocaleDateString()}</td>
+        </tr>
+      ))
+    ) : (
+      <tr>
+        <td colSpan={8} className="px-4 py-4 text-center text-gray-500">
+          No publications found matching your criteria
+        </td>
+      </tr>
+    )}
+
+  </tbody>
+</table>
+
           </div>
         </div>
       </main>
