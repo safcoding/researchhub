@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { supabase } from '@/lib/db-connect';
+import { createClient } from '@/utils/supabase/client';
 
 export type Lab = {
     LABID: string;
@@ -26,6 +26,7 @@ export function LabLogic() {
             setError(null);
             console.log('Fetching labs from database...');
             
+            const supabase = createClient();
             const { data, error } = await supabase
                 .from('labs')
                 .select(`
@@ -68,9 +69,9 @@ export function LabLogic() {
                 // Generate a unique LABID based on timestamp and random string
                 const timestamp = Date.now().toString(36);
                 const randomStr = Math.random().toString(36).substring(2, 8);
-                labToInsert.LABID = `LAB_${timestamp}_${randomStr}`.toUpperCase();
-            }
+                labToInsert.LABID = `LAB_${timestamp}_${randomStr}`.toUpperCase();            }
             
+            const supabase = createClient();
             const { data, error } = await supabase.from('labs').insert([labToInsert]).select().single();
             
             if (error) {
@@ -94,13 +95,13 @@ export function LabLogic() {
         try {
             setLoading(true);
             console.log(`Adding ${newLabs.length} labs in bulk with file path: ${filePath}`);
-            
-            // Add file_path to each lab
+              // Add file_path to each lab
             const labsWithFilePath = newLabs.map(lab => ({
                 ...lab,
                 file_path: filePath
             }));
             
+            const supabase = createClient();
             const { data, error } = await supabase.from('labs').insert(labsWithFilePath).select();
             
             if (error) {
@@ -120,11 +121,11 @@ export function LabLogic() {
         }
     };
 
-    const updateLab = async (labId: string, updatedLab: Partial<Lab>) => {
-        try {
+    const updateLab = async (labId: string, updatedLab: Partial<Lab>) => {        try {
             setLoading(true);
             console.log(`Updating lab ${labId}:`, updatedLab);
-              const { data, error } = await supabase
+            const supabase = createClient();
+            const { data, error } = await supabase
                 .from('labs')
                 .update(updatedLab)
                 .eq('LABID', labId)
@@ -150,11 +151,11 @@ export function LabLogic() {
         }
     };
 
-    const deleteLab = async (labId: string) => {
-        try {
+    const deleteLab = async (labId: string) => {        try {
             setLoading(true);
             console.log(`Deleting lab ${labId}`);
             
+            const supabase = createClient();
             const { error } = await supabase.from('labs').delete().eq('LABID', labId);
             
             if (error) {
@@ -176,6 +177,7 @@ export function LabLogic() {
 useEffect(() => {
     const fetchLabs = async () => {
       try {
+        const supabase = createClient();
         const { data, error } = await supabase
           .from('labs')
           .select(`

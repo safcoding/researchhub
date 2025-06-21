@@ -1,26 +1,35 @@
+// src/app/admin/login/actions.ts
 'use server'
 
 import { revalidatePath } from 'next/cache'
 import { redirect } from 'next/navigation'
-
 import { createClient } from '@/utils/supabase/server'
 
 export async function login(formData: FormData) {
   const supabase = await createClient()
 
-  // type-casting here for convenience
-  // in practice, you should validate your inputs
-  const data = {
-    email: formData.get('email') as string,
-    password: formData.get('password') as string,
+  const email = formData.get('email') as string
+  const password = formData.get('password') as string
+
+  console.log('Login attempt:', { email, hasPassword: !!password })
+
+  // Validate inputs
+  if (!email || !password) {
+    console.error('Missing email or password')
+    redirect('/admin/login?error=Please provide both email and password')
   }
 
-  const { error } = await supabase.auth.signInWithPassword(data)
+  const { data, error } = await supabase.auth.signInWithPassword({
+    email,
+    password,
+  })
 
   if (error) {
-    redirect('/error')
+    console.error('Login error:', error.message)
+    redirect(`/admin/login?error=${encodeURIComponent(error.message)}`)
   }
 
+  console.log('Login successful for:', email)
   revalidatePath('/', 'layout')
   redirect('/admin/dashboard')
 }
@@ -28,19 +37,22 @@ export async function login(formData: FormData) {
 export async function signup(formData: FormData) {
   const supabase = await createClient()
 
-  // type-casting here for convenience
-  // in practice, you should validate your inputs
-  const data = {
-    email: formData.get('email') as string,
-    password: formData.get('password') as string,
+  const email = formData.get('email') as string
+  const password = formData.get('password') as string
+
+  if (!email || !password) {
+    redirect('/admin/login?error=Please provide both email and password')
   }
 
-  const { error } = await supabase.auth.signUp(data)
+  const { error } = await supabase.auth.signUp({
+    email,
+    password,
+  })
 
   if (error) {
-    redirect('/error')
+    redirect(`/admin/login?error=${encodeURIComponent(error.message)}`)
   }
 
   revalidatePath('/', 'layout')
-  redirect('/account')
+  redirect('/admin/dashboard')
 }

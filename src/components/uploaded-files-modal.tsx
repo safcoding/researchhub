@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { supabase } from '@/lib/db-connect';
+import { createClient } from '@/utils/supabase/client';
 
 interface FileListItem {
   name: string;
@@ -21,10 +21,10 @@ export function UploadedFilesModal({ onClose }: UploadedFilesModalProps) {
   useEffect(() => {
     async function fetchFiles() {
       try {
-        setLoading(true);
-        setError(null);
+        setLoading(true);        setError(null);
         
         // Fetch the list of files from the grants bucket
+        const supabase = createClient();
         const { data, error } = await supabase.storage
           .from('grants')
           .list();
@@ -36,9 +36,7 @@ export function UploadedFilesModal({ onClose }: UploadedFilesModalProps) {
         if (!data) {
           setFiles([]);
           return;
-        }
-
-        // Transform the data to include public URLs
+        }        // Transform the data to include public URLs
         const filesWithUrls = await Promise.all(
           data.map(async (file) => {
             const { data: urlData } = supabase.storage

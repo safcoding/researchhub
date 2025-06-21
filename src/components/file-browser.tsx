@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { supabase } from '@/lib/db-connect';
+import { createClient } from '@/utils/supabase/client';
 import { GrantLogic } from '@/hooks/grant-logic';
 
 interface FileBrowserProps {
@@ -12,12 +12,12 @@ export function FileBrowser({ onSelectFile, onClose }: FileBrowserProps) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const { getFileUrl } = GrantLogic();
-
   useEffect(() => {
     const fetchFiles = async () => {
       try {
         setLoading(true);
         // Get list of files from Supabase Storage
+        const supabase = createClient();
         const { data, error } = await supabase
           .storage
           .from('grants')
@@ -27,8 +27,8 @@ export function FileBrowser({ onSelectFile, onClose }: FileBrowserProps) {
 
         // Filter out folders and get only Excel files
         const excelFiles = data
-          ?.filter(item => !item.id.endsWith('/') && (item.name.endsWith('.xlsx') || item.name.endsWith('.xls')))
-          .map(item => {
+          ?.filter((item: any) => !item.id.endsWith('/') && (item.name.endsWith('.xlsx') || item.name.endsWith('.xls')))
+          .map((item: any) => {
             // Make sure we're using the correct path format that Supabase expects
             // This might just be the filename depending on how you've stored it
             const filePath = item.name;
