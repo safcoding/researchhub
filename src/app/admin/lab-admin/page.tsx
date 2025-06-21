@@ -3,7 +3,7 @@
 import { LabLogic, type Lab } from '@/hooks/lab-logic';
 import { LabTable } from '@/components/lab-table-enhanced';
 import { LabModal } from '@/components/lab-crud-enhanced';
-import Navbar from '@/components/navbar';
+import AdminNavbar from '@/components/admin-components/admin-navbar';
 import { useState } from 'react';
 
 export default function LabsPage() {
@@ -17,6 +17,7 @@ export default function LabsPage() {
     const [searchQuery, setSearchQuery] = useState('');
     const [selectedDepartment, setSelectedDepartment] = useState<string>('');
     const [selectedLabType, setSelectedLabType] = useState<string>('');
+    const [equipmentSearch, setEquipmentSearch] = useState<string>('');
     const [sortOrder, setSortOrder] = useState<{
         field: 'LAB_NAME';
         direction: 'asc' | 'desc';
@@ -101,7 +102,7 @@ export default function LabsPage() {
 
     return (
         <>
-            <Navbar />
+            <AdminNavbar />
             <div className="container mx-auto p-4">
                 <div className="flex justify-between items-center mb-4">
                     <h1 className="text-2xl font-bold">Laboratory Database</h1>

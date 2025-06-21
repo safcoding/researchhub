@@ -6,7 +6,7 @@ import { GrantTable } from '@/components/grant-table';
 import { GrantModal } from '@/components/grant-crud';
 import { GrantFileUpload } from '@/components/grant-file-upload';
 import { UploadedFilesModal } from '@/components/uploaded-files-modal';
-import Navbar from '@/components/navbar';
+import AdminNavbar from '@/components/admin-components/admin-navbar';
 import { GrantChartModal } from '@/components/grant-chart-modal';
 import { useState } from 'react';
 
@@ -104,7 +104,7 @@ const getAvailableYears = () => {
 
     return (
         <>
-            <Navbar />
+            <AdminNavbar />
             <div className="container mx-auto p-4">
                 <div className="flex justify-between items-center mb-4">
                     <h1 className="text-2xl font-bold">Grants Database</h1>

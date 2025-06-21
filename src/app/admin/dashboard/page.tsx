@@ -2,13 +2,14 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import Link from 'next/link'
+import AdminNavbar from '@/components/admin-components/admin-navbar';
 
 export default function AdminDashboard() {
 
 
   return (
-
-    
+      <>
+      <AdminNavbar />
       <div className="min-h-screen bg-gray-50">
         <div className="max-w-7xl mx-auto px-4 py-8">
           <div className="mb-8">
@@ -71,11 +72,9 @@ export default function AdminDashboard() {
                 </CardContent>
               </Card>
             </Link>
-
-            <button className="button block" type="submit">Sign out</button>
           </div>
         </div>
       </div>
-      
+    </>   
   )
 }

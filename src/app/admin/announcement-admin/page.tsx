@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import Navbar from '@/components/navbar';
+import AdminNavbar from '@/components/admin-components/admin-navbar';
 import { EventLogic, type Event } from '@/hooks/event-logic';
 import { EventModal, DeleteConfirmationModal } from '@/components/event-crud';
 
@@ -156,7 +156,7 @@ export default function AnnouncementCRUDPage() {
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-50">
-        <Navbar />
+        <AdminNavbar />
         <div className="container mx-auto px-4 py-8">
           <div className="text-center py-8">Loading...</div>
         </div>
@@ -166,7 +166,7 @@ export default function AnnouncementCRUDPage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <Navbar />
+      <AdminNavbar />
       <div className="container mx-auto px-4 py-8">
         <div className="flex justify-between items-center mb-6">
           <h1 className="text-3xl font-bold text-gray-800">Admin: Manage Announcements</h1>

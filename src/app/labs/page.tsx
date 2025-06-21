@@ -1,6 +1,7 @@
 'use client';
 import React, { useState, useEffect } from 'react';
 import Navbar from '@/components/navbar';
+import AdminNavbar from '@/components/admin-components/admin-navbar'
 import { useRouter } from 'next/navigation';
 import { type Lab } from '@/hooks/lab-logic';
 import { supabase } from '@/lib/db-connect';
