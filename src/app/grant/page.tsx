@@ -56,10 +56,6 @@ export default function GrantsDashboard() {
       <main className="flex-grow container mx-auto px-4 py-8 bg-gray-50">
         <div className="flex justify-between items-center mb-8">
           <h1 className="text-3xl font-bold text-gray-800">Grants Dashboard</h1>
-          <div className="text-right">
-            <p className="text-sm text-gray-600">Total Grants</p>
-            <p className="text-2xl font-bold text-blue-600">{grants.length}</p>
-          </div>
         </div>
         
         {/* Stats Cards Row */}
