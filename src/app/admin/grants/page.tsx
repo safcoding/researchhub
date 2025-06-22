@@ -6,7 +6,7 @@ import { GrantTable } from '@/components/admin-components/grant-table';
 import { GrantModal } from '@/components/admin-components/grant-form';
 import { useState } from 'react';
 
-import { AdminSidebar } from "@/components/admin-sidebar/admin-sidebar"
+import { AdminSidebar } from "@/components/admin-sidebar/sidebar-content"
 import { Separator } from "@/components/ui/separator"
 import {
   SidebarInset,

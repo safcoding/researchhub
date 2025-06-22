@@ -4,7 +4,7 @@ import React, { useState, useMemo } from 'react';
 import Link from 'next/link';
 import ConditionalNavbar from '@/components/admin-sidebar/conditional-navbar';
 import Navbar from '@/components/navbar';
-import Footer from '@/components/Footer';
+import Footer from '@/components/footer';
 import { PublicationLogic } from '@/hooks/publication-logic';
 
 import {

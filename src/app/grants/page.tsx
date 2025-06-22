@@ -4,7 +4,7 @@ import StatsCard from './statcards';
 import GrantsPie from './gantchart1';
 import LineChart from './linechart';
 import ConditionalNavbar from '@/components/admin-sidebar/conditional-navbar'; 
-import Footer from '@/components/Footer';
+import Footer from '@/components/footer';
 import { GrantLogic } from '@/hooks/grant-logic';
 import Navbar from '@/components/navbar';
 

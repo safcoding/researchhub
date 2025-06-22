@@ -1,7 +1,7 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import Link from 'next/link'
-import { AdminSidebar } from "@/components/admin-sidebar/admin-sidebar"
+import { AdminSidebar } from "@/components/admin-sidebar/sidebar-content"
 import { Separator } from "@/components/ui/separator"
 import {
   SidebarInset,

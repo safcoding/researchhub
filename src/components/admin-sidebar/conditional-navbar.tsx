@@ -1,7 +1,7 @@
 'use client'
 import { useEffect, useState } from 'react'
 import { createClient } from '@/utils/supabase/client'
-import { AdminSidebar } from "@/components/admin-sidebar/admin-sidebar"
+import { AdminSidebar } from "@/components/admin-sidebar/sidebar-content"
 import { Separator } from "@/components/ui/separator"
 import {
   SidebarInset,

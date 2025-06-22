@@ -3,7 +3,7 @@ import Link from 'next/link';
 import React from 'react';
 import ConditionalNavbar from '@/components/admin-sidebar/conditional-navbar';
 import Navbar from '@/components/navbar';
-import Footer from '@/components/Footer';
+import Footer from '@/components/footer';
 
 const HomePage = () => { 
   return (

@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import { PublicationLogic, type Publication } from '@/hooks/publication-logic';
 
-import { AdminSidebar } from "@/components/admin-sidebar/admin-sidebar"
+import { AdminSidebar } from "@/components/admin-sidebar/sidebar-content"
 import { Separator } from "@/components/ui/separator"
 import {
   SidebarInset,

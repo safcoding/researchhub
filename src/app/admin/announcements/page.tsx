@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { EventLogic, type Event } from '@/hooks/event-logic';
 import { EventModal, DeleteConfirmationModal } from '@/components/admin-components/event-form';
 
-import { AdminSidebar } from "@/components/admin-sidebar/admin-sidebar"
+import { AdminSidebar } from "@/components/admin-sidebar/sidebar-content"
 import { Separator } from "@/components/ui/separator"
 import {
   SidebarInset,
