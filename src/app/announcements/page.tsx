@@ -7,7 +7,7 @@ import { EventLogic, type Event } from '@/hooks/event-logic';
 import { EventModal, DeleteConfirmationModal } from '@/components/admin-components/event-form';
 
 import ConditionalNavbar from '@/components/admin-sidebar/conditional-navbar';
-import Footer from '@/components/Footer';
+import Footer from '@/components/footer';
 import Navbar from '@/components/navbar';
 
 export default function AnnouncementsPage() {

@@ -5,7 +5,7 @@ import { LabTable } from '@/components/admin-components/lab-table';
 import { LabModal } from '@/components/admin-components/lab-form';
 import { useState } from 'react';
 
-import { AdminSidebar } from "@/components/admin-sidebar/admin-sidebar"
+import { AdminSidebar } from "@/components/admin-sidebar/sidebar-content"
 import { Separator } from "@/components/ui/separator"
 import {
   SidebarInset,

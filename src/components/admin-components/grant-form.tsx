@@ -206,17 +206,6 @@ export function GrantModal({ grant, onSave, onClose }: GrantModalProps) {
                                 className="w-full p-2 border rounded focus:ring-2 focus:ring-blue-500"
                             />
                         </div>
-
-                        <div>
-                            <label className="block text-sm font-medium mb-1">Research Alliance</label>
-                            <input
-                                name="COST_CENTER_CODE"
-                                value={formData.COST_CENTER_CODE || ''}
-                                onChange={handleChange}
-                                className="w-full p-2 border rounded focus:ring-2 focus:ring-blue-500"
-                            />
-                        </div>
-
                         <div>
                             <label className="block text-sm font-medium mb-1">Subsponsor Name</label>
                             <input

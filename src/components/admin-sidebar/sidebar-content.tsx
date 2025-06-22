@@ -28,9 +28,17 @@ const data = {
           title: "Grant Management",
           url: "/admin/grants",
         },
+       {
+          title: "Publications Management", 
+          url: "/admin/publications",
+        },
         {
           title: "Lab Management", 
           url: "/admin/labs",
+        },
+        {
+          title: "Announcements Management", 
+          url: "/admin/announcements",
         },
       ],
     },

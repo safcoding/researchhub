@@ -3,7 +3,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import ConditionalNavbar from '@/components/admin-sidebar/conditional-navbar';
 import Navbar from '@/components/navbar';
-import Footer from '@/components/Footer';
+import Footer from '@/components/footer';
 
 export default function AboutPage() {  
   

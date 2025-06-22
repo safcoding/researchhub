@@ -1,7 +1,7 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import Link from 'next/link'
-import { AdminSidebar } from "@/components/admin-sidebar/admin-sidebar"
+import { AdminSidebar } from "@/components/admin-sidebar/sidebar-content"
 import { Separator } from "@/components/ui/separator"
 import {
   SidebarInset,
@@ -36,7 +36,7 @@ export default function Page() {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            <Link href="/admin/publication-admin">
+            <Link href="/admin/publications">
               <Card className="hover:shadow-lg transition-shadow cursor-pointer">
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                   <CardTitle className="text-sm font-medium">Publications</CardTitle>
@@ -58,7 +58,7 @@ export default function Page() {
               </Card>
             </Link>
 
-            <Link href="/admin/announcement-admin">
+            <Link href="/admin/announcements">
               <Card className="hover:shadow-lg transition-shadow cursor-pointer">
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                   <CardTitle className="text-sm font-medium">Announcements</CardTitle>
@@ -69,7 +69,7 @@ export default function Page() {
               </Card>
             </Link>
 
-            <Link href="/admin/users">
+            <Link href="/admin/user-manage">
               <Card className="hover:shadow-lg transition-shadow cursor-pointer">
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                   <CardTitle className="text-sm font-medium">Admin Users</CardTitle>
@@ -80,7 +80,7 @@ export default function Page() {
               </Card>
             </Link>
 
-            <Link href="/admin/grant-admin">
+            <Link href="/admin/grants">
               <Card className="hover:shadow-lg transition-shadow cursor-pointer">
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                   <CardTitle className="text-sm font-medium">Grants</CardTitle>
