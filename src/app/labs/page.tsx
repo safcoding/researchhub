@@ -1,4 +1,5 @@
 'use client';
+
 import React, { useState, useEffect } from 'react';
 import ConditionalNavbar from '@/components/admin-sidebar/conditional-navbar';
 import Navbar from '@/components/navbar';
@@ -178,8 +179,7 @@ const OurLabs = () => {
         />
 
         {/* Main Content */}
-        <div className="flex-1 p-6 bg-gray-50">
-          {/* Lab Type Header Section */}
+        <div className="flex-1 p-6 bg-gray-50">          {/* Lab Type Header Section */}
           <div className="mb-6"> 
             <div className="flex justify-between items-center mb-2">
               <h1 className="text-2xl font-bold text-gray-800">{selectedLabType} Labs</h1>
@@ -243,3 +243,4 @@ const OurLabs = () => {
 };
 
 export default OurLabs;
+

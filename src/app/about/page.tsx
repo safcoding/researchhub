@@ -11,7 +11,8 @@ import { useAboutContent } from '@/hooks/about-content';
 
 export default function AboutPage() {
   const { aboutContent, loading } = useAboutContent();
-    return (
+  
+  return (
       <ConditionalNavbar>
       <Navbar /> 
       <main className="container mx-auto px-4 py-12">
@@ -79,8 +80,7 @@ export default function AboutPage() {
                   <p className="mb-6"><strong>Office Hours:</strong> Monday to Friday, 8:30 AM - 5:00 PM</p>
                   <Link href="/contact" className="inline-block bg-blue-600 text-white px-6 py-2 rounded-md hover:bg-blue-700 transition-colors">
                     Get in Touch
-                  </Link>
-                </div>
+                  </Link>                </div>
               </div>
             </>
           )}
