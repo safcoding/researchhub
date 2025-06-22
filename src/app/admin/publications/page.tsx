@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import Navbar from '@/components/navbar/navbar';
+import AdminNavbar from '@/components/navbar/admin-navbar';
 import { PublicationLogic, type Publication } from '@/hooks/publication-logic';
 
 const PublicationsUpload: React.FC = () => {
@@ -74,9 +74,6 @@ const PublicationsUpload: React.FC = () => {
     }
   };
 
-  
-//Changed this
-// This function handles the edit action for a publication
   const handleEdit = (publication: Publication) => {
     setPublicationData({
       pub_refno: publication.pub_refno ?? '',
@@ -108,12 +105,12 @@ const PublicationsUpload: React.FC = () => {
     }
   };
 
-  if (loading) return <div className="min-h-screen bg-gray-50"><Navbar /><div className="container mx-auto px-4 py-8 flex justify-center"><div className="text-xl">Loading...</div></div></div>;
-  if (error) return <div className="min-h-screen bg-gray-50"><Navbar /><div className="container mx-auto px-4 py-8"><div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">Error: {error}</div></div></div>;
+  if (loading) return <div className="min-h-screen bg-gray-50"><AdminNavbar /><div className="container mx-auto px-4 py-8 flex justify-center"><div className="text-xl">Loading...</div></div></div>;
+  if (error) return <div className="min-h-screen bg-gray-50"><AdminNavbar /><div className="container mx-auto px-4 py-8"><div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">Error: {error}</div></div></div>;
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <Navbar />
+      <AdminNavbar />
       <div className="container mx-auto px-4 py-8">
         <form onSubmit={handleSubmit} className="bg-white p-6 rounded-lg shadow-md mb-8">
           <h1 className="text-2xl font-bold text-gray-800 mb-6">

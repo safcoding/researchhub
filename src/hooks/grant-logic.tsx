@@ -107,37 +107,7 @@ export function GrantLogic() {
         }
     };    
     
-    const addBulkGrants = async (grants: Omit<Grant, 'PROJECTID'>[], filePath?: string) => {
-        try {
-            setLoading(true);
-            console.log(`Adding ${grants.length} grants with file path:`, filePath);
-              // Create a new array with optional file path
-            const grantsWithFilePath = grants.map(grant => ({
-                ...grant,
-                file_path: filePath ?? null
-            }));
-
-            const supabase = createClient();
-            const { data, error: insertError } = await supabase
-                .from('grant')
-                .insert(grantsWithFilePath)
-                .select();
-                
-            if (insertError) {
-                console.error('Error adding bulk grants:', insertError);
-                throw insertError;
-            }
-            
-            console.log(`${data?.length || 0} grants added successfully`);
-            await fetchGrants();
-        } catch (e) {
-            console.error('Error in addBulkGrants:', e);
-            setError(e instanceof Error ? e.message : 'Unknown error');
-            throw e;
-        } finally {
-            setLoading(false);
-        }
-    };    const updateGrant = async (projectId: string, updatedData: Partial<Grant>) => {
+    const updateGrant = async (projectId: string, updatedData: Partial<Grant>) => {
         try {
             setLoading(true);
             console.log(`Updating grant with ID ${projectId}:`, updatedData);
@@ -189,29 +159,7 @@ export function GrantLogic() {
         } finally {
             setLoading(false);
         }
-    };    const getFileUrl = (filePath: string | null | undefined, bucket = 'grants'): string => {
-        if (!filePath) {
-            return '';
-        }
-          try {
-            // Get the public URL for the file
-            const supabase = createClient();
-            const { data } = supabase.storage
-                .from(bucket)
-                .getPublicUrl(filePath);
-            
-            if (!data?.publicUrl) {
-                console.warn('No public URL returned for file:', filePath);
-                return '';
-            }
-            
-            console.log('Generated public URL:', data.publicUrl);    
-            return data.publicUrl;
-        } catch (e) {
-            console.error('Error getting file URL:', e);
-            return '';
-        }
-    };
+    };    
 
     // Analytics functions
      const getGrantStats = (): GrantStats => {
@@ -331,11 +279,9 @@ export function GrantLogic() {
         loading,
         error,
         addGrant,
-        addBulkGrants,
         updateGrant,
         deleteGrant,
-        getFileUrl,
-        // Add new analytics functions
+        //Analytics functions
         getGrantStats,
         getGrantTypeData,
         getSponsorCategoryData,

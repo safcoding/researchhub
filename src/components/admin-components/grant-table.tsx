@@ -9,7 +9,6 @@ export interface GrantsTableProps {
 }
 
 export function GrantTable({ grants, onEdit, onDelete }: GrantsTableProps) {
-    const { getFileUrl } = GrantLogic();
     const [currentPage, setCurrentPage] = useState(1);
     const [expandedRow, setExpandedRow] = useState<string | null>(null);
     
@@ -72,22 +71,6 @@ export function GrantTable({ grants, onEdit, onDelete }: GrantsTableProps) {
                                     
                                     <div className="text-gray-600 text-sm">AMOUNT:</div>
                                     <div>${grant.PRO_APPROVED}</div>
-                                    
-                                    <div className="text-gray-600 text-sm">FILE:</div>
-                                    <div>
-                                        {grant.file_path ? (
-                                            <a 
-                                                href={getFileUrl(grant.file_path)} 
-                                                target="_blank" 
-                                                rel="noopener noreferrer"
-                                                className="text-blue-600 hover:underline"
-                                            >
-                                                View File
-                                            </a>
-                                        ) : (
-                                            <span className="text-gray-400">No file</span>
-                                        )}
-                                    </div>
                                 </div>
                                 
                                 {(onEdit || onDelete) && (
@@ -134,7 +117,6 @@ export function GrantTable({ grants, onEdit, onDelete }: GrantsTableProps) {
                             <th className="px-6 py-3 text-left">GRANT TYPE</th>
                             <th className="px-6 py-3 text-left">STATUS</th>
                             <th className="px-6 py-3 text-left">AMOUNT</th>
-                            <th className="px-6 py-3 text-left">FILE</th>
                             {(onEdit ?? onDelete) && <th className="px-6 py-3 text-left">Actions</th>}
                         </tr>
                     </thead>
@@ -152,21 +134,6 @@ export function GrantTable({ grants, onEdit, onDelete }: GrantsTableProps) {
                                 <td className="px-6 py-4">{grant.GRANT_TYPE}</td>
                                 <td className="px-6 py-4">{grant.PROJECT_STATUS}</td>
                                 <td className="px-6 py-4">${grant.PRO_APPROVED}</td>
-                                <td className="px-6 py-4">
-                                    {grant.file_path ? (
-                                        <a 
-                                            href={getFileUrl(grant.file_path)} 
-                                            target="_blank" 
-                                            rel="noopener noreferrer"
-                                            className="text-blue-600 hover:underline"
-                                            onClick={(e) => e.stopPropagation()}
-                                        >
-                                            View File
-                                        </a>
-                                    ) : (
-                                        <span className="text-gray-400">No file</span>
-                                    )}
-                                </td>
                                 {(onEdit ?? onDelete) && (
                                     <td className="px-6 py-4">
                                         {onEdit && (
@@ -210,31 +177,36 @@ export function GrantTable({ grants, onEdit, onDelete }: GrantsTableProps) {
                         >
                             Previous
                         </button>
-                        {Array.from({ length: totalPages }, (_, i) => i + 1)
-                            .filter(p => p === 1 || p === totalPages || Math.abs(p - currentPage) <= 1)
-                            .map((pageNum, i, arr) => {
-                                // Add ellipsis if there are skipped pages
-                                if (i > 0 && pageNum - arr[i - 1] > 1) {
-                                    return (
-                                        <span key={`ellipsis-${pageNum}`} className="px-3 py-1 border-t border-b border-gray-300 bg-white text-gray-500">
-                                            ...
-                                        </span>
+
+                            {Array.from({ length: totalPages }, (_, i) => i + 1)
+                                .filter(p => p === 1 || p === totalPages || Math.abs(p - currentPage) <= 1)
+                                .map((pageNum, i, arr) => {
+                                    const elements = [];                       
+                                    // Add ellipsis if there are skipped pages
+                                    if (i > 0 && pageNum - arr[i - 1] > 1) {
+                                        elements.push(
+                                            <span key={`ellipsis-before-${pageNum}`} className="px-3 py-1 border-t border-b border-gray-300 bg-white text-gray-500">
+                                                ...
+                                            </span>
+                                        );
+                                    }
+                                    // Add the page number button
+                                    elements.push(
+                                        <button
+                                            key={`page-${pageNum}`}
+                                            onClick={() => setCurrentPage(pageNum)}
+                                            className={`px-3 py-1 border border-gray-300 ${
+                                                currentPage === pageNum
+                                                    ? 'bg-blue-600 text-white'
+                                                    : 'bg-white text-gray-500 hover:bg-gray-50'
+                                            }`}
+                                        >
+                                            {pageNum}
+                                        </button>
                                     );
-                                }
-                                return (
-                                    <button
-                                        key={pageNum}
-                                        onClick={() => setCurrentPage(pageNum)}
-                                        className={`px-3 py-1 border border-gray-300 ${
-                                            currentPage === pageNum
-                                                ? 'bg-blue-600 text-white'
-                                                : 'bg-white text-gray-500 hover:bg-gray-50'
-                                        }`}
-                                    >
-                                        {pageNum}
-                                    </button>
-                                );
-                            })}
+                                    
+                                    return elements;
+                                }).flat()}
                         <button
                             onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
                             disabled={currentPage === totalPages}

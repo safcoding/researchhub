@@ -1,8 +1,8 @@
 'use client';
 
 import { LabLogic, type Lab } from '@/hooks/lab-logic';
-import { LabTable } from '@/components/lab-table-enhanced';
-import { LabModal } from '@/components/lab-crud-enhanced';
+import { LabTable } from '@/components/admin-components/lab-table';
+import { LabModal } from '@/components/admin-components/lab-form';
 import AdminNavbar from '@/components/navbar/admin-navbar';
 import { useState } from 'react';
 
@@ -10,9 +10,6 @@ export default function LabsPage() {
     const { labs, loading, error, addLab, updateLab, deleteLab } = LabLogic();    
     const [showAddModal, setShowAddModal] = useState(false);
     const [showEditModal, setShowEditModal] = useState(false);
-    const [showFileUploadModal, setShowFileUploadModal] = useState(false);
-    const [showUploadedFilesModal, setShowUploadedFilesModal] = useState(false);
-    const [showChartModal, setShowChartModal] = useState(false);
     const [selectedLab, setSelectedLab] = useState<Lab | null>(null);    // Search and filter states
     const [searchQuery, setSearchQuery] = useState('');
     const [selectedDepartment, setSelectedDepartment] = useState<string>('');
@@ -50,11 +47,6 @@ export default function LabsPage() {
                 lab.RESEARCH_AREA?.toLowerCase().includes(query)
             );
         }
-        
-        // Filter by selected department
-        if (selectedDepartment && selectedDepartment !== '') {
-            filtered = filtered.filter(lab => lab.DEPARTMENT === selectedDepartment);
-        }
 
         // Filter by selected lab type
         if (selectedLabType && selectedLabType !== '') {
@@ -78,17 +70,6 @@ export default function LabsPage() {
     });
     };
 
-    // Get available departments from labs for the filter dropdown
-    const getAvailableDepartments = () => {
-        const departments = new Set<string>();
-        labs.forEach(lab => {
-            if (lab.DEPARTMENT) {
-                departments.add(lab.DEPARTMENT);
-            }
-        });
-        return Array.from(departments).sort();
-    };
-
     // Get available lab types from labs for the filter dropdown
     const getAvailableLabTypes = () => {
         const labTypes = new Set<string>();
@@ -106,31 +87,13 @@ export default function LabsPage() {
             <div className="container mx-auto p-4">
                 <div className="flex justify-between items-center mb-4">
                     <h1 className="text-2xl font-bold">Laboratory Database</h1>
-                    <div className="flex gap-2">
-                        <button
-                            onClick={() => setShowFileUploadModal(true)}
-                            className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 transition-colors"
-                        >
-                            Upload Excel File
-                        </button>                        
+                    <div className="flex gap-2">                      
                         <button
                             onClick={() => setShowAddModal(true)}
                             className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition-colors"
                         >
                             Add Lab
                         </button>                          
-                        <button
-                            onClick={() => setShowUploadedFilesModal(true)}
-                            className="bg-purple-600 text-white px-4 py-2 rounded hover:bg-purple-700 transition-colors"
-                        >
-                            View Uploaded Files
-                        </button>
-                        <button
-                            onClick={() => setShowChartModal(true)}
-                            className="bg-yellow-600 text-white px-4 py-2 rounded hover:bg-yellow-700 transition-colors"
-                        >
-                            View Charts
-                        </button>
                     </div>
                 </div>                {/* Search and Filter Section */}
                 <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center mb-4 gap-4">
@@ -265,52 +228,7 @@ export default function LabsPage() {
                         onClose={() => setShowEditModal(false)}
                     />
                 )}                
-                
-                {/* TODO: Implement remaining modals when components are created */}
-                {showFileUploadModal && (
-                    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-                        <div className="bg-white rounded-lg p-6 max-w-md w-full">
-                            <h2 className="text-xl font-bold mb-4">File Upload</h2>
-                            <p className="text-gray-600 mb-4">Lab file upload component will be implemented next.</p>
-                            <button
-                                onClick={() => setShowFileUploadModal(false)}
-                                className="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600"
-                            >
-                                Close
-                            </button>
-                        </div>
-                    </div>
-                )}
-
-                {showUploadedFilesModal && (
-                    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-                        <div className="bg-white rounded-lg p-6 max-w-md w-full">
-                            <h2 className="text-xl font-bold mb-4">Uploaded Files</h2>
-                            <p className="text-gray-600 mb-4">Uploaded files modal will be implemented next.</p>
-                            <button
-                                onClick={() => setShowUploadedFilesModal(false)}
-                                className="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600"
-                            >
-                                Close
-                            </button>
-                        </div>
-                    </div>
-                )}
-
-                {showChartModal && (
-                    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-                        <div className="bg-white rounded-lg p-6 max-w-md w-full">
-                            <h2 className="text-xl font-bold mb-4">Lab Charts</h2>
-                            <p className="text-gray-600 mb-4">Lab charts modal will be implemented next.</p>
-                            <button
-                                onClick={() => setShowChartModal(false)}
-                                className="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600"
-                            >
-                                Close
-                            </button>
-                        </div>
-                    </div>
-                )}
+            
             </div>
         </>
     );

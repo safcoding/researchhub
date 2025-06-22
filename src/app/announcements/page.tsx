@@ -5,7 +5,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import ConditionalNavbar from '@/components/navbar/conditional-navbar';
 import { EventLogic, type Event } from '@/hooks/event-logic';
-import { EventModal, DeleteConfirmationModal } from '@/components/event-crud';
+import { EventModal, DeleteConfirmationModal } from '@/components/admin-components/event-form';
 import Footer from '@/components/Footer';
 
 export default function AnnouncementsPage() {

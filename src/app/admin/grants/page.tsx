@@ -2,21 +2,15 @@
 
 import type { Grant } from '@/hooks/grant-logic';
 import { GrantLogic } from '@/hooks/grant-logic';
-import { GrantTable } from '@/components/grant-table';
-import { GrantModal } from '@/components/grant-crud';
-import { GrantFileUpload } from '@/components/grant-file-upload';
-import { UploadedFilesModal } from '@/components/uploaded-files-modal';
+import { GrantTable } from '@/components/admin-components/grant-table';
+import { GrantModal } from '@/components/admin-components/grant-form';
 import AdminNavbar from '@/components/navbar/admin-navbar';
-import { GrantChartModal } from '@/components/grant-chart-modal';
 import { useState } from 'react';
 
 export default function GrantDBPage() {
-    const { grants, loading, error, addGrant, addBulkGrants, updateGrant, deleteGrant } = GrantLogic();    
+    const { grants, loading, error, addGrant, updateGrant, deleteGrant } = GrantLogic();    
     const [showAddModal, setShowAddModal] = useState(false);
     const [showEditModal, setShowEditModal] = useState(false);
-    const [showFileUploadModal, setShowFileUploadModal] = useState(false);
-    const [showUploadedFilesModal, setShowUploadedFilesModal] = useState(false);
-    const [showChartModal, setShowChartModal] = useState(false);
     const [selectedGrant, setSelectedGrant] = useState<Grant | null>(null);
       // Search and filter states, this is only the logic behind the thing
     const [searchQuery, setSearchQuery] = useState('');
@@ -36,11 +30,6 @@ export default function GrantDBPage() {
             setSelectedGrant(null);
         }
     };
-    
-    const handleFileUploadComplete = async (parsedGrants: Omit<Grant, 'PROJECTID'>[], filePath: string) => {
-        await addBulkGrants(parsedGrants, filePath);
-        setShowFileUploadModal(false);
-    };
 
     const handleEditClick = (grant: Grant) => {
         setSelectedGrant(grant);
@@ -59,10 +48,9 @@ const filteredAndSortedGrants = () => {
         );
     }
     
-    // ✅ FIXED: Filter by selected year (removed PROJECT_YEAR reference)
+    // Filter by selected year
     if (selectedYear && selectedYear !== '') {
         filtered = filtered.filter(grant => {
-            // Only use PRO_DATESTART since PROJECT_YEAR doesn't exist
             if (grant.PRO_DATESTART) {
                 const grantYear = new Date(grant.PRO_DATESTART).getFullYear().toString();
                 return grantYear === selectedYear;
@@ -89,11 +77,9 @@ const filteredAndSortedGrants = () => {
     });
 };
 
-// ✅ FIXED: Get available years (removed PROJECT_YEAR reference)
 const getAvailableYears = () => {
     const years = new Set<string>();
     grants.forEach(grant => {
-        // Only extract year from PRO_DATESTART since PROJECT_YEAR doesn't exist
         if (grant.PRO_DATESTART) {
             const year = new Date(grant.PRO_DATESTART).getFullYear().toString();
             years.add(year);
@@ -108,29 +94,12 @@ const getAvailableYears = () => {
             <div className="container mx-auto p-4">
                 <div className="flex justify-between items-center mb-4">
                     <h1 className="text-2xl font-bold">Grants Database</h1>
-                    <div className="flex gap-2">
-                        <button
-                            onClick={() => setShowFileUploadModal(true)}
-                            className="bg-green-600 text-white px-4 py-2 rounded"
-                        >
-                            Upload Excel File
-                        </button>                        
+                    <div className="flex gap-2">                      
                         <button
                             onClick={() => setShowAddModal(true)}
                             className="bg-blue-600 text-white px-4 py-2 rounded"
                         >
                             Add Single Grant
-                        </button>                          <button
-                            onClick={() => setShowUploadedFilesModal(true)}
-                            className="bg-purple-600 text-white px-4 py-2 rounded"
-                        >
-                            View Uploaded Files
-                        </button>
-                        <button
-                            onClick={() => setShowChartModal(true)}
-                            className="bg-yellow-600 text-white px-4 py-2 rounded"
-                        >
-                            View Charts
                         </button>
                     </div>
                 </div>
@@ -210,23 +179,6 @@ const getAvailableYears = () => {
                         onClose={() => setShowEditModal(false)}
                     />
                 )}                
-                {showFileUploadModal && (
-                    <GrantFileUpload
-                        onUploadComplete={handleFileUploadComplete}
-                        onCancel={() => setShowFileUploadModal(false)}
-                    />
-                )}
-                  {showUploadedFilesModal && (
-                    <UploadedFilesModal 
-                        onClose={() => setShowUploadedFilesModal(false)}
-                    />
-                )}
-                  {showChartModal && (
-                    <GrantChartModal 
-                        grants={filteredAndSortedGrants()}
-                        onClose={() => setShowChartModal(false)}
-                    />
-                )}
             </div>
         </>
     );

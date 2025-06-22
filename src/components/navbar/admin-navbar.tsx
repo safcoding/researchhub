@@ -54,11 +54,11 @@ const AdminNavbar = () => {
         <div className="container mx-auto">
           <nav className="flex space-x-6">
             <Link href="/admin/dashboard" className="hover:underline">Dashboard</Link>
-            <Link href="/admin/grant-admin" className="hover:underline">Grants</Link>
+            <Link href="/admin/grants" className="hover:underline">Grants</Link>
             {/* Fixed broken URLs */}
-            <Link href="/admin/publication-admin" className="hover:underline">Publications</Link>
-            <Link href="/admin/lab-admin" className="hover:underline">Labs</Link>
-            <Link href="/admin/announcement-admin" className="hover:underline">Announcements</Link>
+            <Link href="/admin/publications" className="hover:underline">Publications</Link>
+            <Link href="/admin/labs" className="hover:underline">Labs</Link>
+            <Link href="/admin/announcements" className="hover:underline">Announcements</Link>
           </nav>
         </div>
       </header>

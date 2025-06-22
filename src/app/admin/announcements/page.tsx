@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import AdminNavbar from '@/components/navbar/admin-navbar';
 import { EventLogic, type Event } from '@/hooks/event-logic';
-import { EventModal, DeleteConfirmationModal } from '@/components/event-crud';
+import { EventModal, DeleteConfirmationModal } from '@/components/admin-components/event-form';
 
 export default function AnnouncementCRUDPage() {
   const { events, loading, error, addEvent, updateEvent, deleteEvent } = EventLogic();
