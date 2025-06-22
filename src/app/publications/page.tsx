@@ -1,10 +1,10 @@
 'use client';
 
 import React, { useState, useMemo } from 'react';
-import Link from 'next/link';
 import ConditionalNavbar from '@/components/admin-sidebar/conditional-navbar';
 import Navbar from '@/components/navbar';
-import Footer from '@/components/footer';
+// Fixed import path to match the actual file name (Footer.tsx with capital F)
+import Footer from '@/components/Footer';
 import { PublicationLogic } from '@/hooks/publication-logic';
 
 import {
@@ -23,18 +23,15 @@ const PublicationsDashboard: React.FC = () => {
   const [filterCategory, setFilterCategory] = useState<string>('');
   const [filterYear, setFilterYear] = useState<string>('');
   const [filterType, setFilterType] = useState<string>('');
-  const [selectedChartYear, setSelectedChartYear] = useState(new Date().getFullYear().toString());
-
-  // Calculate monthly data from actual publications
+  const [selectedChartYear, setSelectedChartYear] = useState(new Date().getFullYear().toString());  // Calculate monthly data from actual publications
   const monthlyData = useMemo(() => {
-    const months = new Array(12).fill(0);
+    const months: number[] = Array.from({ length: 12 }, () => 0);
     if (!publications) return months;
-    
-    publications
+      publications
       .filter(pub => pub.date && new Date(pub.date).getFullYear().toString() === selectedChartYear)
       .forEach(pub => {
         const month = new Date(pub.date).getMonth();
-        if (month >= 0 && month < 12) {
+        if (month >= 0 && month < 12 && months[month] !== undefined) {
           months[month]++;
         }
       });
@@ -121,11 +118,11 @@ const PublicationsDashboard: React.FC = () => {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8">
           <div className="lg:col-span-2 bg-white p-6 rounded-xl shadow-md">
             <div className="flex justify-between items-center mb-4">
-              <h3 className="text-xl font-semibold">Monthly Publications</h3>
-              <select
+              <h3 className="text-xl font-semibold">Monthly Publications</h3>              <select
                 value={selectedChartYear}
                 onChange={(e) => setSelectedChartYear(e.target.value)}
                 className="p-2 border border-gray-300 rounded text-sm"
+                aria-label="Select year for chart"
               >
                 {availableYears.map(year => (
                   <option key={year} value={year}>{year}</option>
@@ -173,33 +170,31 @@ const PublicationsDashboard: React.FC = () => {
               </h3>
             </div>
 
-            <div className="flex gap-2">
-              <select 
+            <div className="flex gap-2">              <select 
                 value={filterCategory} 
                 onChange={(e) => setFilterCategory(e.target.value)} 
                 className="border px-3 py-2 rounded text-sm"
+                aria-label="Filter by category"
               >
                 <option value="">All Categories</option>
                 <option value="Journal">Journal</option>
                 <option value="Conference">Conference</option>
                 <option value="Book">Book</option>
-              </select>
-
-              <select 
+              </select>              <select 
                 value={filterYear} 
                 onChange={(e) => setFilterYear(e.target.value)} 
                 className="border px-3 py-2 rounded text-sm"
+                aria-label="Filter by year"
               >
                 <option value="">All Years</option>
                 {availableYears.map(year => (
                   <option key={year} value={year}>{year}</option>
                 ))}
-              </select>
-
-              <select 
+              </select>              <select 
                 value={filterType} 
                 onChange={(e) => setFilterType(e.target.value)} 
                 className="border px-3 py-2 rounded text-sm"
+                aria-label="Filter by type"
               >
                 <option value="All Types">All Types</option>
                 <option value="Book Chapter">Book Chapter</option>
