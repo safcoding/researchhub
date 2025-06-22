@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { supabase } from '@/lib/db-connect';
+import { createClient } from '@/utils/supabase/client';
 
 export type Publication = {
   id?: number;
@@ -24,11 +24,11 @@ export function PublicationLogic() {
   const [publications, setPublications] = useState<Publication[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-
   const fetchPublications = async () => {
     try {
       setLoading(true);
       setError(null);
+      const supabase = createClient();
       const { data, error } = await supabase
         .from('publications')
         .select('*') //changed back 
@@ -43,10 +43,10 @@ export function PublicationLogic() {
       setLoading(false);
     }
   };
-
   const addPublication = async (newPublication: Omit<Publication, 'id'>) => {
     try {
       setError(null);
+      const supabase = createClient();
       const { data, error } = await supabase
         .from('publications')
         .insert([newPublication])
@@ -61,10 +61,10 @@ export function PublicationLogic() {
       throw e;
     }
   };
-
   const updatePublication = async (id: number, updatedData: Partial<Publication>) => {
     try {
       setError(null);
+      const supabase = createClient();
       const { error } = await supabase
         .from('publications')
         .update(updatedData)
@@ -78,10 +78,10 @@ export function PublicationLogic() {
       throw e;
     }
   };
-
   const deletePublication = async (id: number) => {
     try {
       setError(null);
+      const supabase = createClient();
       const { error } = await supabase
         .from('publications')
         .delete()

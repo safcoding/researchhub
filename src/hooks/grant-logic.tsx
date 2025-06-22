@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { supabase } from '@/lib/db-connect';
+import { createClient } from '@/utils/supabase/client';
 
 export interface Grant {
     grant_id?: string;
@@ -46,13 +46,13 @@ export function GrantLogic() {
 
     // ✅ FIXED: Fetch all grants without date restrictions
     const fetchGrants = useCallback(async () => {
-        try {
-            setLoading(true);
+        try {            setLoading(true);
             setError(null);
             
             console.log('🔍 Fetching ALL grants from database...');
             
             // ✅ CRITICAL: Remove any date filtering - fetch ALL data
+            const supabase = createClient();
             const { data, error: fetchError } = await supabase
                 .from('grant')
                 .select('*')
@@ -60,8 +60,8 @@ export function GrantLogic() {
             
             console.log('📊 Raw data count from Supabase:', data?.length);
             console.log('📊 Date range in data:', {
-                earliest: data?.length ? Math.min(...data.map(g => new Date(g.PRO_DATESTART || '').getFullYear())) : 'N/A',
-                latest: data?.length ? Math.max(...data.map(g => new Date(g.PRO_DATESTART || '').getFullYear())) : 'N/A'
+                earliest: data?.length ? Math.min(...data.map((g: any) => new Date(g.PRO_DATESTART || '').getFullYear())) : 'N/A',
+                latest: data?.length ? Math.max(...data.map((g: any) => new Date(g.PRO_DATESTART || '').getFullYear())) : 'N/A'
             });
             
             if (fetchError) {
@@ -81,11 +81,11 @@ export function GrantLogic() {
     }, []);
     
     const addGrant = async (newGrant: Partial<Grant>) => {
-        try {
-            setLoading(true);
+        try {            setLoading(true);
             console.log('Adding new grant:', newGrant);
      
             const { grant_id, ...grantData } = newGrant as Grant;
+            const supabase = createClient();
             const { data, error: insertError } = await supabase
                 .from('grant')
                 .insert([grantData])
@@ -107,41 +107,12 @@ export function GrantLogic() {
         }
     };    
     
-    const addBulkGrants = async (grants: Omit<Grant, 'PROJECTID'>[], filePath?: string) => {
-        try {
-            setLoading(true);
-            console.log(`Adding ${grants.length} grants with file path:`, filePath);
-            
-            // Create a new array with optional file path
-            const grantsWithFilePath = grants.map(grant => ({
-                ...grant,
-                file_path: filePath ?? null
-            }));
-
-            const { data, error: insertError } = await supabase
-                .from('grant')
-                .insert(grantsWithFilePath)
-                .select();
-                
-            if (insertError) {
-                console.error('Error adding bulk grants:', insertError);
-                throw insertError;
-            }
-            
-            console.log(`${data?.length || 0} grants added successfully`);
-            await fetchGrants();
-        } catch (e) {
-            console.error('Error in addBulkGrants:', e);
-            setError(e instanceof Error ? e.message : 'Unknown error');
-            throw e;
-        } finally {
-            setLoading(false);
-        }
-    };    const updateGrant = async (projectId: string, updatedData: Partial<Grant>) => {
+    const updateGrant = async (projectId: string, updatedData: Partial<Grant>) => {
         try {
             setLoading(true);
             console.log(`Updating grant with ID ${projectId}:`, updatedData);
             
+            const supabase = createClient();
             const { data, error: updateError } = await supabase
                 .from('grant')
                 .update(updatedData)
@@ -167,6 +138,7 @@ export function GrantLogic() {
             setLoading(true);
             console.log(`Deleting grant with ID ${projectId}`);
             
+            const supabase = createClient();
             const { data, error: deleteError } = await supabase
                 .from('grant')
                 .delete()
@@ -187,29 +159,7 @@ export function GrantLogic() {
         } finally {
             setLoading(false);
         }
-    };    const getFileUrl = (filePath: string | null | undefined, bucket = 'grants'): string => {
-        if (!filePath) {
-            return '';
-        }
-        
-        try {
-            // Get the public URL for the file
-            const { data } = supabase.storage
-                .from(bucket)
-                .getPublicUrl(filePath);
-            
-            if (!data?.publicUrl) {
-                console.warn('No public URL returned for file:', filePath);
-                return '';
-            }
-            
-            console.log('Generated public URL:', data.publicUrl);    
-            return data.publicUrl;
-        } catch (e) {
-            console.error('Error getting file URL:', e);
-            return '';
-        }
-    };
+    };    
 
     // Analytics functions
      const getGrantStats = (): GrantStats => {
@@ -329,11 +279,9 @@ export function GrantLogic() {
         loading,
         error,
         addGrant,
-        addBulkGrants,
         updateGrant,
         deleteGrant,
-        getFileUrl,
-        // Add new analytics functions
+        //Analytics functions
         getGrantStats,
         getGrantTypeData,
         getSponsorCategoryData,

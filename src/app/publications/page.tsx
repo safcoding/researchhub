@@ -2,7 +2,7 @@
 
 import React, { useState, useMemo } from 'react';
 import Link from 'next/link';
-import Navbar from '@/components/navbar';
+import ConditionalNavbar from '@/components/navbar/conditional-navbar';
 import Footer from '@/components/Footer';
 import { PublicationLogic } from '@/hooks/publication-logic';
 
@@ -95,31 +95,28 @@ const monthlyData = useMemo(() => {
     ));
     return Array.from(years).sort().reverse();
   }, [publications]);
-
   if (loading) {
     return (
       <div className="min-h-screen flex flex-col">
-        <Navbar />
+        <ConditionalNavbar />
         <div className="flex-grow flex items-center justify-center">
           <div className="text-xl">Loading publications...</div>
         </div>
       </div>
     );
-  }
-  if (error) {
+  }  if (error) {
     return (
       <div className="min-h-screen flex flex-col">
-        <Navbar />
+        <ConditionalNavbar />
         <div className="flex-grow flex items-center justify-center">
           <div className="text-xl text-red-600">Error: {error}</div>
         </div>
       </div>
     );
   }
-
   return (
     <div className="min-h-screen flex flex-col">
-      <Navbar />
+      <ConditionalNavbar />
 
       <main className="flex-grow container mx-auto px-4 py-8 bg-gray-50">
         <h1 className="text-3xl font-bold text-gray-800 mb-8">Publications Dashboard</h1>

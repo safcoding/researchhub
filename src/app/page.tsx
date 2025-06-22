@@ -2,13 +2,12 @@ import Image from 'next/image';
 import Link from 'next/link';
 
 import React from 'react';
-import Navbar from '@/components/navbar';
+import ConditionalNavbar from '@/components/navbar/conditional-navbar';
 import Footer from '@/components/Footer';
 
-const HomePage = () => {
-  return (
+const HomePage = () => {  return (
     <div>
-      <Navbar /> {/* Make sure this is the first element */}
+      <ConditionalNavbar /> {/* Make sure this is the first element */}
 
       {/* Achievements */}
       <section className="py-12 bg-gray-50">
