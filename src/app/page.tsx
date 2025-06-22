@@ -1,15 +1,14 @@
 import Image from 'next/image';
 import Link from 'next/link';
-
 import React from 'react';
-import ConditionalNavbar from '@/components/navbar/conditional-navbar';
+import ConditionalNavbar from '@/components/admin-sidebar/conditional-navbar';
+import Navbar from '@/components/navbar';
 import Footer from '@/components/Footer';
 
-const HomePage = () => {  return (
-    <div>
-      <ConditionalNavbar /> {/* Make sure this is the first element */}
-
-      {/* Achievements */}
+const HomePage = () => { 
+  return (
+      <ConditionalNavbar> 
+      <Navbar />
       <section className="py-12 bg-gray-50">
         <div className="container mx-auto px-4">
           <h2 className="text-3xl font-bold mb-8 text-center">Our Achievements</h2>
@@ -152,9 +151,8 @@ const HomePage = () => {  return (
         </div>
       </section>
 
-      {/* Footer */}
       <Footer />
-    </div>
+    </ConditionalNavbar>
   );
 };
 

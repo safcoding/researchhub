@@ -1,9 +1,11 @@
 'use client';
 import React, { useState, useEffect } from 'react';
-import ConditionalNavbar from '@/components/navbar/conditional-navbar';
+import ConditionalNavbar from '@/components/admin-sidebar/conditional-navbar';
+import Navbar from '@/components/navbar';
 import { useRouter } from 'next/navigation';
 import { type Lab } from '@/hooks/lab-logic';
 import { createClient } from '@/utils/supabase/client';
+import Footer from '@/components/Footer';
 
 const OurLabs = () => {
   const [selectedLabType, setSelectedLabType] = useState<string>('');  const [labs, setLabs] = useState<Lab[]>([]);
@@ -204,8 +206,8 @@ const OurLabs = () => {
     );
   }
   return (
-    <>
-      <ConditionalNavbar />
+      <ConditionalNavbar >
+      <Navbar />
       <div className="flex min-h-screen">        {/* Sidebar Navigation */}
         <div className="w-80 bg-gray-100 p-4 border-r border-gray-200">
           <h2 className="text-lg font-bold mb-4">MJIIT Labs</h2>
@@ -607,7 +609,8 @@ const OurLabs = () => {
           </div>
         </div>
       )}
-    </>
+      <Footer />
+    </ConditionalNavbar>
   );
 };
 

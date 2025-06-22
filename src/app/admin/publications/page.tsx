@@ -1,8 +1,16 @@
 'use client';
 
 import React, { useState } from 'react';
-import AdminNavbar from '@/components/navbar/admin-navbar';
 import { PublicationLogic, type Publication } from '@/hooks/publication-logic';
+
+import { AdminSidebar } from "@/components/admin-sidebar/admin-sidebar"
+import { Separator } from "@/components/ui/separator"
+import {
+  SidebarInset,
+  SidebarProvider,
+  SidebarTrigger,
+} from "@/components/ui/sidebar"
+
 
 const PublicationsUpload: React.FC = () => {
   const { publications, loading, error, addPublication, updatePublication, deletePublication } = PublicationLogic();
@@ -105,19 +113,33 @@ const PublicationsUpload: React.FC = () => {
     }
   };
 
-  if (loading) return <div className="min-h-screen bg-gray-50"><AdminNavbar /><div className="container mx-auto px-4 py-8 flex justify-center"><div className="text-xl">Loading...</div></div></div>;
-  if (error) return <div className="min-h-screen bg-gray-50"><AdminNavbar /><div className="container mx-auto px-4 py-8"><div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">Error: {error}</div></div></div>;
 
-  return (
+ return (
+      <SidebarProvider
+      style={
+        {
+          "--sidebar-width": "19rem",
+        } as React.CSSProperties
+      }
+    >
+      <AdminSidebar />
+      <SidebarInset>
+        <header className="flex h-16 shrink-0 items-center gap-2 px-4">
+          <SidebarTrigger className="-ml-1" />
+          <Separator
+            orientation="vertical"
+            className="mr-2 data-[orientation=vertical]:h-4"
+          />
+        </header>
+
     <div className="min-h-screen bg-gray-50">
-      <AdminNavbar />
       <div className="container mx-auto px-4 py-8">
         <form onSubmit={handleSubmit} className="bg-white p-6 rounded-lg shadow-md mb-8">
           <h1 className="text-2xl font-bold text-gray-800 mb-6">
             {editingId ? 'Edit Publication' : 'Add New Publication'}
           </h1>
           
-          {/* ========== Section: Basic Info ========== */}
+
 <div className="mb-8">
   <h2 className="text-lg font-semibold text-gray-800 mb-4 border-b pb-1">Basic Info</h2>
   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -347,6 +369,8 @@ const PublicationsUpload: React.FC = () => {
         </div>
       </div>
     </div>
+      </SidebarInset>
+    </SidebarProvider>
   );
 };
 

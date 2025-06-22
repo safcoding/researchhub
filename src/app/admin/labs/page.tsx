@@ -3,8 +3,16 @@
 import { LabLogic, type Lab } from '@/hooks/lab-logic';
 import { LabTable } from '@/components/admin-components/lab-table';
 import { LabModal } from '@/components/admin-components/lab-form';
-import AdminNavbar from '@/components/navbar/admin-navbar';
 import { useState } from 'react';
+
+import { AdminSidebar } from "@/components/admin-sidebar/admin-sidebar"
+import { Separator } from "@/components/ui/separator"
+import {
+  SidebarInset,
+  SidebarProvider,
+  SidebarTrigger,
+} from "@/components/ui/sidebar"
+
 
 export default function LabsPage() {
     const { labs, loading, error, addLab, updateLab, deleteLab } = LabLogic();    
@@ -82,8 +90,23 @@ export default function LabsPage() {
     };
 
     return (
-        <>
-            <AdminNavbar />
+        <SidebarProvider
+        style={
+            {
+            "--sidebar-width": "19rem",
+            } as React.CSSProperties
+        }
+        >
+        <AdminSidebar />
+        <SidebarInset>
+            <header className="flex h-16 shrink-0 items-center gap-2 px-4">
+            <SidebarTrigger className="-ml-1" />
+            <Separator
+                orientation="vertical"
+                className="mr-2 data-[orientation=vertical]:h-4"
+            />
+            </header>
+
             <div className="container mx-auto p-4">
                 <div className="flex justify-between items-center mb-4">
                     <h1 className="text-2xl font-bold">Laboratory Database</h1>
@@ -230,6 +253,7 @@ export default function LabsPage() {
                 )}                
             
             </div>
-        </>
+      </SidebarInset>
+    </SidebarProvider>
     );
 }

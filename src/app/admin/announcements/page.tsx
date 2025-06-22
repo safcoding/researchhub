@@ -1,9 +1,16 @@
 'use client';
 
 import { useState } from 'react';
-import AdminNavbar from '@/components/navbar/admin-navbar';
 import { EventLogic, type Event } from '@/hooks/event-logic';
 import { EventModal, DeleteConfirmationModal } from '@/components/admin-components/event-form';
+
+import { AdminSidebar } from "@/components/admin-sidebar/admin-sidebar"
+import { Separator } from "@/components/ui/separator"
+import {
+  SidebarInset,
+  SidebarProvider,
+  SidebarTrigger,
+} from "@/components/ui/sidebar"
 
 export default function AnnouncementCRUDPage() {
   const { events, loading, error, addEvent, updateEvent, deleteEvent } = EventLogic();
@@ -153,20 +160,26 @@ export default function AnnouncementCRUDPage() {
     { value: '11', label: 'December' }
   ];
 
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-gray-50">
-        <AdminNavbar />
-        <div className="container mx-auto px-4 py-8">
-          <div className="text-center py-8">Loading...</div>
-        </div>
-      </div>
-    );
-  }
 
   return (
+      <SidebarProvider
+      style={
+        {
+          "--sidebar-width": "19rem",
+        } as React.CSSProperties
+      }
+    >
+      <AdminSidebar />
+      <SidebarInset>
+        <header className="flex h-16 shrink-0 items-center gap-2 px-4">
+          <SidebarTrigger className="-ml-1" />
+          <Separator
+            orientation="vertical"
+            className="mr-2 data-[orientation=vertical]:h-4"
+          />
+        </header>
+
     <div className="min-h-screen bg-gray-50">
-      <AdminNavbar />
       <div className="container mx-auto px-4 py-8">
         <div className="flex justify-between items-center mb-6">
           <h1 className="text-3xl font-bold text-gray-800">Admin: Manage Announcements</h1>
@@ -424,5 +437,8 @@ export default function AnnouncementCRUDPage() {
         />
       )}
     </div>
+      </SidebarInset>
+    </SidebarProvider>
+
   );
 }
