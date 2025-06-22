@@ -3,10 +3,12 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import ConditionalNavbar from '@/components/navbar/conditional-navbar';
 import { EventLogic, type Event } from '@/hooks/event-logic';
 import { EventModal, DeleteConfirmationModal } from '@/components/admin-components/event-form';
+
+import ConditionalNavbar from '@/components/admin-sidebar/conditional-navbar';
 import Footer from '@/components/Footer';
+import Navbar from '@/components/navbar';
 
 export default function AnnouncementsPage() {
   const { events, loading, error, addEvent, updateEvent, deleteEvent } = EventLogic();
@@ -158,9 +160,10 @@ export default function AnnouncementsPage() {
       </div>
     );
   }
+
   return (
-    <div>
-      <ConditionalNavbar />
+    <ConditionalNavbar>
+      <Navbar />
         <main className="container mx-auto px-4 py-12">
         <div className="max-w-6xl mx-auto">          {/* Header */}
           <div className="flex justify-between items-center mb-8">
@@ -422,9 +425,7 @@ export default function AnnouncementsPage() {
           onConfirm={handleConfirmDelete}
         />
       )}
-      
-      {/* Footer */}
-      <Footer />
-    </div>
+    <Footer />
+    </ConditionalNavbar>
   );
 }

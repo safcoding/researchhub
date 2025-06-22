@@ -1,13 +1,15 @@
 import React from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import ConditionalNavbar from '@/components/navbar/conditional-navbar';
+import ConditionalNavbar from '@/components/admin-sidebar/conditional-navbar';
+import Navbar from '@/components/navbar';
 import Footer from '@/components/Footer';
 
-export default function AboutPage() {  return (
-    <div>
-      <ConditionalNavbar /> {/* Make sure this is the first element */}
-
+export default function AboutPage() {  
+  
+  return (
+      <ConditionalNavbar>
+      <Navbar /> 
       <main className="container mx-auto px-4 py-12">
         <div className="max-w-4xl mx-auto">
           <h1 className="text-4xl font-bold mb-8 text-center">About the MJIIT Research Portal</h1>
@@ -74,9 +76,7 @@ export default function AboutPage() {  return (
         </div>
       </main>
       
-      {/* Footer */}
-
       <Footer />
-    </div>
+    </ConditionalNavbar>
   );
 }

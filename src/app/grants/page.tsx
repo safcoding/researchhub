@@ -3,9 +3,10 @@ import Link from 'next/link';
 import StatsCard from './statcards';
 import GrantsPie from './gantchart1';
 import LineChart from './linechart';
-import ConditionalNavbar from '@/components/navbar/conditional-navbar'; // ✅ Changed
+import ConditionalNavbar from '@/components/admin-sidebar/conditional-navbar'; 
 import Footer from '@/components/Footer';
 import { GrantLogic } from '@/hooks/grant-logic';
+import Navbar from '@/components/navbar';
 
 export default function GrantsDashboard() {
   const { 
@@ -49,9 +50,11 @@ export default function GrantsDashboard() {
   const sponsorData = getSponsorCategoryData();
   const timelineData = getTimelineData();
   const totalAmount = getTotalApprovedAmount();
+
+
   return (
-    <div className="min-h-screen flex flex-col">
-    <ConditionalNavbar />
+    <ConditionalNavbar>
+      <Navbar />
       <main className="flex-grow container mx-auto px-4 py-8 bg-gray-50">
         <div className="flex justify-between items-center mb-8">
           <h1 className="text-3xl font-bold text-gray-800">Grants Dashboard</h1>
@@ -109,8 +112,7 @@ export default function GrantsDashboard() {
         </div>
       </main>
 
-      {/* Shared Footer Component */}
-      <Footer />
-    </div>
+    </ConditionalNavbar>
+
   );
 }

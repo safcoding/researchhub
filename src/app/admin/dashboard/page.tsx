@@ -1,16 +1,34 @@
-// app/admin/dashboard/page.
+
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Button } from '@/components/ui/button'
 import Link from 'next/link'
-import AdminNavbar from '@/components/navbar/admin-navbar';
+import { AdminSidebar } from "@/components/admin-sidebar/admin-sidebar"
+import { Separator } from "@/components/ui/separator"
+import {
+  SidebarInset,
+  SidebarProvider,
+  SidebarTrigger,
+} from "@/components/ui/sidebar"
 
-export default function AdminDashboard() {
 
-
+export default function Page() {
   return (
-      <>
-      <AdminNavbar />
-      <div className="min-h-screen bg-gray-50">
+    <SidebarProvider
+      style={
+        {
+          "--sidebar-width": "19rem",
+        } as React.CSSProperties
+      }
+    >
+      <AdminSidebar />
+      <SidebarInset>
+        <header className="flex h-16 shrink-0 items-center gap-2 px-4">
+          <SidebarTrigger className="-ml-1" />
+          <Separator
+            orientation="vertical"
+            className="mr-2 data-[orientation=vertical]:h-4"
+          />
+        </header>
+        <div className="min-h-screen bg-gray-50">
         <div className="max-w-7xl mx-auto px-4 py-8">
           <div className="mb-8">
             <h1 className="text-3xl font-bold text-gray-900">Admin Dashboard</h1>
@@ -75,6 +93,8 @@ export default function AdminDashboard() {
           </div>
         </div>
       </div>
-    </>   
+
+      </SidebarInset>
+    </SidebarProvider>
   )
 }

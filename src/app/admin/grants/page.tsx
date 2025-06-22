@@ -4,8 +4,16 @@ import type { Grant } from '@/hooks/grant-logic';
 import { GrantLogic } from '@/hooks/grant-logic';
 import { GrantTable } from '@/components/admin-components/grant-table';
 import { GrantModal } from '@/components/admin-components/grant-form';
-import AdminNavbar from '@/components/navbar/admin-navbar';
 import { useState } from 'react';
+
+import { AdminSidebar } from "@/components/admin-sidebar/admin-sidebar"
+import { Separator } from "@/components/ui/separator"
+import {
+  SidebarInset,
+  SidebarProvider,
+  SidebarTrigger,
+} from "@/components/ui/sidebar"
+
 
 export default function GrantDBPage() {
     const { grants, loading, error, addGrant, updateGrant, deleteGrant } = GrantLogic();    
@@ -88,9 +96,24 @@ const getAvailableYears = () => {
     return Array.from(years).sort((a, b) => parseInt(b) - parseInt(a)); // Sort descending
 };
 
-    return (
-        <>
-            <AdminNavbar />
+ return (
+      <SidebarProvider
+      style={
+        {
+          "--sidebar-width": "19rem",
+        } as React.CSSProperties
+      }
+    >
+      <AdminSidebar />
+      <SidebarInset>
+        <header className="flex h-16 shrink-0 items-center gap-2 px-4">
+          <SidebarTrigger className="-ml-1" />
+          <Separator
+            orientation="vertical"
+            className="mr-2 data-[orientation=vertical]:h-4"
+          />
+        </header>
+
             <div className="container mx-auto p-4">
                 <div className="flex justify-between items-center mb-4">
                     <h1 className="text-2xl font-bold">Grants Database</h1>
@@ -180,6 +203,7 @@ const getAvailableYears = () => {
                     />
                 )}                
             </div>
-        </>
+      </SidebarInset>
+    </SidebarProvider>
     );
 }
