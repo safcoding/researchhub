@@ -1,8 +1,11 @@
+// src/components/navbar.tsx
+'use client'
 import Link from 'next/link';
 import Image from 'next/image';
 import React from 'react';
 
 const Navbar = () => {
+
   return (
     <div>
       {/* Top Navigation */}
@@ -19,10 +22,10 @@ const Navbar = () => {
             ResearchHub
           </Link>
         </div>
-        <div className="flex gap-8">
+        <div className="flex gap-8 items-center">
           <a href="https://www.utm.my/" target="_blank" rel="noopener noreferrer" className="text-gray-700 hover:text-gray-900">UTM</a>
           <a href="https://mjiit.utm.my/" target="_blank" rel="noopener noreferrer" className="text-gray-700 hover:text-gray-900">UTM MJIIT</a>
-          <Link href="/login" className="text-gray-700 hover:text-gray-900">Login</Link>
+          <Link href="/admin/login" className="text-lg font-bold hover:text-gray-700">Login</Link>
         </div>
       </nav>
 
@@ -33,45 +36,9 @@ const Navbar = () => {
             <nav className="flex space-x-6">
               <Link href="/" className="hover:underline">Home</Link>
               <Link href="/about" className="hover:underline">About</Link>
-              
-              {/* Grants dropdown with hover functionality */}
-              <div className="relative group">
-                <div className="flex items-center hover:underline cursor-pointer">
-                  <Link href="/grant" className="hover:no-underline">Grant</Link>
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                  </svg>
-                </div>
-                <div className="absolute left-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 text-gray-700 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 z-10">
-                  <Link href="/grant" className="block px-4 py-2 hover:bg-gray-100 text-sm">
-                    View Grants
-                  </Link>
-                  <Link href="/grant-db" className="block px-4 py-2 hover:bg-gray-100 text-sm">
-                    Add Grant
-                  </Link>
-                </div>
-              </div>
-              
-              <Link href="/publications" className="hover:underline">Publication</Link>
-              
-              {/* Labs dropdown with hover functionality */}
-              <div className="relative group">
-                <div className="flex items-center hover:underline cursor-pointer">
-                  <Link href="/labs" className="hover:no-underline">Lab</Link>
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                  </svg>
-                </div>
-                <div className="absolute left-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 text-gray-700 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 z-10">
-                  <Link href="/labs/overview" className="block px-4 py-2 hover:bg-gray-100 text-sm">
-                    Lab Overview
-                  </Link>
-                  <Link href="/labs" className="block px-4 py-2 hover:bg-gray-100 text-sm">
-                    Add Lab
-                  </Link>
-                </div>
-              </div>
-              
+              <Link href="/grants" className="hover:underline">Grants</Link>
+              <Link href="/publications" className="hover:underline">Publications</Link>
+              <Link href="/labs" className="hover:underline">Labs</Link>
               <Link href="/announcements" className="hover:underline">Announcements</Link>
             </nav>
           </div>
