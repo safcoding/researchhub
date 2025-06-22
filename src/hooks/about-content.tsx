@@ -22,18 +22,18 @@ const defaultContent: AboutContent = {
   closing_statement: 'Together, let\'s advance innovation and excellence in research at MJIIT.'
 };
 
-export function useAboutContent() {
-  const [aboutContent, setAboutContent] = useState<AboutContent>(defaultContent);
+export function useAboutContent() {  const [aboutContent, setAboutContent] = useState<AboutContent>(defaultContent);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);  const fetchAboutContent = async () => {
+  const [error, setError] = useState<string | null>(null);
+
+  const fetchAboutContent = async () => {
     try {
       setLoading(true);
       setError(null);
       
       console.log('Fetching about content from database...');
       const supabase = createClient();
-      
-      // Try to get all records first, then pick the first one
+        // Try to get all records first, then pick the first one
       const { data, error: fetchError } = await supabase
         .from('about_content')
         .select('*')
@@ -43,7 +43,7 @@ export function useAboutContent() {
 
       if (!fetchError && data && data.length > 0) {
         console.log('Setting content from database:', data[0]);
-        setAboutContent(data[0]);
+        setAboutContent(data[0] as AboutContent);
       } else {
         console.log('Using default content, error or no data:', fetchError);
         setAboutContent(defaultContent);
@@ -51,23 +51,23 @@ export function useAboutContent() {
     } catch (err) {
       console.error('Error fetching about content:', err);
       setError('Failed to load content');
-      setAboutContent(defaultContent);
-    } finally {
+      setAboutContent(defaultContent);    } finally {
       setLoading(false);
     }
-  };  const updateAboutContent = async (newContent: Partial<AboutContent>) => {
+  };
+
+  const updateAboutContent = async (newContent: Partial<AboutContent>) => {
     try {
       setError(null);
       console.log('Updating about content:', newContent);
       
       const supabase = createClient();
-      
-      const updatedContent = {
+        const updatedContent = {
         id: 1, // Always use ID 1 for the about content
         ...aboutContent,
         ...newContent,
         updated_at: new Date().toISOString(),
-        created_at: aboutContent.created_at || new Date().toISOString()
+        created_at: aboutContent.created_at ?? new Date().toISOString()
       };
 
       console.log('Final content to save:', updatedContent);
@@ -78,14 +78,12 @@ export function useAboutContent() {
         .upsert([updatedContent])
         .select();
 
-      console.log('Upsert result:', { upsertError, upsertData });
-
-      if (upsertError) {
+      console.log('Upsert result:', { upsertError, upsertData });      if (upsertError) {
         throw upsertError;
       }
       
-      if (upsertData && upsertData[0]) {
-        setAboutContent(upsertData[0]);
+      if (upsertData?.[0]) {
+        setAboutContent(upsertData[0] as AboutContent);
         console.log('Content updated successfully in state');
       }
 
