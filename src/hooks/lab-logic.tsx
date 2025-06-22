@@ -1,34 +1,47 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { supabase } from '@/lib/db-connect';
+import { createClient } from '@/utils/supabase/client';
 
 export type Lab = {
     LABID: string;
     LAB_NAME: string;
     LAB_HEAD: string;
     LAB_HEAD_EMAIL: string;
-    DEPARTMENT: string;
-    RESEARCH_AREA: string;
+    RESEARCH_AREA?: string;
     LAB_DESCRIPTION: string;
     LOCATION: string;
     LAB_STATUS: string;
     LAB_TYPE: string;
     CONTACT_PHONE: string;
+    EQUIPMENT_LIST?: string;
 }
 
 export function LabLogic() {
     const [labs, setLabs] = useState<Lab[]>([]);
     const [loading, setLoading] = useState(false);
-    const [error, setError] = useState<string | null>(null);
-
-    const fetchLabs = async () => {
+    const [error, setError] = useState<string | null>(null);    const fetchLabs = async () => {
         try {
             setLoading(true);
             setError(null);
             console.log('Fetching labs from database...');
             
-            const { data, error } = await supabase.from('labs').select('*');
+            const supabase = createClient();
+            const { data, error } = await supabase
+                .from('labs')
+                .select(`
+                    LABID,
+                    LAB_NAME,
+                    LAB_HEAD,
+                    LAB_HEAD_EMAIL,
+                    RESEARCH_AREA,
+                    LAB_DESCRIPTION,
+                    LOCATION,
+                    LAB_STATUS,
+                    LAB_TYPE,
+                    CONTACT_PHONE,
+                    EQUIPMENT_LIST
+                `);
             
             if (error) {
                 console.error('Error fetching labs:', error);
@@ -56,9 +69,9 @@ export function LabLogic() {
                 // Generate a unique LABID based on timestamp and random string
                 const timestamp = Date.now().toString(36);
                 const randomStr = Math.random().toString(36).substring(2, 8);
-                labToInsert.LABID = `LAB_${timestamp}_${randomStr}`.toUpperCase();
-            }
+                labToInsert.LABID = `LAB_${timestamp}_${randomStr}`.toUpperCase();            }
             
+            const supabase = createClient();
             const { data, error } = await supabase.from('labs').insert([labToInsert]).select().single();
             
             if (error) {
@@ -82,13 +95,13 @@ export function LabLogic() {
         try {
             setLoading(true);
             console.log(`Adding ${newLabs.length} labs in bulk with file path: ${filePath}`);
-            
-            // Add file_path to each lab
+              // Add file_path to each lab
             const labsWithFilePath = newLabs.map(lab => ({
                 ...lab,
                 file_path: filePath
             }));
             
+            const supabase = createClient();
             const { data, error } = await supabase.from('labs').insert(labsWithFilePath).select();
             
             if (error) {
@@ -108,11 +121,11 @@ export function LabLogic() {
         }
     };
 
-    const updateLab = async (labId: string, updatedLab: Partial<Lab>) => {
-        try {
+    const updateLab = async (labId: string, updatedLab: Partial<Lab>) => {        try {
             setLoading(true);
             console.log(`Updating lab ${labId}:`, updatedLab);
-              const { data, error } = await supabase
+            const supabase = createClient();
+            const { data, error } = await supabase
                 .from('labs')
                 .update(updatedLab)
                 .eq('LABID', labId)
@@ -138,11 +151,11 @@ export function LabLogic() {
         }
     };
 
-    const deleteLab = async (labId: string) => {
-        try {
+    const deleteLab = async (labId: string) => {        try {
             setLoading(true);
             console.log(`Deleting lab ${labId}`);
             
+            const supabase = createClient();
             const { error } = await supabase.from('labs').delete().eq('LABID', labId);
             
             if (error) {
@@ -164,6 +177,7 @@ export function LabLogic() {
 useEffect(() => {
     const fetchLabs = async () => {
       try {
+        const supabase = createClient();
         const { data, error } = await supabase
           .from('labs')
           .select(`
@@ -171,13 +185,12 @@ useEffect(() => {
             LAB_NAME,
             LAB_HEAD,
             LAB_HEAD_EMAIL,
-            DEPARTMENT,
             RESEARCH_AREA,
             LAB_DESCRIPTION,
             LOCATION,
             LAB_STATUS,
             LAB_TYPE,
-            CONTACT_PHONE
+            CONTACT_PHONE,            EQUIPMENT_LIST
           `)
           .order('LAB_NAME');
         

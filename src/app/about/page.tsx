@@ -1,6 +1,7 @@
 import React from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
+import ConditionalNavbar from '@/components/admin-sidebar/conditional-navbar';
 import Navbar from '@/components/navbar';
 
 import organizationChartImage from '@/images/organizationchart.png'; //added image
@@ -11,11 +12,11 @@ import DeputyDean from '@/images/deputydean.png'; //added image
 
 
 
-export default function AboutPage() {
+export default function AboutPage() {  
+  
   return (
-    <div>
-      <Navbar /> {/* Make sure this is the first element */}
-
+      <ConditionalNavbar>
+      <Navbar /> 
       <main className="container mx-auto px-4 py-12">
         <div className="max-w-4xl mx-auto">
           <h1 className="text-4xl font-bold mb-8 text-center">About the MJIIT Research Portal</h1>
@@ -162,46 +163,7 @@ export default function AboutPage() {
         </div>
       </main>
       
-      {/* Footer */}
-      <footer className="bg-gray-900 text-white py-10">
-        <div className="container mx-auto px-4">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-            <div>
-              <h3 className="text-xl font-bold mb-4">Research Hub</h3>
-              <p className="text-gray-400">Advancing knowledge through innovation and collaboration</p>
-            </div>
-            <div>
-              <h4 className="text-lg font-semibold mb-4">Quick Links</h4>
-              <ul className="space-y-2">
-                <li><Link href="/about" className="text-gray-400 hover:text-white">About Us</Link></li>
-                <li><Link href="/programs" className="text-gray-400 hover:text-white">Programs</Link></li>
-                <li><Link href="/research" className="text-gray-400 hover:text-white">Research</Link></li>
-              </ul>
-            </div>
-            <div>
-              <h4 className="text-lg font-semibold mb-4">Resources</h4>
-              <ul className="space-y-2">
-                <li><Link href="/library" className="text-gray-400 hover:text-white">Library</Link></li>
-                <li><Link href="/career" className="text-gray-400 hover:text-white">Career Services</Link></li>
-                <li><Link href="/student-life" className="text-gray-400 hover:text-white">Student Life</Link></li>
-              </ul>
-            </div>
-            <div>
-              <h4 className="text-lg font-semibold mb-4">Contact Us</h4>
-              <address className="not-italic text-gray-400">
-                <p>Jalan Yahya Petra</p>
-                <p>Kuala Lumpur, 54100</p>
-                <p>Malaysia</p>
-                <p>Email: info@researchhub.edu</p>
-                <p>Phone: +60 118200203</p>
-              </address>
-            </div>
-          </div>
-          <div className="border-t border-gray-800 mt-8 pt-6 text-center text-gray-400">
-            <p>&copy; {new Date().getFullYear()} Research Hub. All rights reserved.</p>
-          </div>
-        </div>
-      </footer>
-    </div>
+      <Footer />
+    </ConditionalNavbar>
   );
 }

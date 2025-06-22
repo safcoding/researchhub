@@ -2,7 +2,9 @@
 
 import React, { useState, useMemo } from 'react';
 import Link from 'next/link';
+import ConditionalNavbar from '@/components/admin-sidebar/conditional-navbar';
 import Navbar from '@/components/navbar';
+import Footer from '@/components/footer';
 import { PublicationLogic } from '@/hooks/publication-logic';
 import { PublicationPieChart } from '@/components/pub-piechart';
 // Importing the Pie chart component for publication types
@@ -25,20 +27,20 @@ const PublicationsDashboard: React.FC = () => {
   const [selectedChartYear, setSelectedChartYear] = useState(new Date().getFullYear().toString());
 
   // Calculate monthly data from actual publications
-const monthlyData = useMemo(() => {
-  const months = new Array(12).fill(0);
-  if (!publications) return months;
-  
-  publications
-    .filter(pub => pub.date && new Date(pub.date).getFullYear().toString() === selectedChartYear)
-    .forEach(pub => {
-      const month = new Date(pub.date).getMonth();
-      if (month >= 0 && month < 12) {
-        months[month]++;
-      }
-    });
-  return months;
-}, [publications, selectedChartYear]);
+  const monthlyData = useMemo(() => {
+    const months = new Array(12).fill(0);
+    if (!publications) return months;
+    
+    publications
+      .filter(pub => pub.date && new Date(pub.date).getFullYear().toString() === selectedChartYear)
+      .forEach(pub => {
+        const month = new Date(pub.date).getMonth();
+        if (month >= 0 && month < 12) {
+          months[month]++;
+        }
+      });
+    return months;
+  }, [publications, selectedChartYear]);
 
   const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
   const chartData = months.map((month, index) => ({ 
@@ -59,19 +61,13 @@ const monthlyData = useMemo(() => {
       const matchesYear = filterYear === '' || 
         new Date(pub.date).getFullYear().toString() === filterYear;
       
-      //const matchesType = filterType === '' || 
-       // pub.type.toLowerCase() === filterType.toLowerCase();
-
-       // Updated to include more types
       const matchesType = filterType === '' || 
-      filterType === 'All Types' || 
-      pub.type.toLowerCase() === filterType.toLowerCase();
-
+        filterType === 'All Types' || 
+        pub.type.toLowerCase() === filterType.toLowerCase();
       
       return matchesSearch && matchesCategory && matchesYear && matchesType;
     });
   }, [publications, searchText, filterCategory, filterYear, filterType]);
-
 
   // Calculate statistics
   const currentYear = new Date().getFullYear().toString();
@@ -95,34 +91,31 @@ const monthlyData = useMemo(() => {
     ));
     return Array.from(years).sort().reverse();
   }, [publications]);
-
+  
   if (loading) {
     return (
-      <div className="min-h-screen flex flex-col">
-        <Navbar />
-        <div className="flex-grow flex items-center justify-center">
+      <ConditionalNavbar>
+        <div className="flex items-center justify-center min-h-screen">
           <div className="text-xl">Loading publications...</div>
         </div>
-      </div>
+      </ConditionalNavbar>
     );
   }
 
   if (error) {
     return (
-      <div className="min-h-screen flex flex-col">
-        <Navbar />
-        <div className="flex-grow flex items-center justify-center">
+      <ConditionalNavbar>
+        <div className="flex items-center justify-center min-h-screen">
           <div className="text-xl text-red-600">Error: {error}</div>
         </div>
-      </div>
+      </ConditionalNavbar>
     );
   }
 
   return (
-    <div className="min-h-screen flex flex-col">
+    <ConditionalNavbar>
       <Navbar />
-
-      <main className="flex-grow container mx-auto px-4 py-8 bg-gray-50">
+      <main className="container mx-auto px-4 py-8 bg-gray-50 min-h-screen">
         <h1 className="text-3xl font-bold text-gray-800 mb-8">Publications Dashboard</h1>
 
         {/* Statistics Row Above Charts */}
@@ -190,32 +183,8 @@ const monthlyData = useMemo(() => {
                   {filteredPublications.length}
                 </span>
               </h3>
-
-            {/* Add Publication Button */}
-            {/*
-              <Link 
-                href="/publication-add"
-                className="ml-4 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded text-sm flex items-center transition-colors"
-              >
-
-                <svg 
-                  xmlns="http://www.w3.org/2000/svg" 
-                  className="h-4 w-4 mr-2" 
-                  fill="none" 
-                  viewBox="0 0 24 24" 
-                  stroke="currentColor"
-                >
-                  <path 
-                    strokeLinecap="round" 
-                    strokeLinejoin="round" 
-                    strokeWidth={2} 
-                    d="M12 4v16m8-8H4" 
-                  />
-                </svg>
-                Add Publication
-              </Link>*/}
             </div>
-            
+
             <div className="flex gap-2">
               <select 
                 value={filterCategory} 
@@ -238,12 +207,12 @@ const monthlyData = useMemo(() => {
                   <option key={year} value={year}>{year}</option>
                 ))}
               </select>
+
               <select 
                 value={filterType} 
                 onChange={(e) => setFilterType(e.target.value)} 
                 className="border px-3 py-2 rounded text-sm"
               >
-                 {/* Changed this to include more options */}
                 <option value="All Types">All Types</option>
                 <option value="Book Chapter">Book Chapter</option>
                 <option value="Research Book">Research Book</option>
@@ -252,6 +221,7 @@ const monthlyData = useMemo(() => {
                 <option value="Conference/Proceeding">Conference/Proceeding</option>
                 <option value="Others">Others</option>
               </select>
+
               <input
                 type="text"
                 placeholder="Search titles or authors..."
@@ -261,89 +231,50 @@ const monthlyData = useMemo(() => {
               />
             </div>
           </div>
+
           <div className="overflow-auto max-h-96">
             <table className="w-full text-sm">
-  <thead className="bg-gray-100 sticky top-0">
-    <tr>
-      <th className="text-left px-4 py-2">Ref No</th>
-      <th className="text-left px-4 py-2">Title</th>
-      <th className="text-left px-4 py-2">Author</th>{/*added author*/}
-      <th className="text-left px-4 py-2">Journal</th>
-      <th className="text-left px-4 py-2">Type</th>
-      <th className="text-left px-4 py-2">Category</th>
-      <th className="text-left px-4 py-2">Impact</th>
-      <th className="text-left px-4 py-2">Date</th>
-    </tr>
-  </thead>
-  <tbody>
-    {filteredPublications.length > 0 ? (
-      filteredPublications.map(pub => (
-        <tr key={pub.id} className="border-b hover:bg-gray-50">
-          <td className="px-4 py-2">{pub.pub_refno}</td>
-          <td className="px-4 py-2">{pub.title}</td>
-          <td className="px-4 py-2">{pub.author_name}</td>
-          <td className="px-4 py-2">{pub.journal}</td>
-          <td className="px-4 py-2">{pub.type}</td>
-          <td className="px-4 py-2">{pub.category}</td>
-          <td className="px-4 py-2">{pub.impact}</td>
-          <td className="px-4 py-2">{new Date(pub.date).toLocaleDateString()}</td>
-        </tr>
-      ))
-    ) : (
-      <tr>
-        <td colSpan={8} className="px-4 py-4 text-center text-gray-500">
-          No publications found matching your criteria
-        </td>
-      </tr>
-    )}
-
-  </tbody>
-</table>
-
+              <thead className="bg-gray-100 sticky top-0">
+                <tr>
+                  <th className="text-left px-4 py-2">Ref No</th>
+                  <th className="text-left px-4 py-2">Title</th>
+                  <th className="text-left px-4 py-2">Author</th>
+                  <th className="text-left px-4 py-2">Journal</th>
+                  <th className="text-left px-4 py-2">Type</th>
+                  <th className="text-left px-4 py-2">Category</th>
+                  <th className="text-left px-4 py-2">Impact</th>
+                  <th className="text-left px-4 py-2">Date</th>
+                </tr>
+              </thead>
+              <tbody>
+                {filteredPublications.length > 0 ? (
+                  filteredPublications.map(pub => (
+                    <tr key={pub.id} className="border-b hover:bg-gray-50">
+                      <td className="px-4 py-2">{pub.pub_refno}</td>
+                      <td className="px-4 py-2">{pub.title}</td>
+                      <td className="px-4 py-2">{pub.author_name}</td>
+                      <td className="px-4 py-2">{pub.journal}</td>
+                      <td className="px-4 py-2">{pub.type}</td>
+                      <td className="px-4 py-2">{pub.category}</td>
+                      <td className="px-4 py-2">{pub.impact}</td>
+                      <td className="px-4 py-2">{new Date(pub.date).toLocaleDateString()}</td>
+                    </tr>
+                  ))
+                ) : (
+                  <tr>
+                    <td colSpan={8} className="px-4 py-4 text-center text-gray-500">
+                      No publications found matching your criteria
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
           </div>
         </div>
       </main>
 
-      <footer className="bg-gray-900 text-white py-8">
-        <div className="container mx-auto px-4">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-            <div>
-              <h3 className="text-xl font-bold mb-4">Research Hub</h3>
-              <p className="text-gray-400">Advancing knowledge through innovation</p>
-            </div>
-            <div>
-              <h4 className="text-lg font-semibold mb-4">Quick Links</h4>
-              <ul className="space-y-2">
-                <li><Link href="/about" className="text-gray-400 hover:text-white">About</Link></li>
-                <li><Link href="/labs" className="text-gray-400 hover:text-white">Our Labs</Link></li>
-                <li><Link href="/research" className="text-gray-400 hover:text-white">Research</Link></li>
-              </ul>
-            </div>
-            <div>
-              <h4 className="text-lg font-semibold mb-4">Resources</h4>
-              <ul className="space-y-2">
-                <li><Link href="/grants" className="text-gray-400 hover:text-white">Grants</Link></li>
-                <li><Link href="/publications" className="text-gray-400 hover:text-white">Publications</Link></li>
-                <li><Link href="/announcements" className="text-gray-400 hover:text-white">Announcements</Link></li>
-              </ul>
-            </div>
-            <div>
-              <h4 className="text-lg font-semibold mb-4">Contact</h4>
-              <address className="not-italic text-gray-400">
-                <p>Jalan Yahya Petra</p>
-                <p>Kuala Lumpur, 54100</p>
-                <p>Malaysia</p>
-                <p>research@utm.my</p>
-                <p>+60 3-2203-1200</p>
-              </address>
-            </div>
-          </div>
-          <div className="border-t border-gray-800 mt-8 pt-6 text-center text-gray-400">
-            <p>&copy; {new Date().getFullYear()} UTM ResearchHub. All rights reserved.</p>
-          </div>
-        </div>
-      </footer>
-    </div>
+      <Footer />
+    </ConditionalNavbar>
   );
 };
 

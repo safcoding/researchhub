@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { supabase } from '@/lib/db-connect';
+import { createClient } from '@/utils/supabase/client';
 
 export interface Event {
   id: number;
@@ -10,7 +10,7 @@ export interface Event {
   date: string;
   time: string;
   location: string;
-  category: 'Conference' | 'Workshop' | 'Seminar' | 'Grant' | 'Competition' | 'Networking';
+  category: 'Conference' | 'Workshop' | 'Seminar' | 'Grant' | 'Competition' | 'Networking' | 'Others';
   organizer: string;
   registration_required: boolean;
   registration_deadline?: string;
@@ -26,13 +26,13 @@ export function EventLogic() {
   const [events, setEvents] = useState<Event[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-
   const fetchEvents = async () => {
     try {
       setLoading(true);
       setError(null);
       console.log('Fetching events from database...');
       
+      const supabase = createClient();
       const { data, error } = await supabase
         .from('events')
         .select('*')
@@ -52,13 +52,13 @@ export function EventLogic() {
       setLoading(false);
     }
   };
-
   const addEvent = async (newEvent: Omit<Event, 'id' | 'created_at' | 'updated_at'>) => {
     try {
       setLoading(true);
       setError(null);
       console.log('Adding new event:', newEvent);
       
+      const supabase = createClient();
       const { data, error: insertError } = await supabase
         .from('events')
         .insert([{
@@ -85,13 +85,13 @@ export function EventLogic() {
       setLoading(false);
     }
   };
-
   const updateEvent = async (id: number, updatedData: Partial<Event>) => {
     try {
       setLoading(true);
       setError(null);
       console.log('Updating event:', id, updatedData);
       
+      const supabase = createClient();
       const { error: updateError } = await supabase
         .from('events')
         .update({
@@ -115,13 +115,13 @@ export function EventLogic() {
       setLoading(false);
     }
   };
-
   const deleteEvent = async (id: number) => {
     try {
       setLoading(true);
       setError(null);
       console.log('Deleting event:', id);
       
+      const supabase = createClient();
       const { error: deleteError } = await supabase
         .from('events')
         .delete()

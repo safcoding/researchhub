@@ -1,8 +1,11 @@
+// src/components/navbar.tsx
+'use client'
 import Link from 'next/link';
 import Image from 'next/image';
 import React from 'react';
-import { SignedIn, SignedOut, UserButton } from '@clerk/nextjs';
+
 const Navbar = () => {
+
   return (
     <div>
       {/* Top Navigation */}
@@ -19,15 +22,10 @@ const Navbar = () => {
             ResearchHub
           </Link>
         </div>
-        <div className="flex gap-8">
+        <div className="flex gap-8 items-center">
           <a href="https://www.utm.my/" target="_blank" rel="noopener noreferrer" className="text-gray-700 hover:text-gray-900">UTM</a>
           <a href="https://mjiit.utm.my/" target="_blank" rel="noopener noreferrer" className="text-gray-700 hover:text-gray-900">UTM MJIIT</a>
-          <SignedOut>
-          <Link href="/login" className="text-gray-700 hover:text-gray-900">Login</Link>
-            </SignedOut>
-          <SignedIn>
-            <UserButton afterSignOutUrl="/" />
-          </SignedIn>
+          <Link href="/admin/login" className="text-lg font-bold hover:text-gray-700">Login</Link>
         </div>
       </nav>
 
@@ -38,6 +36,9 @@ const Navbar = () => {
             <nav className="flex space-x-6">
               <Link href="/" className="hover:underline">Home</Link>
               <Link href="/about" className="hover:underline">About</Link>
+              <Link href="/grants" className="hover:underline">Grants</Link>
+              <Link href="/publications" className="hover:underline">Publications</Link>
+              <Link href="/labs" className="hover:underline">Labs</Link>
               <Link href="/announcements" className="hover:underline">Announcements</Link>
               <Link href="/labs/overview" className="hover:underline">Labs</Link>
               <Link href="/publications" className="hover:underline">Publications</Link>
