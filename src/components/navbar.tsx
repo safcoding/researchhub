@@ -3,34 +3,64 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import React from 'react';
+import MJIIT from '@/images/mjiit.png'; //added image
 
 const Navbar = () => {
 
   return (
     <div>
-      {/* Top Navigation */}
+     {/* Top Navigation #0A867D */}
+        <header style={{ backgroundColor: '#2B9167' }} className="text-white py-2 px-4">
+          <div className="max-w-screen-sm ml-auto flex justify-end items-center">
+            <nav className="flex space-x-4">
+              <a
+                href="https://www.utm.my/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="hover:underline"
+              >
+                UTM
+              </a>
+              <a
+                href="https://mjiit.utm.my/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="hover:underline"
+              >
+                UTM MJIIT
+              </a>
+              <Link href="/admin/login" className="hover:underline">
+                Login
+              </Link>
+            </nav>
+          </div>
+        </header>
+
+
+
+
+      {/* Middle Navigation */}
       <nav className="flex items-center justify-between p-3 bg-gray-100">
         <div className="flex items-center">
           <Image 
-            src="https://upload.wikimedia.org/wikipedia/commons/8/81/UTM-LOGO.png"
-            alt="UTM Logo"
-            width={40}
-            height={40}
+            src={MJIIT}
+            alt="Mjiit Logo"
+            width={380}
+            height={380}
             className="mr-3"
           />
-          <Link href="/" className="text-lg font-bold hover:text-gray-700">
-            ResearchHub
-          </Link>
-        </div>
-        <div className="flex gap-8 items-center">
-          <a href="https://www.utm.my/" target="_blank" rel="noopener noreferrer" className="text-gray-700 hover:text-gray-900">UTM</a>
-          <a href="https://mjiit.utm.my/" target="_blank" rel="noopener noreferrer" className="text-gray-700 hover:text-gray-900">UTM MJIIT</a>
-          <Link href="/admin/login" className="text-lg font-bold hover:text-gray-700">Login</Link>
-        </div>
+          </div>
+          <div className="text-left">
+              <Link href="/" className="text-3xl font-bold hover:text-gray-700 block">
+                ResearchHub
+              </Link>
+          </div>
       </nav>
 
+
+
       {/* Main Navigation */}
-      <header className="bg-blue-800 text-white p-4">
+      <header style={{ backgroundColor: '#0A867D' }} className="text-white p-4">
         <div className="container mx-auto flex justify-between items-center">
           <div className="flex items-center space-x-4">
             <nav className="flex space-x-6">
@@ -40,6 +70,7 @@ const Navbar = () => {
               <Link href="/publications" className="hover:underline">Publications</Link>
               <Link href="/labs" className="hover:underline">Labs</Link>
               <Link href="/announcements" className="hover:underline">Announcements</Link>
+
             </nav>
           </div>
         </div>

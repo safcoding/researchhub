@@ -10,9 +10,16 @@ interface Props {
 
 export default function GrantsPie({ data }: Props) {
   const colors = [
-    '#1E40AF', '#1C64F2', '#3F83F8', '#76A9FA', 
-    '#9061F9', '#C084FC', '#F472B6', '#FB7185'
-  ];
+  '#2B9167', // Theme green
+  '#F97316', // Orange
+  '#3F83F8', // Blue
+  '#FBBF24', // Yellow
+  '#EC4899', // Pink
+  '#6366F1', // Indigo
+  '#10B981', // Teal
+  '#E11D48'  // Red
+];
+
 
   const chartData = {
     labels: data.map(item => item.type),

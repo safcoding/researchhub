@@ -3,10 +3,11 @@
 import React, { useState, useMemo } from 'react';
 import ConditionalNavbar from '@/components/admin-sidebar/conditional-navbar';
 import Navbar from '@/components/navbar';
-// Fixed import path to match the actual file name (Footer.tsx with capital F)
 import Footer from '@/components/Footer';
 import { PublicationLogic } from '@/hooks/publication-logic';
+import { PublicationPieChart } from '@/components/pub-piechart';
 
+// Importing the Pie chart component for publication types
 import {
   LineChart,
   Line,
@@ -44,26 +45,42 @@ const PublicationsDashboard: React.FC = () => {
     publications: monthlyData[index] 
   }));
   
-  // Filtering logic
+  //FILTERING LOGIC 
   const filteredPublications = useMemo(() => {
-    return publications.filter(pub => {
-      const matchesSearch = searchText === '' || 
-        pub.title.toLowerCase().includes(searchText.toLowerCase()) || 
-        pub.journal.toLowerCase().includes(searchText.toLowerCase());
-      
-      const matchesCategory = filterCategory === '' || 
-        pub.category.toLowerCase() === filterCategory.toLowerCase();
-      
-      const matchesYear = filterYear === '' || 
-        new Date(pub.date).getFullYear().toString() === filterYear;
-      
-      const matchesType = filterType === '' || 
-        filterType === 'All Types' || 
-        pub.type.toLowerCase() === filterType.toLowerCase();
-      
-      return matchesSearch && matchesCategory && matchesYear && matchesType;
-    });
-  }, [publications, searchText, filterCategory, filterYear, filterType]);
+  const knownTypes = [
+    'book chapter',
+    'original book',
+    'publication in web of science',
+    'conference paper',
+    'proceedings',
+    'scopus'
+  ];
+
+  return publications.filter(pub => {
+    const matchesSearch = searchText === '' || 
+      pub.title.toLowerCase().includes(searchText.toLowerCase()) || 
+      pub.journal.toLowerCase().includes(searchText.toLowerCase()) ||
+      pub.author_name.toLowerCase().includes(searchText.toLowerCase());
+
+    const matchesCategory = filterCategory === '' || 
+      pub.category.toLowerCase() === filterCategory.toLowerCase();
+    
+    const matchesYear = filterYear === '' || 
+      new Date(pub.date).getFullYear().toString() === filterYear;
+    
+    const pubType = pub.type.toLowerCase();
+
+    const matchesType =
+      filterType === '' || 
+      filterType === 'All Types' ||
+      (filterType === 'Others'
+        ? !knownTypes.includes(pubType)
+        : pubType === filterType.toLowerCase());
+
+    return matchesSearch && matchesCategory && matchesYear && matchesType;
+  });
+}, [publications, searchText, filterCategory, filterYear, filterType]);
+
 
   // Calculate statistics
   const currentYear = new Date().getFullYear().toString();
@@ -79,6 +96,7 @@ const PublicationsDashboard: React.FC = () => {
     const pubQuarter = Math.floor((date.getMonth() + 3) / 3);
     return pubYear === currentYear && pubQuarter === currentQuarter;
   }).length;
+
 
   // Available years for filtering
   const availableYears = useMemo(() => {
@@ -114,49 +132,63 @@ const PublicationsDashboard: React.FC = () => {
       <main className="container mx-auto px-4 py-8 bg-gray-50 min-h-screen">
         <h1 className="text-3xl font-bold text-gray-800 mb-8">Publications Dashboard</h1>
 
-        {/* Statistics Cards */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8">
-          <div className="lg:col-span-2 bg-white p-6 rounded-xl shadow-md">
-            <div className="flex justify-between items-center mb-4">
-              <h3 className="text-xl font-semibold">Monthly Publications</h3>              <select
-                value={selectedChartYear}
-                onChange={(e) => setSelectedChartYear(e.target.value)}
-                className="p-2 border border-gray-300 rounded text-sm"
-                aria-label="Select year for chart"
-              >
-                {availableYears.map(year => (
-                  <option key={year} value={year}>{year}</option>
-                ))}
-              </select>
-            </div>
-            <div className="h-80">
-              <ResponsiveContainer width="100%" height="100%">
-                <LineChart data={chartData} margin={{ top: 10, right: 30, left: 20, bottom: 10 }}>
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="month" />
-                  <YAxis label={{ value: 'Publications', angle: -90, position: 'insideLeft' }} />
-                  <Tooltip />
-                  <Line type="monotone" dataKey="publications" stroke="#0056b3" strokeWidth={2} />
-                </LineChart>
-              </ResponsiveContainer>
-            </div>
-          </div>
+    {/* Statistics Row Above Charts */}
+    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+      <div className="bg-white p-6 rounded-xl shadow-md flex flex-col items-center justify-center h-40">
+        <h3 className="text-lg font-semibold mb-2">Total Publications</h3>
+        <div className="text-4xl font-bold">{totalPublications}</div>
+      </div>
+  
+  <div className="bg-white p-6 rounded-xl shadow-md flex flex-col items-center justify-center h-40">
+    <h3 className="text-lg font-semibold mb-2">Publications This Year</h3>
+    <div className="text-4xl font-bold">{publicationsThisYear}</div>
+  </div>
+  
+  <div className="bg-white p-6 rounded-xl shadow-md flex flex-col items-center justify-center h-40">
+    <h3 className="text-lg font-semibold mb-2">Publications This Quarter</h3>
+    <div className="text-4xl font-bold">{publicationsThisQuarter}</div>
+  </div>
+</div>
 
-          <div className="space-y-4">
-            <div className="bg-white p-6 rounded-xl shadow-md text-center h-40 flex flex-col justify-center">
-              <h3 className="text-lg font-semibold mb-2">Total Publications</h3>
-              <div className="text-4xl font-bold">{totalPublications}</div>
-            </div>
-            <div className="bg-white p-6 rounded-xl shadow-md text-center h-40 flex flex-col justify-center">
-              <h3 className="text-lg font-semibold mb-2">Publications This Year</h3>
-              <div className="text-4xl font-bold">{publicationsThisYear}</div>
-            </div>
-            <div className="bg-white p-6 rounded-xl shadow-md text-center h-40 flex flex-col justify-center">
-              <h3 className="text-lg font-semibold mb-2">Publications This Quarter</h3>
-              <div className="text-4xl font-bold">{publicationsThisQuarter}</div>
-            </div>
-          </div>
-        </div>
+{/* Charts Row */}
+<div className="flex flex-col lg:flex-row gap-8 mb-8 min-w-0">
+  {/* Line Chart */}
+  <div className="w-full lg:flex-[2] bg-white p-6 rounded-xl shadow-md min-h-[400px]">
+    <div className="flex justify-between items-center mb-4">
+      <h3 className="text-xl font-semibold">Monthly Publications</h3>      <select
+        value={selectedChartYear}
+        onChange={(e) => setSelectedChartYear(e.target.value)}
+        className="p-2 border border-gray-300 rounded text-sm"
+                aria-label="Select year for chart"
+      >
+        {availableYears.map(year => (
+          <option key={year} value={year}>{year}</option>
+        ))}
+      </select>
+    </div>
+    <div className="h-80 min-w-0">
+      <ResponsiveContainer width="100%" height="100%">
+        <LineChart data={chartData} margin={{ top: 10, right: 30, left: 20, bottom: 10 }}>
+          <CartesianGrid strokeDasharray="3 3" />
+          <XAxis dataKey="month" />
+          <YAxis label={{ value: 'Publications', angle: -90, position: 'insideLeft' }} />
+          <Tooltip />
+          <Line type="monotone" dataKey="publications" stroke="#2B9167" strokeWidth={2} />
+        </LineChart>
+      </ResponsiveContainer>
+    </div>
+  </div>
+
+ {/* Pie Chart */}
+<div className="w-full lg:w-1/3 bg-white p-6 rounded-xl shadow-md">
+  <h3 className="text-xl font-semibold mb-6">Publication Distribution</h3>
+  <div className="flex flex-col items-center justify-center gap-6 pt-4 pb-6">
+    <PublicationPieChart publications={filteredPublications} />
+  </div>
+</div>
+
+</div>
+
 
         {/* Publications Table */}
         <div className="bg-white p-6 rounded-xl shadow-md">
@@ -164,7 +196,10 @@ const PublicationsDashboard: React.FC = () => {
             <div className="flex items-center">
               <h3 className="text-lg font-semibold">
                 All Publications 
-                <span className="text-sm bg-blue-200 text-blue-800 px-2 py-1 rounded-full ml-2">
+                <span
+                    className="text-sm px-2 py-1 rounded-full ml-2"
+                    style={{ backgroundColor: '#D6F0E7', color: '#2B9167' }}
+                  >
                   {filteredPublications.length}
                 </span>
               </h3>
@@ -196,12 +231,15 @@ const PublicationsDashboard: React.FC = () => {
                 className="border px-3 py-2 rounded text-sm"
                 aria-label="Filter by type"
               >
+
+                {/*TYPES FILTER*/}
                 <option value="All Types">All Types</option>
-                <option value="Book Chapter">Book Chapter</option>
-                <option value="Research Book">Research Book</option>
+                <option value="BOOK CHAPTER">Book Chapter</option>
+                <option value="ORIGINAL BOOK">Research Book</option>
                 <option value="Scopus">Scopus</option>
-                <option value="Web of Science">Web of Science</option>
-                <option value="Conference/Proceeding">Conference/Proceeding</option>
+                <option value="PUBLICATION IN WEB OF SCIENCE">Web of Science</option>
+                <option value="CONFERENCE PAPER">Conference</option>
+                <option value="PROCEEDINGS">Proceeding</option>
                 <option value="Others">Others</option>
               </select>
 
