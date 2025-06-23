@@ -1,14 +1,16 @@
 'use client';
 
-import Image from 'next/image';
 import Link from 'next/link';
 import React from 'react';
+import Image from 'next/image';
 import ConditionalNavbar from '@/components/admin-sidebar/conditional-navbar';
 import Navbar from '@/components/navbar';
 // Fixed import path to match the actual file name (Footer.tsx with capital F)
 import Footer from '@/components/Footer';
 // Import EventLogic hook to get real announcements data
 import { EventLogic, type Event } from '@/hooks/event-logic';
+
+const SUPABASE_EVENT_PICS_URL = "https://fqtizehthryjvqxqvpkl.supabase.co/storage/v1/object/public/event-pics/";
 
 const HomePage = () => { 
   // Get events data from the EventLogic hook
@@ -87,21 +89,17 @@ const HomePage = () => {
                 return (
                   <div key={event.id} className="bg-white rounded-lg shadow-md overflow-hidden">
                     <div className="h-48 relative bg-gray-200">
-                      {event.image ? (
-                        <Image
-                          src={event.image}
-                          alt={event.title}
-                          fill
-                          style={{ objectFit: 'cover' }}
-                        />
-                      ) : (
-                        <div className="w-full h-full flex items-center justify-center text-gray-500">
-                          <div className="text-center">
-                            <div className="text-4xl mb-2">📅</div>
-                            <p className="text-sm">{event.category}</p>
-                          </div>
-                        </div>
-                      )}
+                      {/* Event Image */}
+                      <Image
+                        src={
+                          event.image
+                            ? `${SUPABASE_EVENT_PICS_URL}${event.image}`
+                            : "/placeholder.jpg"
+                        }
+                        alt={event.title}
+                        fill
+                        style={{ objectFit: 'cover' }}
+                      />
                       {/* Priority badge */}
                       <div className={`absolute top-2 right-2 px-2 py-1 rounded text-xs font-semibold ${
                         event.priority === 'High' ? 'bg-red-500 text-white' :

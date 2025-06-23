@@ -4,24 +4,24 @@ import React, { useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { EventLogic, type Event } from '@/hooks/event-logic';
-import { EventModal, DeleteConfirmationModal } from '@/components/admin-components/events/event-form';
-
 import ConditionalNavbar from '@/components/admin-sidebar/conditional-navbar';
-// Fixed import path to match the actual file name (Footer.tsx with capital F)
+
 import Footer from '@/components/Footer';
 import Navbar from '@/components/navbar';
+
 
 export default function AnnouncementsPage() {
   const { events, loading, error, addEvent, updateEvent, deleteEvent } = EventLogic();
     const [selectedCategory, setSelectedCategory] = useState<string>('All');
   const [searchQuery, setSearchQuery] = useState('');
   const [showEventModal, setShowEventModal] = useState(false);
-  const [showDeleteModal, setShowDeleteModal] = useState(false);  const [selectedEvent, setSelectedEvent] = useState<Event | null>(null);
-  const [isEditing, setIsEditing] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [showInfoModal, setShowInfoModal] = useState(false);
   const [infoModalEvent, setInfoModalEvent] = useState<Event | null>(null);
   const eventsPerPage = 5;  const categories = ['All', 'Conference', 'Workshop', 'Seminar', 'Grant', 'Competition', 'Networking', 'Others'];
+
+const SUPABASE_EVENT_PICS_URL = "https://fqtizehthryjvqxqvpkl.supabase.co/storage/v1/object/public/event-pics/";
+
   
   const filteredEvents = events.filter(event => {
     // Handle case sensitivity and potential data inconsistencies
@@ -86,42 +86,6 @@ export default function AnnouncementsPage() {
       month: 'long',
       day: 'numeric'
     });
-  };
-  const handleEditEvent = (event: Event) => {
-    setSelectedEvent(event);
-    setIsEditing(true);
-    setShowEventModal(true);
-  };
-
-  const handleDeleteEvent = (event: Event) => {
-    setSelectedEvent(event);
-    setShowDeleteModal(true);
-  };
-
-  const handleSaveEvent = async (eventData: Omit<Event, 'id' | 'created_at' | 'updated_at'>) => {
-    try {
-      if (isEditing && selectedEvent) {
-        await updateEvent(selectedEvent.id, eventData);
-      } else {
-        await addEvent(eventData);
-      }
-      setShowEventModal(false);
-      setSelectedEvent(null);
-    } catch (error) {
-      console.error('Error saving event:', error);
-    }
-  };
-
-  const handleConfirmDelete = async () => {
-    if (selectedEvent) {
-      try {
-        await deleteEvent(selectedEvent.id);
-        setShowDeleteModal(false);
-        setSelectedEvent(null);
-      } catch (error) {
-        console.error('Error deleting event:', error);
-      }
-    }
   };
 
   const handleShowInfo = (event: Event) => {
@@ -226,11 +190,15 @@ export default function AnnouncementsPage() {
             {currentEvents.map((event) => (
               <div key={event.id} className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow">
                 <div className="h-48 relative">
-                  <Image 
-                    src={event.image} 
-                    alt={event.title} 
-                    fill 
-                    style={{ objectFit: 'cover' }} 
+                  <Image
+                    src={
+                      event.image
+                        ? `${SUPABASE_EVENT_PICS_URL}${event.image}`
+                        : "/placeholder.jpg"
+                    }
+                    alt={event.title}
+                    fill
+                    style={{ objectFit: 'cover' }}
                   />
                   <div className="absolute top-4 left-4 flex gap-2">
                     <span className={`px-2 py-1 rounded text-xs font-medium ${getPriorityBadgeColor(event.priority)}`}>
@@ -238,31 +206,9 @@ export default function AnnouncementsPage() {
                     </span>
                     <span className={`px-2 py-1 rounded text-xs font-medium ${getStatusBadgeColor(event.status)}`}>
                       {event.status}
-                    </span>                  </div>
-
-                  {/* Edit/Delete buttons - will be shown conditionally by conditional navbar */}
-                  <div className="absolute top-4 right-4 flex gap-2">
-                    <button
-                      onClick={() => handleEditEvent(event)}
-                      className="bg-white bg-opacity-90 hover:bg-opacity-100 p-2 rounded-full transition-colors"
-                      title="Edit event"
-                    >
-                      <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-[#2B9167]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                      </svg>
-                    </button>
-                    <button
-                      onClick={() => handleDeleteEvent(event)}
-                      className="bg-white bg-opacity-90 hover:bg-opacity-100 p-2 rounded-full transition-colors"
-                      title="Delete event"
-                      >                        <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                        </svg>
-                      </button>
-                    </div>
+                    </span>
+                  </div>
                 </div>
-                
                 <div className="p-6">
                   <div className="flex items-center justify-between mb-2">
                     <span className="text-sm font-medium text-[#2B9167]">{event.category}</span>
@@ -313,7 +259,8 @@ export default function AnnouncementsPage() {
                     >
                       More Info
                     </button>
-                  </div>                </div>
+                  </div>                
+                </div>
               </div>
             ))}
 
@@ -416,18 +363,6 @@ export default function AnnouncementsPage() {
           </div>
         </div>
       </main>
-
-      {/* Event Modal */}
-      {showEventModal && (
-        <EventModal
-          event={selectedEvent ?? undefined}
-          onClose={() => {
-            setShowEventModal(false);
-            setSelectedEvent(null);
-          }}
-          onSave={handleSaveEvent}
-        />
-      )}
     <Footer />
     </ConditionalNavbar>
   );

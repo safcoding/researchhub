@@ -29,9 +29,26 @@ export function useEventForm(event?: Event) {
         return errors;
     };
 
-    return useFormLogic<Event>({
+    // Destructure setFormData from useFormLogic and return it
+    const {
+        formData,
+        setFormData,
+        errors,
+        isSubmitting,
+        handleChange,
+        handleSubmit
+    } = useFormLogic<Event>({
         initialData,
         requiredFields: REQUIRED_EVENT_FIELDS,
         customValidation
     });
+
+    return {
+        formData,
+        setFormData,
+        errors,
+        isSubmitting,
+        handleChange,
+        handleSubmit
+    };
 }

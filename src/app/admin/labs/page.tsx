@@ -1,8 +1,8 @@
 'use client';
 
 import { LabLogic, type Lab } from '@/hooks/lab-logic';
-import { LabTable } from '@/components/admin-components/lab-table';
-import { LabModal } from '@/components/admin-components/lab-form';
+import { LabTable } from '@/components/admin-components/labs/lab-table';
+import { LabModal } from '@/components/admin-components/labs/lab-form';
 import { useState } from 'react';
 
 import { AdminSidebar } from "@/components/admin-sidebar/sidebar-content"

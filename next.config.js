@@ -7,7 +7,10 @@ import "./src/env.js";
 /** @type {import("next").NextConfig} */
 const config = {
   images: {
-    domains: ['upload.wikimedia.org'], // Added domain configuration
+    domains: [
+      'upload.wikimedia.org',
+      'fqtizehthryjvqxqvpkl.supabase.co',
+    ], // Added domain configuration
   },
   // Add any other existing config options here
 };

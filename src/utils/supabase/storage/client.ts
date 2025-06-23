@@ -13,33 +13,28 @@ type UploadProps = {
   folder?: string;
 };
 export const uploadImage = async ({ file, bucket, folder }: UploadProps) => {
-  const fileName = file.name;
-  const fileExtension = fileName.slice(fileName.lastIndexOf(".") + 1);
-  const path = `${folder ? folder + "/" : ""}${uuidv4()}.${fileExtension}`;
+  const fileExtension = file.name.slice(file.name.lastIndexOf(".") + 1);
+  const fileName = `${uuidv4()}.${fileExtension}`;
+  const path = folder ? `${folder}/${fileName}` : fileName;
 
   try {
-    file = await imageCompression(file, {
-      maxSizeMB: 1,
-    });
+    file = await imageCompression(file, { maxSizeMB: 1 });
   } catch (error) {
     console.error(error);
-    return { imageUrl: "", error: "Image compression failed" };
+    return { publicUrl: "", path: "", error: "Image compression failed" };
   }
 
   const storage = getStorage();
-
   const { data, error } = await storage.from(bucket).upload(path, file);
 
-  if (error) {
-    return { imageUrl: "", error: "Image upload failed" };
+  if (error || !data?.path) {
+    return { publicUrl: "", path: "", error: error?.message || "Image upload failed" };
   }
 
-  const imageUrl = `${process.env
-    .NEXT_PUBLIC_SUPABASE_URL!}/storage/v1/object/public/${bucket}/${
-    data?.path
-  }`;
+  // Build the public URL for display
+  const publicUrl = `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/${bucket}/${data.path}`;
 
-  return { imageUrl, error: "" };
+  return { publicUrl, path: data.path, error: null };
 };
 
 export const deleteImage = async (imageUrl: string) => {
