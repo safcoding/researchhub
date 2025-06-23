@@ -114,6 +114,7 @@ export default function GrantsDashboard() {
         </div>
       </main>
 
+      <Footer />
     </ConditionalNavbar>
 
   );
