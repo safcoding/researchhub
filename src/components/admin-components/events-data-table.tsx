@@ -1,12 +1,21 @@
 "use client"
 
 import * as React from "react"
-import { ColumnDef } from "@tanstack/react-table"
-import { ArrowUpDown } from "lucide-react"
-
-import { Button } from "@/components/ui/button"
+import {
+  ColumnDef,
+  SortingState,
+  ColumnFiltersState,
+  getCoreRowModel,
+  getFilteredRowModel,
+  getPaginationRowModel,
+  getSortedRowModel,
+  useReactTable
+} from "@tanstack/react-table"
+import { Input } from "@/components/ui/input"
 import { DataTable } from "@/components/ui/data-table"
-import { type Event } from "@/hooks/event-logic"
+import type { Event } from "@/hooks/event-logic"
+import { Button } from "../ui/button"
+import { ArrowUpDown } from "lucide-react"
 
 interface EventsDataTableProps {
   data: Event[]
@@ -15,6 +24,8 @@ interface EventsDataTableProps {
 }
 
 export function EventsDataTable({ data, onEdit, onDelete }: EventsDataTableProps) {
+  const [sorting, setSorting] = React.useState<SortingState>([])
+  const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([])
   const columns: ColumnDef<Event>[] = [
     {
       accessorKey: "title",
@@ -99,13 +110,35 @@ export function EventsDataTable({ data, onEdit, onDelete }: EventsDataTableProps
       },
     },
   ]
+  const table = useReactTable({
+    data,
+    columns,
+    onSortingChange: setSorting,
+    getCoreRowModel: getCoreRowModel(),
+    getPaginationRowModel: getPaginationRowModel(),
+    getSortedRowModel: getSortedRowModel(),
+    onColumnFiltersChange: setColumnFilters,
+    getFilteredRowModel: getFilteredRowModel(),
+    state: {
+      sorting,
+      columnFilters,
+    },
+  })
 
   return (
     <div className="bg-white shadow-md rounded-lg overflow-hidden">
-      <div className="px-6 py-4 border-b border-gray-200">
-        <h2 className="text-xl font-semibold text-gray-800">All Announcements</h2>
+      <div className="px-6 py-4 border-b border-gray-200 flex items-center">
+        <h2 className="text-xl font-semibold text-gray-800 flex-1">All Events</h2>
+        <Input
+          placeholder="Filter by Title..."
+          value={(table.getColumn("title")?.getFilterValue() as string) ?? ""}
+          onChange={event =>
+            table.getColumn("title")?.setFilterValue(event.target.value)
+          }
+          className="max-w-sm"
+        />
       </div>
-      <DataTable columns={columns} data={data} />
+      <DataTable columns={columns} data={data} table={table} />
     </div>
   )
 }

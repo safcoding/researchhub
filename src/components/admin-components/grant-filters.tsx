@@ -1,22 +1,21 @@
-import { EVENT_CATEGORIES } from "@/constants/event-options"
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select"
 import { Input } from "@/components/ui/input"
 
-interface EventFiltersProps {
+interface GrantFiltersProps {
   filters: {
-    selectedCategory: string
     dateFilter: string
     selectedYear: string
     selectedMonth: string
+    selectedStatus: string
   }
-  events: any[]
-  onFiltersChange: (filters: Partial<EventFiltersProps["filters"]>) => void
+  grants: any[]
+  onFiltersChange: (filters: Partial<GrantFiltersProps["filters"]>) => void
 }
 
-export function EventFilters({ filters, events, onFiltersChange }: EventFiltersProps) {
+export function GrantFilters({ filters, grants, onFiltersChange }: GrantFiltersProps) {
 
   const getAvailableYears = () => {
-    const years = [...new Set(events.map(event => new Date(event.date).getFullYear()))]
+    const years = [...new Set(grants.map(grant => new Date(grant.date).getFullYear()))]
     return years.sort((a, b) => b - a)
   }
 
@@ -38,44 +37,26 @@ export function EventFilters({ filters, events, onFiltersChange }: EventFiltersP
   return (
     <div className="bg-white shadow-md rounded-lg p-6 mb-6">
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
-        {/* Category Filter */}
+        {/* Status Filter */}
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">
-            Filter by Category
+            Filter by Status
           </label>
           <Select
-            value={filters.selectedCategory}
-            onValueChange={value => onFiltersChange({ selectedCategory: value })}
+            value={filters.selectedStatus}
+            onValueChange={value => onFiltersChange({ selectedStatus: value })}
           >
             <SelectTrigger>
-              <SelectValue placeholder="All Categories" />
+              <SelectValue placeholder="All Statuses" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all">All Categories</SelectItem>
-              {EVENT_CATEGORIES.map(cat => (
-                <SelectItem key={cat} value={cat}>{cat}</SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
-        {/* Date Filter */}
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            Filter by Date
-          </label>
-          <Select
-            value={filters.dateFilter}
-            onValueChange={value => onFiltersChange({ dateFilter: value })}
-          >
-            <SelectTrigger>
-              <SelectValue placeholder="All Dates" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">All Dates</SelectItem>
-              <SelectItem value="upcoming">Upcoming Events</SelectItem>
-              <SelectItem value="past">Past Events</SelectItem>
-              <SelectItem value="thisMonth">This Month</SelectItem>
-              <SelectItem value="nextMonth">Next Month</SelectItem>
+              <SelectItem value="all">All Statuses</SelectItem>
+              <SelectItem value="ACTIVE">Active</SelectItem>
+              <SelectItem value="COMPLETED">Completed</SelectItem>
+              <SelectItem value="TERMINATED">Terminated</SelectItem>
+              <SelectItem value="ENDED">Ended</SelectItem>
+              <SelectItem value="REACTIVATE WITH FINAL REPORT">Reactivate with Final Report</SelectItem>
+              {/* Add more statuses as needed */}
             </SelectContent>
           </Select>
         </div>
