@@ -5,7 +5,8 @@ import Navbar from '@/components/navbar';
 import { useRouter } from 'next/navigation';
 import { type Lab } from '@/hooks/lab-logic';
 import { createClient } from '@/utils/supabase/client';
-import Footer from '@/components/footer';
+import Footer from '@/components/Footer';
+
 
 // Import components
 import { LabSidebar } from '@/components/labs/lab-sidebar';
@@ -150,7 +151,9 @@ const OurLabs = () => {
             <p className="text-gray-600 mb-4">There are no labs in the database yet.</p>
             <button
               onClick={() => router.push('/admin/lab-admin')}
-              className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+              className="text-white px-4 py-2 rounded"
+                style={{ backgroundColor: '#2B9167' }}
+
             >
               Add Labs
             </button>
@@ -164,6 +167,7 @@ const OurLabs = () => {
     <ConditionalNavbar>
       <Navbar />
       <div className="flex min-h-screen">
+
         {/* Sidebar Navigation */}
         <LabSidebar
           availableLabTypes={availableLabTypes}

@@ -4,7 +4,7 @@ import StatsCard from './statcards';
 import GrantsPie from './gantchart1';
 import LineChart from './linechart';
 import ConditionalNavbar from '@/components/admin-sidebar/conditional-navbar'; 
-import Footer from '@/components/footer';
+import Footer from '@/components/Footer';
 import { GrantLogic } from '@/hooks/grant-logic';
 import Navbar from '@/components/navbar';
 
@@ -83,6 +83,8 @@ export default function GrantsDashboard() {
             period="Annual Total" 
           />
         </div>
+
+        
         {/* Charts Section */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           {/* Line Chart - Spans full width */}

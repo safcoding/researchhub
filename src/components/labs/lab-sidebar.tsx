@@ -19,15 +19,16 @@ export const LabSidebar: React.FC<LabSidebarProps> = ({
       <div className="space-y-2">
         {availableLabTypes.map((labType) => (
           <button
-            key={labType}
-            onClick={() => setSelectedLabType(labType)}
-            className={`w-full text-left p-3 rounded-lg transition-all ${
-              selectedLabType === labType 
-                ? 'bg-blue-600 text-white shadow-md' 
-                : 'bg-white text-gray-800 hover:bg-gray-200'
-            }`}
-          >
-            {labType}
+                  key={labType}
+                  onClick={() => setSelectedLabType(labType)}
+                  className={`w-full text-left p-3 rounded-lg transition-all ${
+                    selectedLabType === labType 
+                      ? 'text-white shadow-md' 
+                      : 'bg-white text-gray-800 hover:bg-gray-200'
+                  }`}
+                  style={selectedLabType === labType ? { backgroundColor: '#2B9167' } : {}}
+                >
+             {labType}
           </button>
         ))}
       </div>

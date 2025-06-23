@@ -50,7 +50,7 @@ const Navbar = () => {
             className="mr-3"
           />
           </div>
-          <div className="text-right">
+          <div className="text-left">
               <Link href="/" className="text-3xl font-bold hover:text-gray-700 block">
                 ResearchHub
               </Link>

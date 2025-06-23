@@ -3,7 +3,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import ConditionalNavbar from '@/components/admin-sidebar/conditional-navbar';
 import Navbar from '@/components/navbar';
-
+import Footer from '@/components/Footer';
 import organizationChartImage from '@/images/organizationchart.png'; //added image
 import MrAifaa from '@/images/mraifaa.png'; //added image
 import MrShaiful from '@/images/mrshaiful.png'; //added image 
@@ -133,21 +133,9 @@ export default function AboutPage() {
                  <p className="text-gray-600"><i>iKohza</i></p>
               </div>
             </div>
-      </div>
+          </div>
 
-
-
-
-
-
-
-
-
-
-
-
-
-          
+          {/* CONTACT SECTION */}
           <div className="mt-16">
             <h2 className="text-3xl font-bold mb-6">Contact the Research Office</h2>
             <div className="bg-gray-50 rounded-lg p-6 shadow-sm">
@@ -155,15 +143,19 @@ export default function AboutPage() {
               <p className="mb-3"><strong>Email:</strong> research.mjiit@utm.my</p>
               <p className="mb-3"><strong>Phone:</strong> +60 3-2203-1200</p>
               <p className="mb-6"><strong>Office Hours:</strong> Monday to Friday, 8:30 AM - 5:00 PM</p>
-              <Link href="/contact" className="inline-block bg-blue-600 text-white px-6 py-2 rounded-md hover:bg-blue-700 transition-colors">
-                Get in Touch
+              <Link
+                href="/contact"
+                className="inline-block text-white px-6 py-2 rounded-md"
+                style={{ backgroundColor: '#2B9167' }}
+              >
+                Contact
               </Link>
             </div>
           </div>
         </div>
       </main>
       
-      
+      <Footer />
     </ConditionalNavbar>
   );
 }

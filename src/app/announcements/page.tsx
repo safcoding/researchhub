@@ -7,7 +7,7 @@ import { EventLogic, type Event } from '@/hooks/event-logic';
 import { EventModal, DeleteConfirmationModal } from '@/components/admin-components/event-form';
 
 import ConditionalNavbar from '@/components/admin-sidebar/conditional-navbar';
-import Footer from '@/components/footer';
+import Footer from '@/components/Footer';
 import Navbar from '@/components/navbar';
 
 export default function AnnouncementsPage() {
@@ -186,7 +186,10 @@ export default function AnnouncementsPage() {
                   <input
                     type="text"
                     placeholder="Search events by title, description, or organizer..."
-                    className="w-full p-3 pl-10 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full p-3 pl-10 border rounded-lg focus:outline-none"
+                            style={{
+                      boxShadow: '0 0 0 2px #2B9167'
+                    }}
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                   />
@@ -199,16 +202,17 @@ export default function AnnouncementsPage() {
               </div>
               
               <div className="flex gap-2 flex-wrap">
-                {categories.map(category => (
-                  <button
-                    key={category}
-                    onClick={() => setSelectedCategory(category)}
-                    className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
-                      selectedCategory === category
-                        ? 'bg-blue-600 text-white'
-                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                    }`}
-                  >
+                  {categories.map(category => (
+                    <button
+                      key={category}
+                      onClick={() => setSelectedCategory(category)}
+                      className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+                        selectedCategory === category
+                          ? 'text-white'
+                          : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                      }`}
+                      style={selectedCategory === category ? { backgroundColor: '#2B9167' } : {}}
+                    >
                     {category}
                   </button>
                 ))}
@@ -234,6 +238,7 @@ export default function AnnouncementsPage() {
                     <span className={`px-2 py-1 rounded text-xs font-medium ${getStatusBadgeColor(event.status)}`}>
                       {event.status}
                     </span>                  </div>
+
                   {/* Edit/Delete buttons - will be shown conditionally by conditional navbar */}
                   <div className="absolute top-4 right-4 flex gap-2">
                     <button
@@ -241,7 +246,8 @@ export default function AnnouncementsPage() {
                       className="bg-white bg-opacity-90 hover:bg-opacity-100 p-2 rounded-full transition-colors"
                       title="Edit event"
                     >
-                      <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-[#2B9167]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                       </svg>
                     </button>
@@ -258,7 +264,7 @@ export default function AnnouncementsPage() {
                 
                 <div className="p-6">
                   <div className="flex items-center justify-between mb-2">
-                    <span className="text-sm text-blue-600 font-medium">{event.category}</span>
+                    <span className="text-sm font-medium text-[#2B9167]">{event.category}</span>
                     <span className="text-sm text-gray-500">{formatDate(event.date)}</span>
                   </div>
                   
@@ -297,16 +303,21 @@ export default function AnnouncementsPage() {
                     )}
                   </div>
                   
+                  {/*MORE INFO BUTTON: */}
                   <div className="flex gap-2">
                     <button 
                       onClick={() => handleShowInfo(event)}
-                      className="w-full bg-blue-600 text-white text-center py-2 px-4 rounded hover:bg-blue-700 transition-colors text-sm"
+                      className="w-full text-white text-center py-2 px-4 rounded transition-colors text-sm"
+                      style={{ backgroundColor: '#2B9167' }}
                     >
                       More Info
                     </button>
                   </div>                </div>
               </div>
             ))}
+
+
+
           </div>{/* Pagination Controls */}
           {filteredEvents.length > 0 && totalPages > 1 && (
             <div className="mt-8 flex justify-center items-center space-x-2">
@@ -332,14 +343,15 @@ export default function AnnouncementsPage() {
                 
                 return (
                   <button
-                    key={pageNumber}
-                    onClick={() => setCurrentPage(pageNumber)}
-                    className={`px-3 py-2 rounded-md ${
-                      isCurrentPage
-                        ? 'bg-blue-600 text-white'
-                        : 'bg-white border border-gray-300 text-gray-700 hover:bg-gray-50'
-                    }`}
-                  >
+                        key={pageNumber}
+                        onClick={() => setCurrentPage(pageNumber)}
+                        className={`px-3 py-2 rounded-md ${
+                          isCurrentPage
+                            ? 'text-white'
+                            : 'bg-white border border-gray-300 text-gray-700 hover:bg-gray-50'
+                        }`}
+                        style={isCurrentPage ? { backgroundColor: '#000000' } : {}}
+                      >
                     {pageNumber}
                   </button>
                 );
@@ -388,13 +400,15 @@ export default function AnnouncementsPage() {
             <div className="flex gap-4 justify-center">
               <a 
                 href="mailto:research.mjiit@utm.my"
-                className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors"
+                className="text-white px-6 py-3 rounded-lg transition-colors"
+                style={{ backgroundColor: '#2B9167' }}
               >
                 Contact Research Office
               </a>              <Link 
-                href="/about"
-                className="border border-blue-600 text-blue-600 px-6 py-3 rounded-lg hover:bg-blue-50 transition-colors"
-              >
+                      href="/about"
+                      className="px-6 py-3 rounded-lg hover:bg-green-50 transition-colors"
+                      style={{ border: '1px solid #2B9167', color: '#2B9167' }}
+                    >
                 Learn More About Us
               </Link>
             </div>
