@@ -1,12 +1,13 @@
 'use client';
+
 import React, { useState, useEffect } from 'react';
 import ConditionalNavbar from '@/components/admin-sidebar/conditional-navbar';
 import Navbar from '@/components/navbar';
 import { useRouter } from 'next/navigation';
 import { type Lab } from '@/hooks/lab-logic';
 import { createClient } from '@/utils/supabase/client';
+// Fixed import path to match the actual file name (Footer.tsx with capital F)
 import Footer from '@/components/Footer';
-
 
 // Import components
 import { LabSidebar } from '@/components/labs/lab-sidebar';
@@ -24,12 +25,16 @@ const OurLabs = () => {
   const [selectedLab, setSelectedLab] = useState<Lab | null>(null);
   const [showLabModal, setShowLabModal] = useState(false);
   const router = useRouter();
-
   // Fetch labs from Supabase
   useEffect(() => {
     const fetchLabs = async () => {
       try {
+        // Add error handling for client creation
         const supabase = createClient();
+        if (!supabase) {
+          throw new Error('Failed to create Supabase client');
+        }
+        
         const { data, error } = await supabase
           .from('labs')
           .select('*')
@@ -177,8 +182,7 @@ const OurLabs = () => {
         />
 
         {/* Main Content */}
-        <div className="flex-1 p-6 bg-gray-50">
-          {/* Lab Type Header Section */}
+        <div className="flex-1 p-6 bg-gray-50">          {/* Lab Type Header Section */}
           <div className="mb-6"> 
             <div className="flex justify-between items-center mb-2">
               <h1 className="text-2xl font-bold text-gray-800">{selectedLabType} Labs</h1>
@@ -242,3 +246,4 @@ const OurLabs = () => {
 };
 
 export default OurLabs;
+

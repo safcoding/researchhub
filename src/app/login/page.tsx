@@ -1,4 +1,5 @@
 import { LoginForm } from "@/components/login-form"
+// Fixed import path to match the actual file name (Footer.tsx with capital F)
 import Footer from '@/components/Footer';
 
 export default function LoginPage() {

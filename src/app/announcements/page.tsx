@@ -7,6 +7,7 @@ import { EventLogic, type Event } from '@/hooks/event-logic';
 import { EventModal, DeleteConfirmationModal } from '@/components/admin-components/event-form';
 
 import ConditionalNavbar from '@/components/admin-sidebar/conditional-navbar';
+// Fixed import path to match the actual file name (Footer.tsx with capital F)
 import Footer from '@/components/Footer';
 import Navbar from '@/components/navbar';
 

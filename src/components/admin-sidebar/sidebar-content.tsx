@@ -30,8 +30,7 @@ const data = {
         },
        {
           title: "Publications Management", 
-          url: "/admin/publications",
-        },
+          url: "/admin/publications",        },
         {
           title: "Lab Management", 
           url: "/admin/labs",
@@ -39,6 +38,10 @@ const data = {
         {
           title: "Announcements Management", 
           url: "/admin/announcements",
+        },
+        {
+          title: "Edit Abouts", 
+          url: "/admin/about",
         },
       ],
     },
