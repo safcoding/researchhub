@@ -60,11 +60,9 @@ export function EventModal({ event, onSave, onClose }: EventModalProps) {    con
         
         if (!validateForm()) {
             return;
-        }
-
-        setIsSubmitting(true);
+        }        setIsSubmitting(true);
         try {
-            await onSave(formData as Omit<Event, 'id' | 'created_at' | 'updated_at'>);
+            await Promise.resolve(onSave(formData as Omit<Event, 'id' | 'created_at' | 'updated_at'>));
             onClose();
         } catch (error) {
             console.error('Error saving event:', error);
@@ -109,8 +107,7 @@ export function EventModal({ event, onSave, onClose }: EventModalProps) {    con
                             <span className="ml-1 text-xs text-gray-500">
                                 {event ? '(Cannot be changed)' : '(Optional - auto-generated if empty)'}
                             </span>
-                        </label>
-                        <input
+                        </label>                        <input
                             type="text"
                             name="id"
                             value={formData.id ?? ''}
@@ -120,6 +117,7 @@ export function EventModal({ event, onSave, onClose }: EventModalProps) {    con
                             }`}
                             placeholder={event ? "Event ID (cannot be changed)" : "Enter event ID or leave blank for auto-generation"}
                             disabled={!!event} // Disable editing for existing events
+                            aria-label="Event ID"
                         />
                     </div>
 
@@ -164,8 +162,7 @@ export function EventModal({ event, onSave, onClose }: EventModalProps) {    con
                         <div>
                             <label className="block text-sm font-medium text-gray-700 mb-2">
                                 Event Date *
-                            </label>
-                            <input
+                            </label>                            <input
                                 type="date"
                                 name="date"
                                 value={formData.date ?? ''}
@@ -173,6 +170,7 @@ export function EventModal({ event, onSave, onClose }: EventModalProps) {    con
                                 className={`w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${
                                     errors.date ? 'border-red-500' : 'border-gray-300'
                                 }`}
+                                aria-label="Event Date"
                             />
                             {errors.date && <p className="text-red-500 text-sm mt-1">{errors.date}</p>}
                         </div>
@@ -243,6 +241,7 @@ export function EventModal({ event, onSave, onClose }: EventModalProps) {    con
                                 onChange={handleChange}
                                 className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                                 required
+                                aria-label="Event Category"
                             >
                                 <option value="" disabled>Select a category</option>
                                 {categoryOptions.map(option => (
@@ -257,12 +256,12 @@ export function EventModal({ event, onSave, onClose }: EventModalProps) {    con
                         <div>
                             <label className="block text-sm font-medium text-gray-700 mb-2">
                                 Priority
-                            </label>
-                            <select
+                            </label>                            <select
                                 name="priority"
                                 value={formData.priority ?? 'Medium'}
                                 onChange={handleChange}
                                 className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                aria-label="Event Priority"
                             >
                                 {priorityOptions.map(option => (
                                     <option key={option} value={option}>{option}</option>
@@ -273,12 +272,12 @@ export function EventModal({ event, onSave, onClose }: EventModalProps) {    con
                         <div>
                             <label className="block text-sm font-medium text-gray-700 mb-2">
                                 Status
-                            </label>
-                            <select
+                            </label>                            <select
                                 name="status"
                                 value={formData.status ?? 'Upcoming'}
                                 onChange={handleChange}
                                 className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                aria-label="Event Status"
                             >
                                 {statusOptions.map(option => (
                                     <option key={option} value={option}>{option}</option>
@@ -303,13 +302,13 @@ export function EventModal({ event, onSave, onClose }: EventModalProps) {    con
                         />
                         {errors.contact_email && <p className="text-red-500 text-sm mt-1">{errors.contact_email}</p>}
                     </div>                    {/* Registration Required */}
-                    <div className="flex items-center">
-                        <input
+                    <div className="flex items-center">                        <input
                             type="checkbox"
                             name="registration_required"
                             checked={formData.registration_required ?? false}
                             onChange={handleChange}
                             className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                            aria-label="Registration Required"
                         />
                         <label className="ml-2 block text-sm text-gray-900">
                             Registration Required
@@ -321,8 +320,7 @@ export function EventModal({ event, onSave, onClose }: EventModalProps) {    con
                         <div>
                             <label className="block text-sm font-medium text-gray-700 mb-2">
                                 Registration Deadline
-                            </label>
-                            <input
+                            </label>                            <input
                                 type="date"
                                 name="registration_deadline"
                                 value={formData.registration_deadline ?? ''}
@@ -330,6 +328,7 @@ export function EventModal({ event, onSave, onClose }: EventModalProps) {    con
                                 className={`w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${
                                     errors.registration_deadline ? 'border-red-500' : 'border-gray-300'
                                 }`}
+                                aria-label="Registration Deadline"
                             />
                             {errors.registration_deadline && <p className="text-red-500 text-sm mt-1">{errors.registration_deadline}</p>}
                         </div>
