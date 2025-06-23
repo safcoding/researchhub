@@ -2,9 +2,9 @@ import type { Grant } from "@/hooks/grant-logic";
 import { GRANT_TYPES, GRANT_STATUSES, SPONSOR_CATEGORIES } from '@/constants/grant-options';
 import { useGrantForm } from '@/hooks/forms/useGrantForm';
 
-import { FormField } from "../reusable/formfield";
-import { SelectField } from "../reusable/selectfield";
-import { Button } from "../ui/button";
+import { FormField } from "../../reusable/formfield";
+import { SelectField } from "../../reusable/selectfield";
+import { Button } from "../../ui/button";
 
 interface GrantModalProps {
     grant?: Grant;

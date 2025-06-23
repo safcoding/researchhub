@@ -2,9 +2,9 @@
 
 import * as React from "react"
 import {
-  ColumnDef,
-  SortingState,
-  ColumnFiltersState,
+  type ColumnDef,
+  type SortingState,
+  type ColumnFiltersState,
   getCoreRowModel,
   getFilteredRowModel,
   getPaginationRowModel,
@@ -14,7 +14,7 @@ import {
 import { Input } from "@/components/ui/input"
 import { DataTable } from "@/components/ui/data-table"
 import type { Event } from "@/hooks/event-logic"
-import { Button } from "../ui/button"
+import { Button } from "../../ui/button"
 import { ArrowUpDown } from "lucide-react"
 
 interface EventsDataTableProps {

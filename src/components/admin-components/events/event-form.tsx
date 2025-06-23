@@ -1,10 +1,10 @@
 import type { Event } from '@/hooks/event-logic';
-import { FormField } from '../reusable/formfield';
-import { TextAreaField } from '../reusable/textarea';
-import { SelectField } from '../reusable/selectfield';
+import { FormField } from '../../reusable/formfield';
+import { TextAreaField } from '../../reusable/textarea';
+import { SelectField } from '../../reusable/selectfield';
 import { EVENT_CATEGORIES, EVENT_PRIORITIES, EVENT_STATUSES} from '@/constants/event-options';
 import { useEventForm } from '@/hooks//forms/useEventForm';
-import { Button } from '../ui/button';
+import { Button } from '../../ui/button';
 
 
 interface EventModalProps {

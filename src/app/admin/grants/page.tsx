@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { GrantLogic, type Grant } from '@/hooks/grant-logic';
-import { GrantModal } from '@/components/admin-components/grant-form';
+import { GrantModal } from '@/components/admin-components/grants/grant-form';
 import { ConfirmationModal } from '@/components/reusable/confirmation-popup';
 import { Button } from '@/components/ui/button';
 import { AdminSidebar } from "@/components/admin-sidebar/sidebar-content";
@@ -13,8 +13,8 @@ import {
   SidebarTrigger,
 } from "@/components/ui/sidebar";
 
-import { GrantDataTable } from '@/components/admin-components/grant-data-table';
-import { GrantFilters } from '@/components/admin-components/grant-filters';
+import { GrantDataTable } from '@/components/admin-components/grants/grant-data-table';
+import { GrantFilters } from '@/components/admin-components/grants/grant-filters';
 
 export default function GrantDBPage() {
   const { grants, loading, error, addGrant, updateGrant, deleteGrant } = GrantLogic();

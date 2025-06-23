@@ -2,11 +2,11 @@
 
 import { useState } from 'react';
 import { EventLogic, type Event } from '@/hooks/event-logic';
-import { EventModal } from '@/components/admin-components/event-form';
+import { EventModal } from '@/components/admin-components/events/event-form';
 import { ConfirmationModal } from '@/components/reusable/confirmation-popup';
-import { EventsDataTable } from '@/components/admin-components/events-data-table';
+import { EventsDataTable } from '@/components/admin-components/events/events-data-table';
 import { Button } from '@/components/ui/button';
-import { EventFilters } from "@/components/admin-components/event-filters";
+import { EventFilters } from "@/components/admin-components/events/event-filters";
 import { AdminSidebar } from "@/components/admin-sidebar/sidebar-content";
 import { Separator } from "@/components/ui/separator";
 import {
