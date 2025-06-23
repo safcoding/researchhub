@@ -1,5 +1,13 @@
 import type { Event } from '@/hooks/event-logic';
 import { useState } from 'react';
+import { FormField } from '../reusable/formfield';
+import { TextAreaField } from '../reusable/textarea';
+import { SelectField } from '../reusable/selectfield';
+import { EVENT_CATEGORIES,
+         EVENT_PRIORITIES,
+         EVENT_STATUSES,
+         REQUIRED_EVENT_FIELDS,
+ } from '@/constants/event-options';
 
 interface EventModalProps {
     event?: Event;
@@ -19,15 +27,11 @@ export function EventModal({ event, onSave, onClose }: EventModalProps) {    con
         };
     });
     const [errors, setErrors] = useState<Record<string, string>>({});
-    const [isSubmitting, setIsSubmitting] = useState(false);    const categoryOptions: Event['category'][] = ['Conference', 'Workshop', 'Seminar', 'Grant', 'Competition', 'Networking', 'Others'];
-    const priorityOptions: Event['priority'][] = ['High', 'Medium', 'Low'];
-    const statusOptions: Event['status'][] = ['Upcoming', 'Registration Open', 'Registration Closed', 'Completed'];
-
-    const requiredFields = ['title', 'description', 'date', 'time', 'location', 'category', 'organizer', 'contact_email'];    const validateForm = () => {
-        const newErrors: Record<string, string> = {};
+    const [isSubmitting, setIsSubmitting] = useState(false);   
+    const validateForm = () => {
+    const newErrors: Record<string, string> = {};
         let isValid = true;
-
-        requiredFields.forEach(field => {
+        REQUIRED_EVENT_FIELDS.forEach(field => {
             if (!formData[field as keyof Event]) {
                 newErrors[field] = 'This field is required';
                 isValid = false;
@@ -54,8 +58,9 @@ export function EventModal({ event, onSave, onClose }: EventModalProps) {    con
 
         setErrors(newErrors);
         return isValid;
-    };    const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
+    };    
+    
+    const handleSubmit = async (e: React.FormEvent) => {
         
         if (!validateForm()) {
             return;
@@ -100,239 +105,126 @@ export function EventModal({ event, onSave, onClose }: EventModalProps) {    con
                     <h2 className="text-2xl font-bold text-gray-900">
                         {event ? 'Edit Event' : 'Add New Event'}
                     </h2>
-                </div>                <form onSubmit={handleSubmit} className="p-6 space-y-6">
-                    {/* Event ID */}
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
-                            Event ID
-                            <span className="ml-1 text-xs text-gray-500">
-                                {event ? '(Cannot be changed)' : '(Optional - auto-generated if empty)'}
-                            </span>
-                        </label>
-                        <input
-                            type="text"
-                            name="id"
-                            value={formData.id ?? ''}
-                            onChange={handleChange}
-                            className={`w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                                event ? 'bg-gray-100 cursor-not-allowed' : 'border-gray-300'
-                            }`}
-                            placeholder={event ? "Event ID (cannot be changed)" : "Enter event ID or leave blank for auto-generation"}
-                            disabled={!!event} // Disable editing for existing events
-                        />
-                    </div>
 
-                    {/* Title */}
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
-                            Event Title *
-                        </label>
-                        <input
-                            type="text"
-                            name="title"
-                            value={formData.title ?? ''}
-                            onChange={handleChange}
-                            className={`w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                                errors.title ? 'border-red-500' : 'border-gray-300'
-                            }`}
-                            placeholder="Enter event title"
-                        />
-                        {errors.title && <p className="text-red-500 text-sm mt-1">{errors.title}</p>}
-                    </div>
+                </div>                
+                <form onSubmit={handleSubmit} className="p-6 space-y-6">
 
-                    {/* Description */}
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
-                            Description *
-                        </label>
-                        <textarea
-                            name="description"
-                            value={formData.description ?? ''}
-                            onChange={handleChange}
-                            rows={4}
-                            className={`w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                                errors.description ? 'border-red-500' : 'border-gray-300'
-                            }`}
-                            placeholder="Enter event description"
-                        />
-                        {errors.description && <p className="text-red-500 text-sm mt-1">{errors.description}</p>}
-                    </div>
+                    <FormField
+                        label= "Event ID"
+                        name= "id"
+                        type= "text"
+                        value= {formData.id ?? ''}
+                        required= {true}
+                        disabled={!!event}
+                        error= {errors.id}
+                        onChange={handleChange}
+                    />
 
-                    {/* Date and Time */}
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-2">
-                                Event Date *
-                            </label>
-                            <input
-                                type="date"
-                                name="date"
-                                value={formData.date ?? ''}
-                                onChange={handleChange}
-                                className={`w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                                    errors.date ? 'border-red-500' : 'border-gray-300'
-                                }`}
-                            />
-                            {errors.date && <p className="text-red-500 text-sm mt-1">{errors.date}</p>}
-                        </div>
+                    <FormField
+                        label= "Title"
+                        name= "title"
+                        type= "text"
+                        value= {formData.title ?? ''}
+                        required= {true}
+                        disabled={!event}
+                        error= {errors.title}
+                        onChange={handleChange}
+                    />                   
 
-                        <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-2">
-                                Event Time *
-                            </label>
-                            <input
-                                type="text"
-                                name="time"
-                                value={formData.time ?? ''}
-                                onChange={handleChange}
-                                className={`w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                                    errors.time ? 'border-red-500' : 'border-gray-300'
-                                }`}
-                                placeholder="e.g., 9:00 AM - 5:00 PM"
-                            />
-                            {errors.time && <p className="text-red-500 text-sm mt-1">{errors.time}</p>}
-                        </div>
-                    </div>
+                    <TextAreaField
+                        label= "Description"
+                        name= "description"
+                        value= {formData.description ?? ''}
+                        required= {true}
+                        disabled={false}
+                        error= {errors.description}
+                        rows={4}
+                        onChange={handleChange}
+                    />    
+                    <FormField
+                        label= "Date"
+                        name= "date"
+                        type= "date"
+                        value= {formData.date ?? ''}
+                        required= {true}
+                        disabled={!event}
+                        error= {errors.date}
+                        onChange={handleChange}
+ />    
+                    <FormField
+                        label= "Time"
+                        name= "time"
+                        type= "time"
+                        value= {formData.time ?? ''}
+                        required= {false}
+                        disabled={!event}
+                        error= {errors.time}
+                        onChange={handleChange}                        
+                    />    
+                     <FormField
+                        label= "Location"
+                        name= "location"
+                        type= "text"
+                        value= {formData.location ?? ''}
+                        required= {false}
+                        disabled={!!event}
+                        error= {errors.location}
+                        onChange={handleChange}                        
+                    />    
+                     <FormField
+                        label= "Organizer"
+                        name= "organizer"
+                        type= "text"
+                        value= {formData.organizer ?? ''}
+                        required= {false}
+                        disabled={!event}
+                        error= {errors.organizer}
+                        onChange={handleChange}                        
+                    />    
+                    <SelectField
+                        label="Category"
+                        name="category"
+                        value={formData.category ?? ''}
+                        required={true}
+                        disabled={false}
+                        placeholder='Select Event Category'
+                        options={EVENT_CATEGORIES}
+                        error= {errors.category}                       
+                        onChange={handleChange}
+                    />
+                    <SelectField
+                        label="Priority"
+                        name="priority"
+                        value={formData.priority ?? ''}
+                        required={true}
+                        disabled={false}
+                        placeholder='Select Priority'
+                        options={EVENT_PRIORITIES}
+                        error= {errors.priority}                           
+                        onChange={handleChange}
+                    />
+                    <SelectField
+                        label="Status"
+                        name="status"
+                        value={formData.status ?? ''}
+                        required={true}
+                        disabled={false}
+                        placeholder='Select Status'
+                        options={EVENT_STATUSES}
+                        error= {errors.status}                        
+                        onChange={handleChange}
+                    />
 
-                    {/* Location and Organizer */}
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-2">
-                                Location *
-                            </label>
-                            <input
-                                type="text"
-                                name="location"
-                                value={formData.location ?? ''}
-                                onChange={handleChange}
-                                className={`w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                                    errors.location ? 'border-red-500' : 'border-gray-300'
-                                }`}
-                                placeholder="Enter event location"
-                            />
-                            {errors.location && <p className="text-red-500 text-sm mt-1">{errors.location}</p>}
-                        </div>
-
-                        <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-2">
-                                Organizer *
-                            </label>
-                            <input
-                                type="text"
-                                name="organizer"
-                                value={formData.organizer ?? ''}
-                                onChange={handleChange}
-                                className={`w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                                    errors.organizer ? 'border-red-500' : 'border-gray-300'
-                                }`}
-                                placeholder="Enter organizer name"
-                            />
-                            {errors.organizer && <p className="text-red-500 text-sm mt-1">{errors.organizer}</p>}
-                        </div>
-                    </div>
-
-                    {/* Category, Priority, Status */}
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                        <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-2">
-                                Category
-                            </label>                            <select
-                                name="category"
-                                value={formData.category ?? ''}
-                                onChange={handleChange}
-                                className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                required
-                            >
-                                <option value="" disabled>Select a category</option>
-                                {categoryOptions.map(option => (
-                                    <option key={option} value={option}>{option}</option>
-                                ))}
-                            </select>
-                            {errors.category && (
-                                <p className="mt-1 text-sm text-red-600">{errors.category}</p>
-                            )}
-                        </div>
-
-                        <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-2">
-                                Priority
-                            </label>
-                            <select
-                                name="priority"
-                                value={formData.priority ?? 'Medium'}
-                                onChange={handleChange}
-                                className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                            >
-                                {priorityOptions.map(option => (
-                                    <option key={option} value={option}>{option}</option>
-                                ))}
-                            </select>
-                        </div>
-
-                        <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-2">
-                                Status
-                            </label>
-                            <select
-                                name="status"
-                                value={formData.status ?? 'Upcoming'}
-                                onChange={handleChange}
-                                className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                            >
-                                {statusOptions.map(option => (
-                                    <option key={option} value={option}>{option}</option>
-                                ))}
-                            </select>
-                        </div>
-                    </div>
-
-                    {/* Contact Email */}
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
-                            Contact Email *
-                        </label>                        <input
-                            type="email"
-                            name="contact_email"
-                            value={formData.contact_email ?? ''}
-                            onChange={handleChange}
-                            className={`w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                                errors.contact_email ? 'border-red-500' : 'border-gray-300'
-                            }`}
-                            placeholder="Enter contact email"
-                        />
-                        {errors.contact_email && <p className="text-red-500 text-sm mt-1">{errors.contact_email}</p>}
-                    </div>                    {/* Registration Required */}
-                    <div className="flex items-center">
-                        <input
-                            type="checkbox"
-                            name="registration_required"
-                            checked={formData.registration_required ?? false}
-                            onChange={handleChange}
-                            className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
-                        />
-                        <label className="ml-2 block text-sm text-gray-900">
-                            Registration Required
-                        </label>
-                    </div>
-
-                    {/* Registration Deadline (only if registration required) */}
-                    {formData.registration_required && (
-                        <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-2">
-                                Registration Deadline
-                            </label>
-                            <input
-                                type="date"
-                                name="registration_deadline"
-                                value={formData.registration_deadline ?? ''}
-                                onChange={handleChange}
-                                className={`w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                                    errors.registration_deadline ? 'border-red-500' : 'border-gray-300'
-                                }`}
-                            />
-                            {errors.registration_deadline && <p className="text-red-500 text-sm mt-1">{errors.registration_deadline}</p>}
-                        </div>
-                    )}
+                    <FormField
+                        label= "Contact Email"
+                        name= "contact_email"
+                        type= "email"
+                        value= {formData.contact_email ?? ''}
+                        required= {true}
+                        disabled={false}
+                        error= {errors.contact_email}
+                        onChange={handleChange}
+                    /> 
 
                     {/* Buttons */}
                     <div className="flex gap-3 pt-6 border-t border-gray-200">
