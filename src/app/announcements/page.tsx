@@ -1,10 +1,12 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { EventLogic, type Event } from '@/hooks/event-logic';
-import { EventModal, DeleteConfirmationModal } from '@/components/admin-components/event-form';
+import { EventModal, DeleteConfirmationModal, EventInfoModal } from '@/components/admin-components/event-form';
+import { createClient } from '@/utils/supabase/client';
+import type { User } from '@supabase/supabase-js';
 
 import ConditionalNavbar from '@/components/admin-sidebar/conditional-navbar';
 // Fixed import path to match the actual file name (Footer.tsx with capital F)
@@ -13,15 +15,42 @@ import Navbar from '@/components/navbar';
 
 export default function AnnouncementsPage() {
   const { events, loading, error, addEvent, updateEvent, deleteEvent } = EventLogic();
-    const [selectedCategory, setSelectedCategory] = useState<string>('All');
+  const [selectedCategory, setSelectedCategory] = useState<string>('All');
   const [searchQuery, setSearchQuery] = useState('');
   const [showEventModal, setShowEventModal] = useState(false);
-  const [showDeleteModal, setShowDeleteModal] = useState(false);  const [selectedEvent, setSelectedEvent] = useState<Event | null>(null);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [selectedEvent, setSelectedEvent] = useState<Event | null>(null);
   const [isEditing, setIsEditing] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [showInfoModal, setShowInfoModal] = useState(false);
   const [infoModalEvent, setInfoModalEvent] = useState<Event | null>(null);
-  const eventsPerPage = 5;  const categories = ['All', 'Conference', 'Workshop', 'Seminar', 'Grant', 'Competition', 'Networking', 'Others'];
+  const [user, setUser] = useState<User | null>(null);
+  const eventsPerPage = 5;
+  // Check authentication status
+  useEffect(() => {
+    const supabase = createClient();
+    
+    const getUser = async () => {
+      try {
+        const { data: { user } } = await supabase.auth.getUser();
+        setUser(user);
+      } catch (error) {
+        console.error('Error getting user:', error);
+        setUser(null);
+      }
+    };
+
+    void getUser();
+
+    // Listen for auth changes
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      (event, session) => {
+        setUser(session?.user ?? null);
+      }
+    );
+
+    return () => subscription.unsubscribe();
+  }, []);const categories = ['All', 'Conference', 'Workshop', 'Seminar', 'Grant', 'Competition', 'Networking', 'Others'];
   
   const filteredEvents = events.filter(event => {
     // Handle case sensitivity and potential data inconsistencies
@@ -235,26 +264,29 @@ export default function AnnouncementsPage() {
                     <span className={`px-2 py-1 rounded text-xs font-medium ${getStatusBadgeColor(event.status)}`}>
                       {event.status}
                     </span>                  </div>
-                  {/* Edit/Delete buttons - will be shown conditionally by conditional navbar */}
-                  <div className="absolute top-4 right-4 flex gap-2">
-                    <button
-                      onClick={() => handleEditEvent(event)}
-                      className="bg-white bg-opacity-90 hover:bg-opacity-100 p-2 rounded-full transition-colors"
-                      title="Edit event"
-                    >
-                      <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                      </svg>
-                    </button>
-                    <button
-                      onClick={() => handleDeleteEvent(event)}
-                      className="bg-white bg-opacity-90 hover:bg-opacity-100 p-2 rounded-full transition-colors"
-                      title="Delete event"
-                      >                        <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  {/* Edit/Delete buttons - only show for authenticated users */}
+                  {user && (
+                    <div className="absolute top-4 right-4 flex gap-2">
+                      <button
+                        onClick={() => handleEditEvent(event)}
+                        className="bg-white bg-opacity-90 hover:bg-opacity-100 p-2 rounded-full transition-colors"
+                        title="Edit event"
+                      >
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                        </svg>
+                      </button>
+                      <button
+                        onClick={() => handleDeleteEvent(event)}
+                        className="bg-white bg-opacity-90 hover:bg-opacity-100 p-2 rounded-full transition-colors"
+                        title="Delete event"
+                      >
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                         </svg>
                       </button>
                     </div>
+                  )}
                 </div>
                 
                 <div className="p-6">
@@ -413,9 +445,7 @@ export default function AnnouncementsPage() {
           }}
           onSave={handleSaveEvent}
         />
-      )}
-
-      {/* Delete Confirmation Modal */}
+      )}      {/* Delete Confirmation Modal */}
       {showDeleteModal && selectedEvent && (
         <DeleteConfirmationModal
           event={selectedEvent}
@@ -424,6 +454,17 @@ export default function AnnouncementsPage() {
             setSelectedEvent(null);
           }}
           onConfirm={handleConfirmDelete}
+        />
+      )}
+
+      {/* Event Info Modal */}
+      {showInfoModal && infoModalEvent && (
+        <EventInfoModal
+          event={infoModalEvent}
+          onClose={() => {
+            setShowInfoModal(false);
+            setInfoModalEvent(null);
+          }}
         />
       )}
     <Footer />

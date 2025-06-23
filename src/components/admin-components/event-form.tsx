@@ -1,5 +1,6 @@
 import type { Event } from '@/hooks/event-logic';
 import { useState } from 'react';
+import Image from 'next/image';
 
 interface EventModalProps {
     event?: Event;
@@ -396,6 +397,197 @@ export function DeleteConfirmationModal({ event, onConfirm, onCancel }: DeleteCo
                             className="flex-1 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
                         >
                             Delete
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    );
+}
+
+interface EventInfoModalProps {
+    event: Event;
+    onClose: () => void;
+}
+
+export function EventInfoModal({ event, onClose }: EventInfoModalProps) {
+    const formatDate = (dateString: string) => {
+        const date = new Date(dateString);
+        return date.toLocaleDateString('en-US', {
+            weekday: 'long',
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric'
+        });
+    };
+
+    const getPriorityBadgeColor = (priority: string) => {
+        switch (priority) {
+            case 'High': return 'bg-red-100 text-red-800';
+            case 'Medium': return 'bg-yellow-100 text-yellow-800';
+            case 'Low': return 'bg-green-100 text-green-800';
+            default: return 'bg-gray-100 text-gray-800';
+        }
+    };
+
+    const getStatusBadgeColor = (status: string) => {
+        switch (status) {
+            case 'Registration Open': return 'bg-blue-100 text-blue-800';
+            case 'Registration Closed': return 'bg-red-100 text-red-800';
+            case 'Upcoming': return 'bg-purple-100 text-purple-800';
+            case 'Completed': return 'bg-gray-100 text-gray-800';
+            default: return 'bg-gray-100 text-gray-800';
+        }
+    };
+
+    return (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+            <div className="bg-white rounded-lg shadow-xl w-full max-w-3xl max-h-[90vh] overflow-y-auto">                {/* Header with Image */}
+                <div className="relative h-64 bg-gray-200 rounded-t-lg overflow-hidden">
+                    {event.image && (
+                        <Image 
+                            src={event.image} 
+                            alt={event.title}
+                            fill
+                            style={{ objectFit: 'cover' }}
+                        />
+                    )}
+                    <div className="absolute top-4 right-4">
+                        <button
+                            onClick={onClose}
+                            className="bg-white bg-opacity-90 hover:bg-opacity-100 p-2 rounded-full transition-colors"
+                            title="Close"
+                        >
+                            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                            </svg>
+                        </button>
+                    </div>
+                    <div className="absolute bottom-4 left-4 flex gap-2">
+                        <span className={`px-3 py-1 rounded-full text-sm font-medium ${getPriorityBadgeColor(event.priority)}`}>
+                            {event.priority} Priority
+                        </span>
+                        <span className={`px-3 py-1 rounded-full text-sm font-medium ${getStatusBadgeColor(event.status)}`}>
+                            {event.status}
+                        </span>
+                    </div>
+                </div>
+
+                {/* Content */}
+                <div className="p-8">
+                    {/* Title and Category */}
+                    <div className="mb-6">
+                        <div className="flex items-center justify-between mb-2">
+                            <span className="text-sm text-blue-600 font-medium bg-blue-50 px-3 py-1 rounded-full">
+                                {event.category}
+                            </span>
+                            <span className="text-sm text-gray-500">
+                                Event ID: {event.id}
+                            </span>
+                        </div>
+                        <h1 className="text-3xl font-bold text-gray-900 mb-4">{event.title}</h1>
+                        <p className="text-lg text-gray-600 leading-relaxed">{event.description}</p>
+                    </div>
+
+                    {/* Event Details Grid */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                        {/* Date & Time */}
+                        <div className="bg-gray-50 p-4 rounded-lg">
+                            <h3 className="font-semibold text-gray-900 mb-3 flex items-center">
+                                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                </svg>
+                                Date & Time
+                            </h3>
+                            <p className="text-gray-700 mb-2">
+                                <strong>Date:</strong> {formatDate(event.date)}
+                            </p>
+                            <p className="text-gray-700">
+                                <strong>Time:</strong> {event.time}
+                            </p>
+                        </div>
+
+                        {/* Location */}
+                        <div className="bg-gray-50 p-4 rounded-lg">
+                            <h3 className="font-semibold text-gray-900 mb-3 flex items-center">
+                                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                                </svg>
+                                Location
+                            </h3>
+                            <p className="text-gray-700">{event.location}</p>
+                        </div>
+
+                        {/* Organizer */}
+                        <div className="bg-gray-50 p-4 rounded-lg">
+                            <h3 className="font-semibold text-gray-900 mb-3 flex items-center">
+                                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                                </svg>
+                                Organizer
+                            </h3>
+                            <p className="text-gray-700">{event.organizer}</p>
+                        </div>
+
+                        {/* Contact */}
+                        <div className="bg-gray-50 p-4 rounded-lg">
+                            <h3 className="font-semibold text-gray-900 mb-3 flex items-center">
+                                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                                </svg>
+                                Contact
+                            </h3>
+                            <a 
+                                href={`mailto:${event.contact_email}`}
+                                className="text-blue-600 hover:text-blue-800 underline"
+                            >
+                                {event.contact_email}
+                            </a>
+                        </div>
+                    </div>
+
+                    {/* Registration Information */}
+                    {event.registration_required && (
+                        <div className="bg-orange-50 border border-orange-200 rounded-lg p-6 mb-6">
+                            <h3 className="font-semibold text-orange-900 mb-3 flex items-center">
+                                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2 text-orange-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 15.5c-.77.833.192 2.5 1.732 2.5z" />
+                                </svg>
+                                Registration Required
+                            </h3>
+                            <p className="text-orange-800">
+                                This event requires registration to attend.
+                                {event.registration_deadline && (
+                                    <>
+                                        <br />
+                                        <strong>Registration Deadline:</strong> {formatDate(event.registration_deadline)}
+                                    </>
+                                )}
+                            </p>
+                        </div>                    )}
+
+                    {/* Action Buttons */}
+                    <div className="flex gap-4 pt-6 border-t border-gray-200">
+                        <a 
+                            href={`mailto:${event.contact_email}?subject=Inquiry about ${event.title}`}
+                            className="flex-1 bg-blue-600 text-white text-center py-3 px-6 rounded-lg hover:bg-blue-700 transition-colors font-medium"
+                        >
+                            Contact Organizer
+                        </a>
+                        {event.registration_required && (
+                            <a 
+                                href={`mailto:${event.contact_email}?subject=Registration for ${event.title}`}
+                                className="flex-1 bg-green-600 text-white text-center py-3 px-6 rounded-lg hover:bg-green-700 transition-colors font-medium"
+                            >
+                                Register for Event
+                            </a>
+                        )}
+                        <button
+                            onClick={onClose}
+                            className="px-6 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors font-medium"
+                        >
+                            Close
                         </button>
                     </div>
                 </div>
