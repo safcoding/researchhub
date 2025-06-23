@@ -11,7 +11,6 @@ import {
   SidebarTrigger,
 } from "@/components/ui/sidebar"
 
-
 const PublicationsUpload: React.FC = () => {
   const { publications, loading, error, addPublication, updatePublication, deletePublication } = PublicationLogic();
   const [editingId, setEditingId] = useState<number | null>(null);

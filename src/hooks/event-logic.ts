@@ -4,28 +4,27 @@ import { useState, useEffect } from 'react';
 import { createClient } from '@/utils/supabase/client';
 
 export interface Event {
-  id: number;
+  id: string;                 
   title: string;
   description: string;
   date: string;
-  time: string;
-  location: string;
+  time?: string;              
+  location?: string;          
   category: 'Conference' | 'Workshop' | 'Seminar' | 'Grant' | 'Competition' | 'Networking' | 'Others';
-  organizer: string;
-  registration_required: boolean;
-  registration_deadline?: string;
-  contact_email: string;
-  image: string;
   priority: 'High' | 'Medium' | 'Low';
   status: 'Upcoming' | 'Registration Open' | 'Registration Closed' | 'Completed';
-  created_at?: string;
-  updated_at?: string;
+  organizer?: string;        
+  registration_required: boolean;
+  registration_deadline?: string;
+  contact_email?: string;        
+  image?: string;             
 }
 
 export function EventLogic() {
   const [events, setEvents] = useState<Event[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
   const fetchEvents = async () => {
     try {
       setLoading(true);
@@ -38,11 +37,10 @@ export function EventLogic() {
         .select('*')
         .order('date', { ascending: true });
       
-      if (error) {
+     if (error) {
         console.error('Error fetching events:', error);
         throw error;
       }
-      
       console.log(`Successfully fetched ${data?.length || 0} events`);
       setEvents(data || []);
     } catch (e) {
@@ -52,7 +50,8 @@ export function EventLogic() {
       setLoading(false);
     }
   };
-  const addEvent = async (newEvent: Omit<Event, 'id' | 'created_at' | 'updated_at'>) => {
+
+  const addEvent = async (newEvent: Partial<Event>) => {
     try {
       setLoading(true);
       setError(null);
@@ -63,8 +62,7 @@ export function EventLogic() {
         .from('events')
         .insert([{
           ...newEvent,
-          created_at: new Date().toISOString(),
-          updated_at: new Date().toISOString()
+          registration_required: newEvent.registration_required ?? false,
         }])
         .select()
         .single();
@@ -85,7 +83,8 @@ export function EventLogic() {
       setLoading(false);
     }
   };
-  const updateEvent = async (id: number, updatedData: Partial<Event>) => {
+
+ const updateEvent = async (id: string, updatedData: Partial<Event>) => {
     try {
       setLoading(true);
       setError(null);
@@ -94,10 +93,7 @@ export function EventLogic() {
       const supabase = createClient();
       const { error: updateError } = await supabase
         .from('events')
-        .update({
-          ...updatedData,
-          updated_at: new Date().toISOString()
-        })
+        .update(updatedData)
         .eq('id', id);
 
       if (updateError) {
@@ -115,7 +111,8 @@ export function EventLogic() {
       setLoading(false);
     }
   };
-  const deleteEvent = async (id: number) => {
+
+  const deleteEvent = async (id: string) => {
     try {
       setLoading(true);
       setError(null);
@@ -142,18 +139,43 @@ export function EventLogic() {
       setLoading(false);
     }
   };
+  
+const getEventById = (id: string): Event | undefined => {
+    return events.find(event => event.id === id);
+  };
+
+  const getEventsByStatus = (status: Event['status']): Event[] => {
+    return events.filter(event => event.status === status);
+  };
+
+  const getUpcomingEvents = (): Event[] => {
+    const today = new Date().toISOString().split('T')[0];
+    return events.filter(event => event.date >= today);
+  };
 
   useEffect(() => {
     void fetchEvents();
   }, []);
 
   return {
+    // State
     events,
     loading,
     error,
+    
+    // CRUD Operations
     addEvent,
     updateEvent,
     deleteEvent,
-    refreshEvents: fetchEvents
+    refreshEvents: fetchEvents,
+    
+    // Business Logic Utilities
+    getEventById,
+    getEventsByStatus,
+    getUpcomingEvents
   };
 }
+
+// Export helper types
+export type CreateEventData = Partial<Event>;
+export type UpdateEventData = Partial<Event>;

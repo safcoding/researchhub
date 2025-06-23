@@ -414,18 +414,6 @@ export default function AnnouncementsPage() {
           onSave={handleSaveEvent}
         />
       )}
-
-      {/* Delete Confirmation Modal */}
-      {showDeleteModal && selectedEvent && (
-        <DeleteConfirmationModal
-          event={selectedEvent}
-          onCancel={() => {
-            setShowDeleteModal(false);
-            setSelectedEvent(null);
-          }}
-          onConfirm={handleConfirmDelete}
-        />
-      )}
     <Footer />
     </ConditionalNavbar>
   );

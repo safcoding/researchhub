@@ -14,7 +14,8 @@ export const EVENT_PRIORITIES: Event['priority'][] =[
     'High',
     'Medium',
     'Low',
-] as const
+] as const;
+
 export const EVENT_STATUSES: Event['status'][] =[
     'Upcoming',
     'Registration Open',
@@ -23,12 +24,9 @@ export const EVENT_STATUSES: Event['status'][] =[
 ] as const;
 
 export const REQUIRED_EVENT_FIELDS = [
+    'id',
     'title',
     'description', 
     'date',
-    'time',
-    'location',
     'category',
-    'organizer',
-    'contact_email'
 ] as const;

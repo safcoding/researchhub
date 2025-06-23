@@ -47,6 +47,7 @@ export function SelectField({
                     </option>
                 ))}                
             </select>   
+            {error && <p className="text-red-500 text-sm mt-1">{error}</p>}
         </div>
     )
 }

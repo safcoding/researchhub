@@ -1,102 +1,21 @@
 import type { Event } from '@/hooks/event-logic';
-import { useState } from 'react';
 import { FormField } from '../reusable/formfield';
 import { TextAreaField } from '../reusable/textarea';
 import { SelectField } from '../reusable/selectfield';
-import { EVENT_CATEGORIES,
-         EVENT_PRIORITIES,
-         EVENT_STATUSES,
-         REQUIRED_EVENT_FIELDS,
- } from '@/constants/event-options';
+import { EVENT_CATEGORIES, EVENT_PRIORITIES, EVENT_STATUSES} from '@/constants/event-options';
+import { useEventForm } from '@/hooks//forms/useEventForm';
+import { Button } from '../ui/button';
+
 
 interface EventModalProps {
     event?: Event;
-    onSave: (event: Omit<Event, 'id' | 'created_at' | 'updated_at'>) => void;
+    onSave: (eventData: Partial<Event>) => void;
     onClose: () => void;
 }
 
-export function EventModal({ event, onSave, onClose }: EventModalProps) {    const [formData, setFormData] = useState<Partial<Event>>(() => {
-        if (event) {
-            return event;
-        }
-        return {
-            registration_required: false,
-            priority: 'Medium',
-            status: 'Upcoming'
-            // Don't set a default category - force user to select one
-        };
-    });
-    const [errors, setErrors] = useState<Record<string, string>>({});
-    const [isSubmitting, setIsSubmitting] = useState(false);   
-    const validateForm = () => {
-    const newErrors: Record<string, string> = {};
-        let isValid = true;
-        REQUIRED_EVENT_FIELDS.forEach(field => {
-            if (!formData[field as keyof Event]) {
-                newErrors[field] = 'This field is required';
-                isValid = false;
-            }
-        });        // Special validation for category since it might be undefined
-        if (!formData.category) {
-            newErrors.category = 'Please select a category';
-            isValid = false;
-        }// Email validation
-        if (formData.contact_email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.contact_email)) {
-            newErrors.contact_email = 'Please enter a valid email address';
-            isValid = false;
-        }
+export function EventModal({ event, onSave, onClose }: EventModalProps) {
+    const { formData, errors, isSubmitting, handleChange, handleSubmit } = useEventForm(event);
 
-        // Date validation
-        if (formData.date && formData.registration_deadline) {
-            const eventDate = new Date(formData.date);
-            const regDeadline = new Date(formData.registration_deadline);
-            if (regDeadline >= eventDate) {
-                newErrors.registration_deadline = 'Registration deadline must be before event date';
-                isValid = false;
-            }
-        }
-
-        setErrors(newErrors);
-        return isValid;
-    };    
-    
-    const handleSubmit = async (e: React.FormEvent) => {
-        
-        if (!validateForm()) {
-            return;
-        }
-
-        setIsSubmitting(true);
-        try {
-            await onSave(formData as Omit<Event, 'id' | 'created_at' | 'updated_at'>);
-            onClose();
-        } catch (error) {
-            console.error('Error saving event:', error);
-            // Show error to user
-            if (error instanceof Error) {
-                alert(`Error saving event: ${error.message}`);
-            } else {
-                alert('An unknown error occurred while saving the event');
-            }
-        } finally {
-            setIsSubmitting(false);
-        }
-    };
-
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
-        const { name, value, type } = e.target;
-        const checked = (e.target as HTMLInputElement).checked;
-        
-        setFormData(prev => ({
-            ...prev,
-            [name]: type === 'checkbox' ? checked : value
-        }));
-
-        // Clear error when user starts typing
-        if (errors[name]) {
-            setErrors(prev => ({ ...prev, [name]: '' }));
-        }
-    };
 
     return (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
@@ -105,20 +24,8 @@ export function EventModal({ event, onSave, onClose }: EventModalProps) {    con
                     <h2 className="text-2xl font-bold text-gray-900">
                         {event ? 'Edit Event' : 'Add New Event'}
                     </h2>
-
                 </div>                
-                <form onSubmit={handleSubmit} className="p-6 space-y-6">
-
-                    <FormField
-                        label= "Event ID"
-                        name= "id"
-                        type= "text"
-                        value= {formData.id ?? ''}
-                        required= {true}
-                        disabled={!!event}
-                        error= {errors.id}
-                        onChange={handleChange}
-                    />
+                <form onSubmit={(e) => handleSubmit(e, onSave, onClose)} className="p-6 space-y-6">
 
                     <FormField
                         label= "Title"
@@ -126,7 +33,7 @@ export function EventModal({ event, onSave, onClose }: EventModalProps) {    con
                         type= "text"
                         value= {formData.title ?? ''}
                         required= {true}
-                        disabled={!event}
+                        disabled={isSubmitting}
                         error= {errors.title}
                         onChange={handleChange}
                     />                   
@@ -136,7 +43,7 @@ export function EventModal({ event, onSave, onClose }: EventModalProps) {    con
                         name= "description"
                         value= {formData.description ?? ''}
                         required= {true}
-                        disabled={false}
+                        disabled={isSubmitting}
                         error= {errors.description}
                         rows={4}
                         onChange={handleChange}
@@ -147,7 +54,7 @@ export function EventModal({ event, onSave, onClose }: EventModalProps) {    con
                         type= "date"
                         value= {formData.date ?? ''}
                         required= {true}
-                        disabled={!event}
+                        disabled={isSubmitting}
                         error= {errors.date}
                         onChange={handleChange}
  />    
@@ -157,7 +64,7 @@ export function EventModal({ event, onSave, onClose }: EventModalProps) {    con
                         type= "time"
                         value= {formData.time ?? ''}
                         required= {false}
-                        disabled={!event}
+                        disabled={isSubmitting}
                         error= {errors.time}
                         onChange={handleChange}                        
                     />    
@@ -167,7 +74,7 @@ export function EventModal({ event, onSave, onClose }: EventModalProps) {    con
                         type= "text"
                         value= {formData.location ?? ''}
                         required= {false}
-                        disabled={!!event}
+                        disabled={isSubmitting}
                         error= {errors.location}
                         onChange={handleChange}                        
                     />    
@@ -177,7 +84,7 @@ export function EventModal({ event, onSave, onClose }: EventModalProps) {    con
                         type= "text"
                         value= {formData.organizer ?? ''}
                         required= {false}
-                        disabled={!event}
+                        disabled={isSubmitting}
                         error= {errors.organizer}
                         onChange={handleChange}                        
                     />    
@@ -186,7 +93,7 @@ export function EventModal({ event, onSave, onClose }: EventModalProps) {    con
                         name="category"
                         value={formData.category ?? ''}
                         required={true}
-                        disabled={false}
+                        disabled={isSubmitting}
                         placeholder='Select Event Category'
                         options={EVENT_CATEGORIES}
                         error= {errors.category}                       
@@ -197,7 +104,7 @@ export function EventModal({ event, onSave, onClose }: EventModalProps) {    con
                         name="priority"
                         value={formData.priority ?? ''}
                         required={true}
-                        disabled={false}
+                        disabled={isSubmitting}
                         placeholder='Select Priority'
                         options={EVENT_PRIORITIES}
                         error= {errors.priority}                           
@@ -208,7 +115,7 @@ export function EventModal({ event, onSave, onClose }: EventModalProps) {    con
                         name="status"
                         value={formData.status ?? ''}
                         required={true}
-                        disabled={false}
+                        disabled={isSubmitting}
                         placeholder='Select Status'
                         options={EVENT_STATUSES}
                         error= {errors.status}                        
@@ -220,77 +127,42 @@ export function EventModal({ event, onSave, onClose }: EventModalProps) {    con
                         name= "contact_email"
                         type= "email"
                         value= {formData.contact_email ?? ''}
-                        required= {true}
-                        disabled={false}
+                        required= {false}
+                        disabled={isSubmitting}
                         error= {errors.contact_email}
                         onChange={handleChange}
                     /> 
 
-                    {/* Buttons */}
+                    //Buttons
                     <div className="flex gap-3 pt-6 border-t border-gray-200">
-                        <button
+                        <Button
                             type="button"
+                            variant="outline"
+                            size="default"
                             onClick={onClose}
-                            className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
-                        >
-                            Cancel
-                        </button>
-                        <button
-                            type="submit"
                             disabled={isSubmitting}
-                            className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50"
+                            className='flex-1'
                         >
+                        Cancel
+                        </Button>
+
+                        <Button
+                            type="submit"
+                            variant="default"
+                            size="default"
+                            disabled={isSubmitting}
+                            className='flex-1'
+                        >
+                            {isSubmitting && (
+                                <svg className="animate-spin h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24">
+                                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                                    <path className="opacity-75" fill="currentColor" d="m4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                </svg>
+                            )}
                             {isSubmitting ? 'Saving...' : (event ? 'Update Event' : 'Create Event')}
-                        </button>
+                        </Button>
                     </div>
                 </form>
-            </div>
-        </div>
-    );
-}
-
-interface DeleteConfirmationModalProps {
-    event: Event;
-    onConfirm: () => void;
-    onCancel: () => void;
-}
-
-export function DeleteConfirmationModal({ event, onConfirm, onCancel }: DeleteConfirmationModalProps) {
-    return (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-            <div className="bg-white rounded-lg shadow-xl w-full max-w-md">
-                <div className="p-6">
-                    <div className="flex items-center mb-4">
-                        <div className="mx-auto flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full bg-red-100">
-                            <svg className="h-6 w-6 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 15.5c-.77.833.192 2.5 1.732 2.5z" />
-                            </svg>
-                        </div>
-                    </div>
-                    <div className="text-center">
-                        <h3 className="text-lg font-medium text-gray-900 mb-2">
-                            Delete Event
-                        </h3>                        <p className="text-sm text-gray-500 mb-4">
-                            Are you sure you want to delete &quot;{event.title}&quot;? This action cannot be undone.
-                        </p>
-                    </div>
-                    <div className="flex gap-3">
-                        <button
-                            type="button"
-                            onClick={onCancel}
-                            className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
-                        >
-                            Cancel
-                        </button>
-                        <button
-                            type="button"
-                            onClick={onConfirm}
-                            className="flex-1 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
-                        >
-                            Delete
-                        </button>
-                    </div>
-                </div>
             </div>
         </div>
     );

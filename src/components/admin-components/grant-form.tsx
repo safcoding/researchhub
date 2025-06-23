@@ -1,7 +1,10 @@
-'use client';
+import type { Grant } from "@/hooks/grant-logic";
+import { GRANT_TYPES, GRANT_STATUSES, SPONSOR_CATEGORIES } from '@/constants/grant-options';
+import { useGrantForm } from '@/hooks/forms/useGrantForm';
 
-import { useState } from 'react';
-import type { Grant } from '@/hooks/grant-logic';
+import { FormField } from "../reusable/formfield";
+import { SelectField } from "../reusable/selectfield";
+import { Button } from "../ui/button";
 
 interface GrantModalProps {
     grant?: Grant;
@@ -10,31 +13,7 @@ interface GrantModalProps {
 }
 
 export function GrantModal({ grant, onSave, onClose }: GrantModalProps) {
-    const [formData, setFormData] = useState<Partial<Grant>>(grant || {});
-    const [loading, setLoading] = useState(false);
-
-    const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
-        setLoading(true);
-        try {
-            await onSave(formData);
-            if (!grant) onClose(); // Close modal for new grants
-        } catch (error) {
-            console.error('Error saving grant:', error);
-        } finally {
-            setLoading(false);
-        }
-    };
-
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-        const { name, value } = e.target;
-        const numericFields = ['PL_STAFF_NO', 'PRO_APPROVED'];
-        
-        setFormData(prev => ({
-            ...prev,
-            [name]: numericFields.includes(name) ? Number(value) || 0 : value
-        }));
-    };
+    const { formData, errors, isSubmitting, handleChange, handleSubmit } = useGrantForm(grant);
 
     return (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
@@ -48,202 +27,242 @@ export function GrantModal({ grant, onSave, onClose }: GrantModalProps) {
                     </button>
                 </div>
 
-                <form onSubmit={handleSubmit} className="space-y-4">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div className="md:col-span-2">
-                            <label className="block text-sm font-medium mb-1">
-                                Project ID *
-                            </label>
-                            <input
-                                name="PROJECTID"
-                                value={formData.PROJECTID || ''}
-                                onChange={handleChange}
-                                className="w-full p-2 border rounded focus:ring-2 focus:ring-blue-500"
-                                required
-                            />
-                        </div>
+          <form onSubmit={(e) => handleSubmit(e, onSave, onClose)} className="p-6 space-y-8">
+                    {/* 📝 Project Information */}
+                    <div className="space-y-4">
+                        <h3 className="text-lg font-semibold text-gray-900 border-b border-gray-200 pb-2 flex items-center gap-2">
+                            📝 Project Information
+                        </h3>
+                        
+                        <FormField
+                            label="Project ID"
+                            name="PROJECTID"
+                            type="text"
+                            value={formData.PROJECTID ?? ''}
+                            required={true}
+                            disabled={isSubmitting}
+                            error={errors.PROJECTID}
+                            onChange={handleChange}
+                        />
 
-                        <div className="md:col-span-2">
-                            <label className="block text-sm font-medium mb-1">
-                                Project Title *
-                            </label>
-                            <input
-                                name="PROJECT_TITLE"
-                                value={formData.PROJECT_TITLE || ''}
-                                onChange={handleChange}
-                                className="w-full p-2 border rounded focus:ring-2 focus:ring-blue-500"
-                                required
-                            />
-                        </div>
-
-                        <div>
-                            <label className="block text-sm font-medium mb-1">PI Name *</label>
-                            <input
-                                name="PL_NAME"
-                                value={formData.PL_NAME || ''}
-                                onChange={handleChange}
-                                className="w-full p-2 border rounded focus:ring-2 focus:ring-blue-500"
-                                required
-                            />
-                        </div>
-
-                        <div>
-                            <label className="block text-sm font-medium mb-1">PI Staff No</label>
-                            <input
-                                type="number"
-                                name="PL_STAFF_NO"
-                                value={formData.PL_STAFF_NO || ''}
-                                onChange={handleChange}
-                                className="w-full p-2 border rounded focus:ring-2 focus:ring-blue-500"
-                            />
-                        </div>
-
-                        <div>
-                            <label className="block text-sm font-medium mb-1">Start Date *</label>
-                            <input
-                                type="date"
-                                name="PRO_DATESTART"
-                                value={formData.PRO_DATESTART || ''}
-                                onChange={handleChange}
-                                className="w-full p-2 border rounded focus:ring-2 focus:ring-blue-500"
-                                required
-                            />
-                        </div>
-
-                        <div>
-                            <label className="block text-sm font-medium mb-1">End Date *</label>
-                            <input
-                                type="date"
-                                name="PRO_DATEEND"
-                                value={formData.PRO_DATEEND || ''}
-                                onChange={handleChange}
-                                className="w-full p-2 border rounded focus:ring-2 focus:ring-blue-500"
-                                required
-                            />
-                        </div>
-
-                        <div>
-                            <label className="block text-sm font-medium mb-1">Grant Type *</label>
-                            <select
-                                name="GRANT_TYPE"
-                                value={formData.GRANT_TYPE || ''}
-                                onChange={handleChange}
-                                className="w-full p-2 border rounded focus:ring-2 focus:ring-blue-500"
-                                required
-                            >
-                                <option value="">Select Type</option>
-                                <option value="University Grant">University Grant</option>
-                                <option value="Government Grant">Government Grant</option>
-                                <option value="Industrial Grant">Industrial Grant</option>
-                                <option value="Research Contract">Research Contract</option>
-                                <option value="Other">Other</option>
-                            </select>
-                        </div>
-
-                        <div>
-                            <label className="block text-sm font-medium mb-1">Status *</label>
-                            <select
-                                name="PROJECT_STATUS"
-                                value={formData.PROJECT_STATUS || ''}
-                                onChange={handleChange}
-                                className="w-full p-2 border rounded focus:ring-2 focus:ring-blue-500"
-                                required
-                            >
-                                <option value="">Select Status</option>
-                                <option value="Active">Active</option>
-                                <option value="Completed">Completed</option>
-                                <option value="Pending">Pending</option>
-                                <option value="Suspended">Suspended</option>
-                            </select>
-                        </div>
-
-                        <div>
-                            <label className="block text-sm font-medium mb-1">Amount (MYR) *</label>
-                            <input
-                                type="number"
-                                step="0.01"
-                                name="PRO_APPROVED"
-                                value={formData.PRO_APPROVED || ''}
-                                onChange={handleChange}
-                                className="w-full p-2 border rounded focus:ring-2 focus:ring-blue-500"
-                                required
-                            />
-                        </div>
-
-                        <div>
-                            <label className="block text-sm font-medium mb-1">Sponsor Category</label>
-                            <select
-                                name="SPONSOR_CATEGORY"
-                                value={formData.SPONSOR_CATEGORY || ''}
-                                onChange={handleChange}
-                                className="w-full p-2 border rounded focus:ring-2 focus:ring-blue-500"
-                            >
-                                <option value="">Select Category</option>
-                                <option value="Government">Government</option>
-                                <option value="University">University</option>
-                                <option value="Industry">Industry</option>
-                                <option value="International">International</option>
-                            </select>
-                        </div>
-
-                        <div>
-                            <label className="block text-sm font-medium mb-1">Sponsor Name</label>
-                            <input
-                                name="SPONSOR_NAME"
-                                value={formData.SPONSOR_NAME || ''}
-                                onChange={handleChange}
-                                className="w-full p-2 border rounded focus:ring-2 focus:ring-blue-500"
-                                placeholder="Enter sponsor name"
-                            />
-                        </div>
-
-                        <div>
-                            <label className="block text-sm font-medium mb-1">Project Research Alliance</label>
-                            <input
-                                name="PTJ_RESEARCH_ALLIANCE"
-                                value={formData.PTJ_RESEARCH_ALLIANCE || ''}
-                                onChange={handleChange}
-                                className="w-full p-2 border rounded focus:ring-2 focus:ring-blue-500"
-                            />
-                        </div>
-                        <div>
-                            <label className="block text-sm font-medium mb-1">Subsponsor Name</label>
-                            <input
-                                name="SUBSPONSOR_NAME"
-                                value={formData.SUBSPONSOR_NAME || ''}
-                                onChange={handleChange}
-                                className="w-full p-2 border rounded focus:ring-2 focus:ring-blue-500"
-                            />
-                        </div>
-
-                        <div>
-                            <label className="block text-sm font-medium mb-1">Cost Center</label>
-                            <input
-                                name="COST_CENTER_CODE"
-                                value={formData.COST_CENTER_CODE || ''}
-                                onChange={handleChange}
-                                className="w-full p-2 border rounded focus:ring-2 focus:ring-blue-500"
-                            />
-                        </div>
-                    
+                        <FormField
+                            label="Project Title"
+                            name="PROJECT_TITLE"
+                            type="text"
+                            value={formData.PROJECT_TITLE ?? ''}
+                            required={true}
+                            disabled={isSubmitting}
+                            error={errors.PROJECT_TITLE}
+                            onChange={handleChange}
+                        />
                     </div>
 
-                    <div className="flex justify-end gap-2 pt-4">
-                        <button
+                    {/* 👤 Principal Investigator */}
+                    <div className="space-y-4">
+                        <h3 className="text-lg font-semibold text-gray-900 border-b border-gray-200 pb-2 flex items-center gap-2">
+                            👤 Project Leader
+                        </h3>
+                        
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <FormField
+                                label="PI Name"
+                                name="PL_NAME"
+                                type="text"
+                                value={formData.PL_NAME ?? ''}
+                                required={true}
+                                disabled={isSubmitting}
+                                error={errors.PL_NAME}
+                                onChange={handleChange}
+                            />
+
+                            <FormField
+                                label="PI Staff Number"
+                                name="PL_STAFF_NO"
+                                type="number"
+                                value={formData.PL_STAFF_NO?.toString() ?? ''}
+                                required={false}
+                                disabled={isSubmitting}
+                                error={errors.PL_STAFF_NO}
+                                onChange={handleChange}
+                            />
+                        </div>
+
+                        <FormField
+                            label="Research Group"
+                            name="RESEARCH_GROUP"
+                            type="text"
+                            value={formData.RESEARCH_GROUP ?? ''}
+                            required={false}
+                            disabled={isSubmitting}
+                            error={errors.RESEARCH_GROUP}
+                            onChange={handleChange}
+                        />
+                    </div>
+
+                    {/* 📅 Timeline & Financial */}
+                    <div className="space-y-4">
+                        <h3 className="text-lg font-semibold text-gray-900 border-b border-gray-200 pb-2 flex items-center gap-2">
+                            📅 Timeline & Financial
+                        </h3>
+                        
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <FormField
+                                label="Start Date"
+                                name="PRO_DATESTART"
+                                type="date"
+                                value={formData.PRO_DATESTART ?? ''}
+                                required={true}
+                                disabled={isSubmitting}
+                                error={errors.PRO_DATESTART}
+                                onChange={handleChange}
+                            />
+
+                            <FormField
+                                label="End Date"
+                                name="PRO_DATEEND"
+                                type="date"
+                                value={formData.PRO_DATEEND ?? ''}
+                                required={true}
+                                disabled={isSubmitting}
+                                error={errors.PRO_DATEEND}
+                                onChange={handleChange}
+                            />
+
+                            <FormField
+                                label="Amount Approved (MYR)"
+                                name="PRO_APPROVED"
+                                type="number"
+                                value={formData.PRO_APPROVED?.toString() ?? ''}
+                                required={true}
+                                disabled={isSubmitting}
+                                error={errors.PRO_APPROVED}
+                                onChange={handleChange}
+                            />
+                        </div>
+                    </div>
+
+                    {/* 🏷️ Classification */}
+                    <div className="space-y-4">
+                        <h3 className="text-lg font-semibold text-gray-900 border-b border-gray-200 pb-2 flex items-center gap-2">
+                            🏷️ Classification
+                        </h3>
+                        
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <SelectField
+                                label="Grant Type"
+                                name="GRANT_TYPE"
+                                value={formData.GRANT_TYPE ?? ''}
+                                required={true}
+                                disabled={isSubmitting}
+                                placeholder="Select Grant Type"
+                                options={GRANT_TYPES}
+                                error={errors.GRANT_TYPE}
+                                onChange={handleChange}
+                            />
+
+                            <SelectField
+                                label="Project Status"
+                                name="PROJECT_STATUS"
+                                value={formData.PROJECT_STATUS ?? ''}
+                                required={true}
+                                disabled={isSubmitting}
+                                placeholder="Select Status"
+                                options={GRANT_STATUSES}
+                                error={errors.PROJECT_STATUS}
+                                onChange={handleChange}
+                            />
+                        </div>
+                    </div>
+
+                    {/* 🏢 Sponsorship Details */}
+                    <div className="space-y-4">
+                        <h3 className="text-lg font-semibold text-gray-900 border-b border-gray-200 pb-2 flex items-center gap-2">
+                            🏢 Sponsorship Details
+                        </h3>
+                        
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <SelectField
+                                label="Sponsor Category"
+                                name="SPONSOR_CATEGORY"
+                                value={formData.SPONSOR_CATEGORY ?? ''}
+                                required={false}
+                                disabled={isSubmitting}
+                                placeholder="Select Category"
+                                options={SPONSOR_CATEGORIES}
+                                error={errors.SPONSOR_CATEGORY}
+                                onChange={handleChange}
+                            />
+
+                            <FormField
+                                label="Sponsor Name"
+                                name="SPONSOR_NAME"
+                                type="text"
+                                value={formData.SPONSOR_NAME ?? ''}
+                                required={false}
+                                disabled={isSubmitting}
+                                error={errors.SPONSOR_NAME}
+                                onChange={handleChange}
+                            />
+
+                            <FormField
+                                label="Subsponsor Name"
+                                name="SUBSPONSOR_NAME"
+                                type="text"
+                                value={formData.SUBSPONSOR_NAME ?? ''}
+                                required={false}
+                                disabled={isSubmitting}
+                                error={errors.SUBSPONSOR_NAME}
+                                onChange={handleChange}
+                            />
+
+                            <FormField
+                                label="Cost Center Code"
+                                name="COST_CENTER_CODE"
+                                type="text"
+                                value={formData.COST_CENTER_CODE ?? ''}
+                                required={false}
+                                disabled={isSubmitting}
+                                error={errors.COST_CENTER_CODE}
+                                onChange={handleChange}
+                            />
+                        </div>
+
+                        <FormField
+                            label="Research Alliance"
+                            name="PTJ_RESEARCH_ALLIANCE"
+                            type="text"
+                            value={formData.PTJ_RESEARCH_ALLIANCE ?? ''}
+                            required={false}
+                            disabled={isSubmitting}
+                            error={errors.PTJ_RESEARCH_ALLIANCE}
+                            onChange={handleChange}
+                        />
+                    </div>
+                 <div className="flex gap-3 pt-6 border-t border-gray-200">
+                        <Button
                             type="button"
+                            variant="outline"
                             onClick={onClose}
-                            className="px-4 py-2 text-gray-600 border rounded hover:bg-gray-50"
-                            disabled={loading}
+                            disabled={isSubmitting}
+                            className="flex-1"
                         >
                             Cancel
-                        </button>
-                        <button
+                        </Button>
+
+                        <Button
                             type="submit"
-                            className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 disabled:opacity-50"
-                            disabled={loading}
+                            variant="default"
+                            disabled={isSubmitting}
+                            className="flex-1"
                         >
-                            {loading ? 'Saving...' : 'Save Grant'}
-                        </button>
+                            {isSubmitting && (
+                                <svg className="animate-spin h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24">
+                                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                                    <path className="opacity-75" fill="currentColor" d="m4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                </svg>
+                            )}
+                            {isSubmitting ? 'Saving...' : (grant ? 'Update Grant' : 'Create Grant')}
+                        </Button>
                     </div>
                 </form>
             </div>
