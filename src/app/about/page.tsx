@@ -38,8 +38,8 @@ export default function AboutPage() {
             <Image
               src={DeputyDean}
               alt="Deputy Dean"
-              width={250}
-              height={250}
+              width={350}
+              height={350}
               className="rounded-lg shadow-md object-cover flex-shrink-0"
             />
 

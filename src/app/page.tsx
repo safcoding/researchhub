@@ -71,6 +71,7 @@ const HomePage = () => {
   return (
       <ConditionalNavbar> 
       <Navbar />
+
            {/* Latest Announcements - Dynamic from Events */}
       <section className="py-12 bg-gray-50">
         <div className="container mx-auto px-4">
@@ -80,7 +81,8 @@ const HomePage = () => {
             <div className="text-center">
               <p className="text-gray-600">Loading announcements...</p>
             </div>
-          ) : upcomingEvents.length > 0 ? (            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          ) : upcomingEvents.length > 0 ? (            
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               {upcomingEvents.map((event) => {
                 const currentDate = new Date();
                 const registrationDeadline = event.registration_deadline ? new Date(event.registration_deadline) : null;
@@ -89,6 +91,7 @@ const HomePage = () => {
                 return (
                   <div key={event.id} className="bg-white rounded-lg shadow-md overflow-hidden">
                     <div className="h-48 relative bg-gray-200">
+
                       {/* Event Image */}
                       <Image
                         src={
@@ -100,6 +103,7 @@ const HomePage = () => {
                         fill
                         style={{ objectFit: 'cover' }}
                       />
+
                       {/* Priority badge */}
                       <div className={`absolute top-2 right-2 px-2 py-1 rounded text-xs font-semibold ${
                         event.priority === 'High' ? 'bg-red-500 text-white' :
@@ -121,7 +125,9 @@ const HomePage = () => {
                             Registration {isRegistrationOpen ? 'Closes' : 'Closed'}: {new Date(event.registration_deadline).toLocaleDateString()}
                           </p>
                         )}
-                        <p className="text-sm text-blue-600">{event.category}</p>
+                        <p className="text-sm" style={{ color: '#0A867D' }}>
+                            {event.category}
+                          </p>
                       </div>
                       <h3 className="text-xl font-semibold mb-2 line-clamp-2">{event.title}</h3>
                       <p className="text-gray-600 mb-4 line-clamp-3">{event.description}</p>
@@ -134,9 +140,18 @@ const HomePage = () => {
                         }`}>
                           {event.status}
                         </span>
-                        <Link href="/announcements" className="text-blue-600 hover:text-blue-800 font-medium">
-                          View Details →
-                        </Link>
+
+                        {/* Link to event details */}
+                        <Link
+                            href="/announcements"
+                            className="font-medium"
+                            style={{ color: '#0A867D' }}
+                            onMouseEnter={(e) => ((e.target as HTMLElement).style.color = '#066458')}
+                            onMouseLeave={(e) => ((e.target as HTMLElement).style.color = '#0A867D')}
+                          >
+                            View Details →
+                          </Link>
+
                       </div>
                     </div>
                   </div>
@@ -146,6 +161,8 @@ const HomePage = () => {
           ) : (
             <div className="text-center">
               <p className="text-gray-600">No upcoming announcements at the moment.</p>
+
+              {/* Link to view all announcements */}
               <Link href="/announcements" className="text-blue-600 hover:text-blue-800 font-medium">
                 View all announcements →
               </Link>
@@ -153,9 +170,14 @@ const HomePage = () => {
           )}
           
           <div className="text-center mt-8">
-            <Link 
+
+            {/* Button to view all announcements */}
+              <Link 
               href="/announcements" 
-              className="inline-block bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors"
+              className="inline-block px-6 py-3 rounded-lg text-white transition-colors"
+              style={{ backgroundColor: '#2B9167' }}
+              onMouseEnter={(e) => ((e.target as HTMLElement).style.backgroundColor = '#066458')}
+              onMouseLeave={(e) => ((e.target as HTMLElement).style.backgroundColor = '#2B9167')}
             >
               View All Announcements
             </Link>
@@ -166,7 +188,8 @@ const HomePage = () => {
       {/* Programs */}
       <section className="py-12">
         <div className="container mx-auto px-4">
-          <h2 className="text-3xl font-bold mb-8 text-center">Our Programs</h2>          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          <h2 className="text-3xl font-bold mb-8 text-center">Our Programs</h2>          
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {[
               { title: 'Publication Details', icon: '🎓', route: '/publications' },
               { title: 'Research Opportunities', icon: '🔬', route: '/labs' },
@@ -182,17 +205,25 @@ const HomePage = () => {
                 <p className="text-gray-600 mb-4">
                   Discover our range of programs designed to empower the next generation.
                 </p>
+
+
+                {/* Link to program details */}
                 <Link
-                  href={program.route}
-                  className="text-blue-600 hover:text-blue-800 font-medium"
-                >
+                    href={program.route}
+                    className="font-medium"
+                    style={{ color: '#0A867D' }}
+                    onMouseEnter={(e) => ((e.target as HTMLElement).style.color = '#066458')}
+                    onMouseLeave={(e) => ((e.target as HTMLElement).style.color = '#0A867D')}
+                  >
                   Learn more →
                 </Link>
               </div>
             ))}
           </div>
         </div>
-      </section>      {/* Upcoming Conferences - Dynamic from Events */}
+      </section>     
+
+       {/* Upcoming Conferences - Dynamic from Events */}
       <section className="py-12 bg-gray-50">
         <div className="container mx-auto px-4">
           <h2 className="text-3xl font-bold mb-8 text-center">Upcoming Conferences</h2>
@@ -212,7 +243,10 @@ const HomePage = () => {
                 
                 return (
                   <div key={conference.id} className="flex bg-white rounded-lg shadow-md overflow-hidden">
-                    <div className="bg-blue-700 text-white py-4 px-6 flex flex-col items-center justify-center">
+                    <div
+                            className="text-white py-4 px-6 flex flex-col items-center justify-center"
+                            style={{ backgroundColor: '#0A867D' }}
+                          >
                       <span className="text-2xl font-bold">{month}</span>
                       <span>{day}</span>
                     </div>
@@ -234,9 +268,18 @@ const HomePage = () => {
                         }`}>
                           {conference.status}
                         </span>
-                        <Link href="/announcements" className="text-blue-600 hover:text-blue-800 font-medium">
-                          Details →
-                        </Link>
+
+
+                        {/* Link to conference details */}
+                        <Link
+                            href="/announcements"
+                            className="font-medium"
+                            style={{ color: '#0A867D' }}
+                            onMouseEnter={(e) => ((e.target as HTMLElement).style.color = '#066458')}
+                            onMouseLeave={(e) => ((e.target as HTMLElement).style.color = '#0A867D')}
+                          >
+                            Details →
+                          </Link>
                       </div>
                     </div>
                   </div>
@@ -252,10 +295,15 @@ const HomePage = () => {
             </div>
           )}
           
+
+          {/* Button to view all events */}
           <div className="text-center mt-8">
             <Link 
               href="/announcements" 
-              className="inline-block bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors"
+              className="inline-block px-6 py-3 rounded-lg text-white transition-colors"
+              style={{ backgroundColor: '#2B9167' }}
+              onMouseEnter={(e) => ((e.target as HTMLElement).style.backgroundColor = '#066458')}
+              onMouseLeave={(e) => ((e.target as HTMLElement).style.backgroundColor = '#2B9167')}
             >
               View All Events
             </Link>
