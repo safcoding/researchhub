@@ -1,7 +1,7 @@
 import type { Lab } from '@/hooks/lab-logic';
-import { FormField } from '../reusable/formfield';
-import { TextAreaField } from '../reusable/textarea';
-import { SelectField } from '../reusable/selectfield';
+import { FormField} from '@/components/reusable/formfield';
+import { TextAreaField } from '@/components/reusable/textarea';
+import { SelectField } from '@/components/reusable/selectfield';
 import { LAB_TYPES, LAB_STATUS, RESEARCH_AREA } from '@/constants/lab-options';
 import { useLabForm } from '@/hooks/forms/useLabForm';
 import { Button } from '@/components/ui/button';
