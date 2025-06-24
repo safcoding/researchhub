@@ -205,17 +205,22 @@ const PublicationsDashboard: React.FC = () => {
               </h3>
             </div>
 
-            <div className="flex gap-2">              <select 
+
+           {/* Category Filter*/}
+            <div className="flex gap-2">              
+              <select 
                 value={filterCategory} 
                 onChange={(e) => setFilterCategory(e.target.value)} 
                 className="border px-3 py-2 rounded text-sm"
                 aria-label="Filter by category"
               >
                 <option value="">All Categories</option>
-                <option value="Journal">Journal</option>
-                <option value="Conference">Conference</option>
-                <option value="Book">Book</option>
-              </select>              <select 
+                <option value="INDEXED PUBLICATION">Indexed Publication</option>
+                <option value="NON INDEXED PUBLICATION">Non-Indexed Publication</option>
+                <option value="OTHERS PUBLICATION">Others</option>
+              </select>    
+
+              <select 
                 value={filterYear} 
                 onChange={(e) => setFilterYear(e.target.value)} 
                 className="border px-3 py-2 rounded text-sm"

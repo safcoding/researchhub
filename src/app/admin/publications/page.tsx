@@ -11,6 +11,11 @@ import {
   SidebarTrigger,
 } from "@/components/ui/sidebar"
 
+// Importing the Filtering pages
+import { useFilteredPublications } from '@/hooks/useFilteredPublications';
+import { PublicationFilters } from '@/components/PublicationFilters';
+
+
 const PublicationsUpload: React.FC = () => {
   const { publications, loading, error, addPublication, updatePublication, deletePublication } = PublicationLogic();
   const [editingId, setEditingId] = useState<number | null>(null);
@@ -24,7 +29,7 @@ const PublicationsUpload: React.FC = () => {
     impact: 0,
     date: '',
     level: '',
-    author_name: '', // Added author_name, made it an array
+    author_name: '', // Added author_name
     author_id: 0,
     research_alliance: '',
     rg_name: ''
@@ -43,7 +48,7 @@ const PublicationsUpload: React.FC = () => {
       pub_refno: '',
       status: 'Published',
       type: 'Book Chapter', //changed this to default to Book Chapter
-      category: 'Journal',
+      category: 'Indexed Publication', //Changed this to default to Indexed Publication
       journal: '',
       title: '',
       impact: 0,
@@ -111,6 +116,21 @@ const PublicationsUpload: React.FC = () => {
       }
     }
   };
+
+// Filtering logic: useState hooks
+const [searchText, setSearchText] = useState('');
+const [filterCategory, setFilterCategory] = useState('');
+const [filterYear, setFilterYear] = useState('');
+const [filterType, setFilterType] = useState('');
+
+// Extract unique years from publications for the filter dropdown
+const availableYears = Array.from(
+  new Set(
+    publications
+      .map((pub) => pub.date && pub.date.slice(0, 4))
+      .filter((year) => year)
+  )
+).sort();
 
 
  return (
@@ -228,14 +248,17 @@ const PublicationsUpload: React.FC = () => {
         className="w-full p-2 border rounded"
         required
       >
-        <option value="Book Chapter">Book Chapter</option>
-        <option value="Research Book">Research Book</option>
+        { /* TYPES */}
+        <option value="BOOK CHAPTER">Book Chapter</option>
+        <option value="ORIGINAL BOOK">Research Book</option>
         <option value="Scopus">Scopus</option>
-        <option value="Web of Science">Web of Science</option>
-        <option value="Conference/Proceeding">Conference/Proceeding</option>
+        <option value="PUBLICATION IN WEB OF SCIENCE">Web of Science</option>
+        <option value="CONFERENCE PAPER">Conference</option>
+        <option value="PROCEEDINGS">Proceeding</option>
         <option value="Others">Others</option>
       </select>
     </div>
+
     <div>
       <label className="block text-sm font-medium text-gray-700 mb-1">Category*</label>
       <select
@@ -245,11 +268,14 @@ const PublicationsUpload: React.FC = () => {
         className="w-full p-2 border rounded"
         required
       >
-        <option value="Journal">Journal</option>
-        <option value="Conference">Conference</option>
-        <option value="Book">Book</option>
+        { /* CATEGORIES */}
+        <option value="INDEXED PUBLICATION">Indexed Publication</option>
+        <option value="NON INDEXED PUBLICATION">Non-Indexed Publication</option>
+        <option value="OTHERS PUBLICATION">Other</option>
       </select>
     </div>
+
+
     <div>
       <label className="block text-sm font-medium text-gray-700 mb-1">Research Alliance</label>
       <input
@@ -324,6 +350,18 @@ const PublicationsUpload: React.FC = () => {
 
         <div className="bg-white p-6 rounded-lg shadow-md">
           <h2 className="text-xl font-bold text-gray-800 mb-4">Publications List</h2>
+           {/* FILTERING*/}
+            <PublicationFilters
+                searchText={searchText}
+                filterCategory={filterCategory}
+                filterYear={filterYear}
+                filterType={filterType}
+                availableYears={availableYears}
+                onSearchChange={setSearchText}
+                onCategoryChange={setFilterCategory}
+                onYearChange={setFilterYear}
+                onTypeChange={setFilterType}
+              />
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead className="bg-gray-100">
@@ -338,7 +376,8 @@ const PublicationsUpload: React.FC = () => {
                 </tr>
               </thead>
               <tbody>
-                {publications.map(pub => (
+                {/* Filtered publications */}
+                {useFilteredPublications(publications, { searchText, filterCategory, filterYear, filterType }).map(pub => (
                   <tr key={pub.id} className="border-b hover:bg-gray-50">
                     <td className="px-4 py-2">{pub.pub_refno}</td>
                     <td className="px-4 py-2">{pub.title}</td>
