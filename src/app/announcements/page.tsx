@@ -249,7 +249,6 @@ const SUPABASE_EVENT_PICS_URL = "https://fqtizehthryjvqxqvpkl.supabase.co/storag
                       </div>
                     )}
                   </div>
-                  
                   {/*MORE INFO BUTTON: */}
                   <div className="flex gap-2">
                     <button 
