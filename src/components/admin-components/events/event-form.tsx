@@ -133,7 +133,6 @@ export function EventModal({ event, onSave, onClose }: EventModalProps) {
                         onChange={handleChange}
                     /> 
 
-                    //Buttons
                     <div className="flex gap-3 pt-6 border-t border-gray-200">
                         <Button
                             type="button"
