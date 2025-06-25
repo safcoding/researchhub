@@ -26,6 +26,7 @@ export default function GrantDBPage() {
   const [dateFilter, setDateFilter] = useState<'all' | 'upcoming' | 'past' | 'thisMonth' | 'nextMonth'>('all');
   const [selectedStatus, setSelectedStatus] = useState<string>('all');
 
+    //State Management
   const handleUpdateGrant = async (updatedGrant: Partial<Grant>) => {
     if (selectedGrant?.PROJECTID) {
       await updateGrant(selectedGrant.PROJECTID, updatedGrant);
@@ -33,7 +34,6 @@ export default function GrantDBPage() {
       setSelectedGrant(null);
     }
   };
-
   const handleAddGrant = async (newGrant: Partial<Grant>) => {
     await addGrant(newGrant);
     setShowGrantModal(false);
@@ -85,14 +85,9 @@ export default function GrantDBPage() {
         matchesDate = true;
     }
 
-    // Year filtering
     const matchesYear = selectedYear === 'all' || grantDate.getFullYear().toString() === selectedYear;
-
-    // Month filtering
     const matchesMonth = selectedMonth === 'all' || grantDate.getMonth().toString() === selectedMonth;
-
     const matchesStatus = selectedStatus === 'all' || grant.PROJECT_STATUS === selectedStatus;
-
     return matchesDate && matchesYear && matchesMonth && matchesStatus;
   });
 
@@ -123,6 +118,13 @@ export default function GrantDBPage() {
               </Button>
             </div>
 
+            {/* Error Display */}
+            {error && (
+              <div className="mt-4 p-4 bg-red-100 border border-red-400 text-red-700 rounded">
+                Error: {error}
+              </div>
+            )}
+            
             <GrantFilters
               filters={{
                 dateFilter,
@@ -143,13 +145,6 @@ export default function GrantDBPage() {
               onEdit={handleEditClick}
               onDelete={handleDeleteClick}
             />
-
-            {/* Error Display */}
-            {error && (
-              <div className="mt-4 p-4 bg-red-100 border border-red-400 text-red-700 rounded">
-                Error: {error}
-              </div>
-            )}
 
             {/* Modals */}
             {showGrantModal && (

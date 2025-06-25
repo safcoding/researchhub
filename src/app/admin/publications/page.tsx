@@ -26,6 +26,8 @@ export default function PublicationCRUDPage() {
   const [dateFilter, setDateFilter] = useState<'all' | 'upcoming' | 'past' | 'thisMonth' | 'nextMonth'>('all');
   const [selectedStatus, setSelectedStatus] = useState<string>('all');
 
+
+  //State Management
   const handleUpdatePublication = async (updatedPublication: Partial<Publication>) => {
     if (selectedPublication?.id) {
       await updatePublication(selectedPublication.id, updatedPublication);
@@ -83,14 +85,9 @@ export default function PublicationCRUDPage() {
       default:
         matchesDate = true;
     }
-
-    // Year filtering
     const matchesYear = selectedYear === 'all' || publicationDate.getFullYear().toString() === selectedYear;
-    // Month filtering
     const matchesMonth = selectedMonth === 'all' || publicationDate.getMonth().toString() === selectedMonth;
-    // Status filtering
     const matchesStatus = selectedStatus === 'all' || publication.status === selectedStatus;
-
     return matchesDate && matchesYear && matchesMonth && matchesStatus;
   });
 
@@ -121,6 +118,13 @@ export default function PublicationCRUDPage() {
               </Button>
             </div>
 
+            {/* Error Display */}
+            {error && (
+              <div className="mt-4 p-4 bg-red-100 border border-red-400 text-red-700 rounded">
+                Error: {error}
+              </div>
+            )}
+            
             <PublicationFilters
               filters={{
                 dateFilter,
@@ -141,13 +145,6 @@ export default function PublicationCRUDPage() {
               onEdit={handleEditClick}
               onDelete={handleDeleteClick}
             />
-
-            {/* Error Display */}
-            {error && (
-              <div className="mt-4 p-4 bg-red-100 border border-red-400 text-red-700 rounded">
-                Error: {error}
-              </div>
-            )}
 
             {/* Modals */}
             {showPublicationModal && (

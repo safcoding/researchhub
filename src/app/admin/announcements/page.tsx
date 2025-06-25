@@ -16,23 +16,20 @@ import {
 } from "@/components/ui/sidebar";
 
 export default function AnnouncementCRUDPage() {
-  const { events, loading, error, addEvent, updateEvent, deleteEvent } = EventLogic();
+  const { events, error, addEvent, updateEvent, deleteEvent } = EventLogic();
   const [showEventModal, setShowEventModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [selectedEvent, setSelectedEvent] = useState<Event | null>(null);
-
-  // Filter state
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [dateFilter, setDateFilter] = useState<'all' | 'upcoming' | 'past' | 'thisMonth' | 'nextMonth'>('all');
   const [selectedYear, setSelectedYear] = useState<string>('all');
   const [selectedMonth, setSelectedMonth] = useState<string>('all');
 
-  // Event CRUD handlers
+    //State Management
   const handleAddEvent = async (newEvent: Omit<Event, 'id' | 'created_at' | 'updated_at'>) => {
     await addEvent(newEvent);
     setShowEventModal(false);
   };
-
   const handleUpdateEvent = async (updatedEvent: Omit<Event, 'id' | 'created_at' | 'updated_at'>) => {
     if (selectedEvent?.id) {
       await updateEvent(selectedEvent.id, updatedEvent);
@@ -40,17 +37,14 @@ export default function AnnouncementCRUDPage() {
       setSelectedEvent(null);
     }
   };
-
   const handleEditClick = (event: Event) => {
     setSelectedEvent(event);
     setShowEventModal(true);
   };
-
   const handleDeleteClick = (event: Event) => {
     setSelectedEvent(event);
     setShowDeleteModal(true);
   };
-
   const handleDeleteConfirm = async () => {
     if (selectedEvent?.id) {
       await deleteEvent(selectedEvent.id);
@@ -63,12 +57,11 @@ export default function AnnouncementCRUDPage() {
   const filteredEvents = events.filter(event => {
     const matchesCategory = selectedCategory === 'all' || event.category === selectedCategory;
 
-    // Date filtering
+
     const eventDate = new Date(event.date);
     const today = new Date();
     const currentMonth = today.getMonth();
     const currentYear = today.getFullYear();
-
     let matchesDate = true;
     switch (dateFilter) {
       case 'upcoming':
@@ -89,12 +82,8 @@ export default function AnnouncementCRUDPage() {
         matchesDate = true;
     }
 
-    // Year filtering
     const matchesYear = selectedYear === 'all' || eventDate.getFullYear().toString() === selectedYear;
-
-    // Month filtering
     const matchesMonth = selectedMonth === 'all' || eventDate.getMonth().toString() === selectedMonth;
-
     return matchesCategory && matchesDate && matchesYear && matchesMonth;
   });
 
@@ -125,21 +114,26 @@ export default function AnnouncementCRUDPage() {
               </Button>
             </div>
 
+            {/* Error Display */}
+            {error && (
+              <div className="mt-4 p-4 bg-red-100 border border-red-400 text-red-700 rounded">
+                Error: {error}
+              </div>
+            )}
+
             <EventFilters
               filters={{
                 selectedCategory,
                 dateFilter,
                 selectedYear,
                 selectedMonth,
-                // searchQuery,
               }}
               events={events}
               onFiltersChange={updated => {
                 if (updated.selectedCategory !== undefined) setSelectedCategory(updated.selectedCategory);
-                if (updated.dateFilter !== undefined) setDateFilter(updated.dateFilter);
+                if (updated.dateFilter !== undefined) setDateFilter(updated.dateFilter as typeof dateFilter);
                 if (updated.selectedYear !== undefined) setSelectedYear(updated.selectedYear);
                 if (updated.selectedMonth !== undefined) setSelectedMonth(updated.selectedMonth);
-                // if (updated.searchQuery !== undefined) setSearchQuery(updated.searchQuery);
               }}
             />
 
@@ -149,18 +143,14 @@ export default function AnnouncementCRUDPage() {
               onDelete={handleDeleteClick}
             />
 
-            {/* Error Display */}
-            {error && (
-              <div className="mt-4 p-4 bg-red-100 border border-red-400 text-red-700 rounded">
-                Error: {error}
-              </div>
-            )}
-
             {/* Modals */}
             {showEventModal && (
               <EventModal
                 event={selectedEvent ?? undefined}
-                onSave={selectedEvent ? handleUpdateEvent : handleAddEvent}
+                onSave={selectedEvent
+                  ? (data) => handleUpdateEvent(data as Omit<Event, 'id' | 'created_at' | 'updated_at'>)
+                  : (data) => handleAddEvent(data as Omit<Event, 'id' | 'created_at' | 'updated_at'>)
+                }
                 onClose={() => {
                   setShowEventModal(false);
                   setSelectedEvent(null);
