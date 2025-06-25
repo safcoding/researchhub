@@ -1,158 +1,101 @@
 'use client';
 
 import React, { useState } from 'react';
-import { PublicationLogic, type Publication } from '@/hooks/publication-logic';
-
 import { AdminSidebar } from "@/components/admin-sidebar/sidebar-content"
 import { Separator } from "@/components/ui/separator"
+import { Button } from '@/components/ui/button';
 import {
   SidebarInset,
   SidebarProvider,
   SidebarTrigger,
 } from "@/components/ui/sidebar"
 
-// Importing the Filtering pages
-import { useFilteredPublications } from '@/hooks/useFilteredPublications';
+import { PublicationLogic, type Publication } from '@/hooks/publication-logic';
+import { ConfirmationModal } from '@/components/reusable/confirmation-popup';
+import { PublicationModal } from '@/components/admin-components/publications/publication-form';
+import { PublicationDataTable } from '@/components/admin-components/publications/publication-data-table';
 import { PublicationFilters } from '@/components/PublicationFilters';
 
-
-const PublicationsUpload: React.FC = () => {
+export default function PublicationCRUDPage() {
   const { publications, loading, error, addPublication, updatePublication, deletePublication } = PublicationLogic();
-  const [editingId, setEditingId] = useState<number | null>(null);
-  const [publicationData, setPublicationData] = useState({
-    pub_refno: '',
-    status: '',
-    type: '',
-    category: '',
-    journal: '',
-    title: '',
-    impact: 0,
-    date: '',
-    level: '',
-    author_name: '', // Added author_name
-    author_id: 0,
-    research_alliance: '',
-    rg_name: ''
+  const [showPublicationModal, setShowPublicationModal] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [selectedPublication, setSelectedPublication] = useState<Publication | null>(null);
+  const [selectedYear, setSelectedYear] = useState<string>('all');
+  const [selectedMonth, setSelectedMonth] = useState<string>('all');
+  const [dateFilter, setDateFilter] = useState<'all' | 'upcoming' | 'past' | 'thisMonth' | 'nextMonth'>('all');
+  const [selectedStatus, setSelectedStatus] = useState<string>('all');
+
+  const handleUpdatePublication = async (updatedPublication: Partial<Publication>) => {
+    if (selectedPublication?.id) {
+      await updatePublication(selectedPublication.id, updatedPublication);
+      setShowPublicationModal(false);
+      setSelectedPublication(null);
+    }
+  };
+
+  const handleAddPublication = async (newPublication: Partial<Publication>) => {
+    await addPublication(newPublication as Omit<Publication, 'id'>);
+    setShowPublicationModal(false);
+  };
+
+  const handleEditClick = (publication: Publication) => {
+    setSelectedPublication(publication);
+    setShowPublicationModal(true);
+  };
+
+  const handleDeleteClick = (publication: Publication) => {
+    setSelectedPublication(publication);
+    setShowDeleteModal(true);
+  };
+
+  const handleDeleteConfirm = async () => {
+    if (selectedPublication?.id) {
+      await deletePublication(selectedPublication.id);
+      setShowDeleteModal(false);
+      setSelectedPublication(null);
+    }
+  };
+
+  // Filtering logic
+  const filteredPublications = publications.filter(publication => {
+    const publicationDate = new Date(publication.date);
+    const today = new Date();
+    const currentMonth = today.getMonth();
+    const currentYear = today.getFullYear();
+
+    let matchesDate = true;
+    switch (dateFilter) {
+      case 'upcoming':
+        matchesDate = publicationDate >= today;
+        break;
+      case 'past':
+        matchesDate = publicationDate < today;
+        break;
+      case 'thisMonth':
+        matchesDate = publicationDate.getMonth() === currentMonth && publicationDate.getFullYear() === currentYear;
+        break;
+      case 'nextMonth':
+        const nextMonth = currentMonth === 11 ? 0 : currentMonth + 1;
+        const nextMonthYear = currentMonth === 11 ? currentYear + 1 : currentYear;
+        matchesDate = publicationDate.getMonth() === nextMonth && publicationDate.getFullYear() === nextMonthYear;
+        break;
+      default:
+        matchesDate = true;
+    }
+
+    // Year filtering
+    const matchesYear = selectedYear === 'all' || publicationDate.getFullYear().toString() === selectedYear;
+    // Month filtering
+    const matchesMonth = selectedMonth === 'all' || publicationDate.getMonth().toString() === selectedMonth;
+    // Status filtering
+    const matchesStatus = selectedStatus === 'all' || publication.status === selectedStatus;
+
+    return matchesDate && matchesYear && matchesMonth && matchesStatus;
   });
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-    const { name, value } = e.target;
-    setPublicationData(prev => ({
-      ...prev,
-      [name]: name === 'impact' || name === 'author_id' ? Number(value) : value
-    }));
-  };
-
-  const resetForm = () => {
-    setPublicationData({
-      pub_refno: '',
-      status: 'Published',
-      type: 'Book Chapter', //changed this to default to Book Chapter
-      category: 'Indexed Publication', //Changed this to default to Indexed Publication
-      journal: '',
-      title: '',
-      impact: 0,
-      date: '',
-      level: 'International',
-      author_name: '',
-      author_id: 0,
-      research_alliance: '',
-      rg_name: ''
-    });
-    setEditingId(null);
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-
-    try {
-      if (!publicationData.title || !publicationData.pub_refno || !publicationData.date) {
-        alert('Please fill in all required fields.');
-        return;
-      }
-
-      if (editingId !== null) {
-        await updatePublication(editingId, publicationData);
-        alert('Publication updated successfully!');
-      } else {
-        await addPublication(publicationData);
-        alert('Publication added successfully!');
-      }
-
-      resetForm();
-    } catch (err) {
-      console.error('Error handling publication:', err);
-      alert('An error occurred while saving the publication');
-    }
-  };
-
-  const handleEdit = (publication: Publication) => {
-    setPublicationData({
-      pub_refno: publication.pub_refno ?? '',
-      status: publication.status ?? '',
-      type: publication.type ?? '',
-      category: publication.category ?? '',
-      journal: publication.journal ?? '',
-      title: publication.title ?? '',
-      impact: publication.impact ?? 0,
-      date: publication.date ?? '',
-      level: publication.level ?? '',
-      author_name: publication.author_name ?? '',
-      author_id: publication.author_id ?? 0,
-      research_alliance: publication.research_alliance ?? '',
-      rg_name: publication.rg_name ?? ''
-    });
-    setEditingId(publication.id ?? null);
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  };
-
-  const handleDelete = async (id: number) => {
-    if (window.confirm('Are you sure you want to delete this publication?')) {
-      try {
-        await deletePublication(id);
-        alert('Publication deleted successfully');
-      } catch (err) {
-        alert('Error deleting publication');
-      }
-    }
-  };
-
-// Filtering logic: useState hooks
-const [searchText, setSearchText] = useState('');
-const [filterCategory, setFilterCategory] = useState('');
-const [filterYear, setFilterYear] = useState('');
-const [filterType, setFilterType] = useState('');
-
-// Pagination logic
-const [currentPage, setCurrentPage] = useState(1);
-const itemsPerPage = 10;
-
-// Extract unique years from publications for the filter dropdown
-const availableYears = Array.from(
-  new Set(
-    publications
-      .map((pub) => pub.date && pub.date.slice(0, 4))
-      .filter((year) => year)
-  )
-).sort();
-
-// Filtered publications
-const filteredPublications = useFilteredPublications(publications, { searchText, filterCategory, filterYear, filterType });
-const totalPages = Math.ceil(filteredPublications.length / itemsPerPage);
-const paginatedPublications = filteredPublications.slice(
-  (currentPage - 1) * itemsPerPage,
-  currentPage * itemsPerPage
-);
-
-
- return (
-      <SidebarProvider
-      style={
-        {
-          "--sidebar-width": "19rem",
-        } as React.CSSProperties
-      }
-    >
+  return (
+    <SidebarProvider style={{ "--sidebar-width": "19rem" } as React.CSSProperties}>
       <AdminSidebar />
       <SidebarInset>
         <header className="flex h-16 shrink-0 items-center gap-2 px-4">
@@ -163,283 +106,79 @@ const paginatedPublications = filteredPublications.slice(
           />
         </header>
 
-    <div className="min-h-screen bg-gray-50">
-      <div className="container mx-auto px-4 py-8">
-        <form onSubmit={handleSubmit} className="bg-white p-6 rounded-lg shadow-md mb-8">
-          <h1 className="text-2xl font-bold text-gray-800 mb-6">
-            {editingId ? 'Edit Publication' : 'Add New Publication'}
-          </h1>
-          
-
-<div className="mb-8">
-  <h2 className="text-lg font-semibold text-gray-800 mb-4 border-b pb-1">Basic Info</h2>
-  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-    <div>
-      <label className="block text-sm font-medium text-gray-700 mb-1">Reference Number*</label>
-      <input
-        type="text"
-        name="pub_refno"
-        value={publicationData.pub_refno}
-        onChange={handleInputChange}
-        className="w-full p-2 border rounded"
-        required
-      />
-    </div>
-    <div>
-      <label className="block text-sm font-medium text-gray-700 mb-1">Title*</label>
-      <input
-        type="text"
-        name="title"
-        value={publicationData.title}
-        onChange={handleInputChange}
-        className="w-full p-2 border rounded"
-        required
-      />
-    </div>
-    <div>
-      <label className="block text-sm font-medium text-gray-700 mb-1">Journal*</label>
-      <input
-        type="text"
-        name="journal"
-        value={publicationData.journal}
-        onChange={handleInputChange}
-        className="w-full p-2 border rounded"
-        required
-      />
-    </div>
-    <div>
-      <label className="block text-sm font-medium text-gray-700 mb-1">Impact Factor</label>
-      <input
-        type="number"
-        name="impact"
-        value={publicationData.impact}
-        onChange={handleInputChange}
-        className="w-full p-2 border rounded"
-        step="0.01"
-        min="0"
-      />
-    </div>
-    <div>
-      <label className="block text-sm font-medium text-gray-700 mb-1">Date*</label>
-      <input
-        type="date"
-        name="date"
-        value={publicationData.date}
-        onChange={handleInputChange}
-        className="w-full p-2 border rounded"
-        required
-      />
-    </div>
-    <div>
-      <label className="block text-sm font-medium text-gray-700 mb-1">Level*</label>
-      <select
-        name="level"
-        value={publicationData.level}
-        onChange={handleInputChange}
-        className="w-full p-2 border rounded"
-        required
-      >
-        <option value="International">International</option>
-        <option value="National">National</option>
-        <option value="Local">Local</option>
-      </select>
-    </div>
-  </div>
-</div>
-
-{/* ========== Section: Publication Details ========== */}
-<div className="mb-8">
-  <h2 className="text-lg font-semibold text-gray-800 mb-4 border-b pb-1">Publication Details</h2>
-  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-    <div>
-      <label className="block text-sm font-medium text-gray-700 mb-1">Type*</label>
-      <select
-        name="type"
-        value={publicationData.type}
-        onChange={handleInputChange}
-        className="w-full p-2 border rounded"
-        required
-      >
-        { /* TYPES */}
-        <option value="BOOK CHAPTER">Book Chapter</option>
-        <option value="ORIGINAL BOOK">Research Book</option>
-        <option value="Scopus">Scopus</option>
-        <option value="PUBLICATION IN WEB OF SCIENCE">Web of Science</option>
-        <option value="CONFERENCE PAPER">Conference</option>
-        <option value="PROCEEDINGS">Proceeding</option>
-        <option value="Others">Others</option>
-      </select>
-    </div>
-
-    <div>
-      <label className="block text-sm font-medium text-gray-700 mb-1">Category*</label>
-      <select
-        name="category"
-        value={publicationData.category}
-        onChange={handleInputChange}
-        className="w-full p-2 border rounded"
-        required
-      >
-        { /* CATEGORIES */}
-        <option value="INDEXED PUBLICATION">Indexed Publication</option>
-        <option value="NON INDEXED PUBLICATION">Non-Indexed Publication</option>
-        <option value="OTHERS PUBLICATION">Other</option>
-      </select>
-    </div>
-
-
-    <div>
-      <label className="block text-sm font-medium text-gray-700 mb-1">Research Alliance</label>
-      <input
-        type="text"
-        name="research_alliance"
-        value={publicationData.research_alliance}
-        onChange={handleInputChange}
-        className="w-full p-2 border rounded"
-      />
-    </div>
-    <div>
-      <label className="block text-sm font-medium text-gray-700 mb-1">Research Group</label>
-      <input
-        type="text"
-        name="rg_name"
-        value={publicationData.rg_name}
-        onChange={handleInputChange}
-        className="w-full p-2 border rounded"
-      />
-    </div>
-  </div>
-</div>
-
-{/* ========== Section: Author Info ========== */}
-<div className="mb-8">
-  <h2 className="text-lg font-semibold text-gray-800 mb-4 border-b pb-1">Author Info</h2>
-  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-    <div>
-      <label className="block text-sm font-medium text-gray-700 mb-1">Author Name*</label>
-      <input
-        type="text"
-        name="author_name"
-        value={publicationData.author_name}
-        onChange={handleInputChange}
-        className="w-full p-2 border rounded"
-        required
-      />
-    </div>
-    <div>
-      <label className="block text-sm font-medium text-gray-700 mb-1">Author ID*</label>
-      <input
-        type="number"
-        name="author_id"
-        value={publicationData.author_id}
-        onChange={handleInputChange}
-        className="w-full p-2 border rounded"
-        required
-      />
-    </div>
-  </div>
-</div>
-
-
-          <div className="mt-6 flex justify-end space-x-4">
-            {editingId && (
-              <button
-                type="button"
-                onClick={resetForm}
-                className="bg-gray-500 text-white px-6 py-2 rounded hover:bg-gray-600"
+        <div className="min-h-screen bg-gray-50">
+          <div className="container mx-auto px-4 py-8">
+            <div className="flex justify-between items-center mb-6">
+              <h1 className="text-3xl font-bold text-gray-800">Admin: Manage Publications</h1>
+              <Button
+                onClick={() => {
+                  setSelectedPublication(null);
+                  setShowPublicationModal(true);
+                }}
+                className="bg-blue-600 hover:bg-blue-700"
               >
-                Cancel
-              </button>
-            )}
-            <button
-              type="submit"
-              className="bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700"
-            >
-              {editingId ? 'Update' : 'Add'} Publication
-            </button>
-          </div>
-        </form>
+                Add Publication
+              </Button>
+            </div>
 
-        <div className="bg-white p-6 rounded-lg shadow-md">
-          <h2 className="text-xl font-bold text-gray-800 mb-4">Publications List</h2>
-           {/* FILTERING*/}
             <PublicationFilters
-                searchText={searchText}
-                filterCategory={filterCategory}
-                filterYear={filterYear}
-                filterType={filterType}
-                availableYears={availableYears}
-                onSearchChange={setSearchText}
-                onCategoryChange={setFilterCategory}
-                onYearChange={setFilterYear}
-                onTypeChange={setFilterType}
+              filters={{
+                dateFilter,
+                selectedYear,
+                selectedMonth,
+                selectedStatus,
+              }}
+              publications={publications}
+              onFiltersChange={(updated: { selectedYear?: string; selectedMonth?: string; selectedStatus?: string }) => {
+                if (updated.selectedYear !== undefined) setSelectedYear(updated.selectedYear);
+                if (updated.selectedMonth !== undefined) setSelectedMonth(updated.selectedMonth);
+                if (updated.selectedStatus !== undefined) setSelectedStatus(updated.selectedStatus);
+              }}
+            />
+
+            <PublicationDataTable
+              data={filteredPublications}
+              onEdit={handleEditClick}
+              onDelete={handleDeleteClick}
+            />
+
+            {/* Error Display */}
+            {error && (
+              <div className="mt-4 p-4 bg-red-100 border border-red-400 text-red-700 rounded">
+                Error: {error}
+              </div>
+            )}
+
+            {/* Modals */}
+            {showPublicationModal && (
+              <PublicationModal
+                publication={selectedPublication ?? undefined}
+                onSave={selectedPublication? handleUpdatePublication : handleAddPublication}
+                onClose={() => {
+                  setShowPublicationModal(false);
+                  setSelectedPublication(null);
+                }}
               />
-          <div className="overflow-x-auto">
-            <table className="w-full text-sm">
-              <thead className="bg-gray-100">
-                <tr>
-                  <th className="text-left px-4 py-2">Ref No</th>
-                  <th className="text-left px-4 py-2">Title</th>
-                  <th className="text-left px-4 py-2">Author</th> {/* Added author_name field */}
-                  <th className="text-left px-4 py-2">Journal</th>
-                  <th className="text-left px-4 py-2">Type</th>
-                  <th className="text-left px-4 py-2">Date</th>
-                  <th className="text-left px-4 py-2">Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {/* Paginated publications */}
-                {paginatedPublications.map(pub => (
-                  <tr key={pub.id} className="border-b hover:bg-gray-50">
-                    <td className="px-4 py-2">{pub.pub_refno}</td>
-                    <td className="px-4 py-2">{pub.title}</td>
-                    <td className="px-4 py-2">{pub.author_name}</td> {/* Added author_name field */}
-                    <td className="px-4 py-2">{pub.journal}</td>
-                    <td className="px-4 py-2">{pub.type}</td>
-                    <td className="px-4 py-2">{pub.date}</td>
-                    <td className="px-4 py-2">
-                      <button
-                        onClick={() => handleEdit(pub)}
-                        className="text-blue-600 hover:underline mr-4"
-                      >
-                        Edit
-                      </button>
-                      <button
-                        onClick={() => handleDelete(pub.id!)}
-                        className="text-red-600 hover:underline"
-                      >
-                        Delete
-                      </button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-          {/* Pagination controls */}
-          <div className="flex justify-center items-center mt-4 space-x-2">
-            <button
-              onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
-              disabled={currentPage === 1}
-              className={`px-3 py-1 rounded ${currentPage === 1 ? 'bg-gray-200 text-gray-400' : 'bg-blue-600 text-white hover:bg-blue-700'}`}
-            >
-              Previous
-            </button>
-            <span className="px-2">Page {currentPage} of {totalPages}</span>
-            <button
-              onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
-              disabled={currentPage === totalPages || totalPages === 0}
-              className={`px-3 py-1 rounded ${currentPage === totalPages || totalPages === 0 ? 'bg-gray-200 text-gray-400' : 'bg-blue-600 text-white hover:bg-blue-700'}`}
-            >
-              Next
-            </button>
+            )}
+
+            {showDeleteModal && selectedPublication && (
+              <ConfirmationModal
+                isOpen={showDeleteModal}
+                title="Delete Publication"
+                message={`Are you sure you want to delete "${selectedPublication?.title}"? This action cannot be undone.`}
+                confirmText="Delete"
+                cancelText="Cancel"
+                variant="destructive"
+                onConfirm={handleDeleteConfirm}
+                onCancel={() => {
+                  setShowDeleteModal(false);
+                  setSelectedPublication(null);
+                }}
+              />
+            )}
           </div>
         </div>
-      </div>
-    </div>
       </SidebarInset>
     </SidebarProvider>
   );
-};
-
-export default PublicationsUpload;
+}

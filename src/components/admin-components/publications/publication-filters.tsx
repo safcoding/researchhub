@@ -1,20 +1,18 @@
-'use client';
-
-import React from 'react';
-import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
+import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select"
 
 interface PublicationFiltersProps {
   filters: {
-    dateFilter: string;
-    selectedYear: string;
-    selectedMonth: string;
-    selectedStatus: string;
-  };
-  publications: any[];
-  onFiltersChange: (filters: Partial<PublicationFiltersProps["filters"]>) => void;
+    dateFilter: string
+    selectedYear: string
+    selectedMonth: string
+    selectedStatus: string
+  }
+  publications: any[] // <-- fixed from 'grants' to 'publications'
+  onFiltersChange: (filters: Partial<PublicationFiltersProps["filters"]>) => void
 }
 
 export function PublicationFilters({ filters, publications, onFiltersChange }: PublicationFiltersProps) {
+
   const getAvailableYears = () => {
     const years = [...new Set(
       publications
@@ -25,7 +23,7 @@ export function PublicationFilters({ filters, publications, onFiltersChange }: P
         .filter(year => year !== null)
     )];
     return years.sort((a, b) => b - a);
-  };
+  }
 
   const getMonthOptions = () => [
     { value: '0', label: 'January' },
@@ -40,7 +38,7 @@ export function PublicationFilters({ filters, publications, onFiltersChange }: P
     { value: '9', label: 'October' },
     { value: '10', label: 'November' },
     { value: '11', label: 'December' }
-  ];
+  ]
 
   return (
     <div className="bg-white shadow-md rounded-lg p-6 mb-6">
@@ -62,6 +60,7 @@ export function PublicationFilters({ filters, publications, onFiltersChange }: P
               <SelectItem value="INDEXED PUBLICATION">Indexed</SelectItem>
               <SelectItem value="NON-INDEXED PUBLICATION">Non Indexed</SelectItem>
               <SelectItem value="OTHERS">Others</SelectItem>
+              {/* Add more statuses as needed */}
             </SelectContent>
           </Select>
         </div>
@@ -107,5 +106,5 @@ export function PublicationFilters({ filters, publications, onFiltersChange }: P
         </div>
       </div>
     </div>
-  );
+  )
 }

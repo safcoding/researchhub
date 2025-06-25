@@ -2,13 +2,14 @@
 
 import { useState, useEffect } from 'react';
 import { createClient } from '@/utils/supabase/client';
+import { PUBLICATION_TYPES, PUBLICATION_CATEGORIES } from '@/constants/publication-options';
 
 export type Publication = {
   id?: number;
   pub_refno: string;
   status: string;
-  type: string;
-  category: string;
+  type: "BOOK CHAPTER" | "ORIGINAL BOOK" | "SCOPUS"| "WEB OF SCIENCE" | "CONFERENCE PAPER"| "PROCEEDINGS" | "OTHERS";
+  category: "INDEXED PUBLICATION" | "NON-INDEXED PUBLICATION" | "OTHERS";
   journal: string;
   title: string;
   impact: number;

@@ -13,10 +13,10 @@ export const PUBLICATION_TYPES: Publication['type'][] =[
 export const PUBLICATION_CATEGORIES: Publication['category'][] =[
     'INDEXED PUBLICATION',
     'NON-INDEXED PUBLICATION',
-    'OTHERS PUBLICATION',
+    'OTHERS',
 ] as const;
 
-export const REQUIRED_EVENT_FIELDS = [
+export const REQUIRED_PUBLICATION_FIELDS = [
     'pub_refno',
     'title',
     'journal', 

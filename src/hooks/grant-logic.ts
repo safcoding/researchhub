@@ -79,7 +79,8 @@ export function GrantLogic() {
             setLoading(false);
         }
     }, []);
-    
+
+    //Add Omit<> to remove id
     const addGrant = async (newGrant: Partial<Grant>) => {
         try {            setLoading(true);
             console.log('Adding new grant:', newGrant);
