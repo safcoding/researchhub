@@ -74,7 +74,9 @@ export function EventLogic() {
 
       console.log('Event added successfully:', data);
       await fetchEvents();
+      
       return data;
+
     } catch (e) {
       console.error('Error in addEvent:', e);
       setError(e instanceof Error ? e.message : 'Unknown error');
