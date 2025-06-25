@@ -123,6 +123,10 @@ const [filterCategory, setFilterCategory] = useState('');
 const [filterYear, setFilterYear] = useState('');
 const [filterType, setFilterType] = useState('');
 
+// Pagination logic
+const [currentPage, setCurrentPage] = useState(1);
+const itemsPerPage = 10;
+
 // Extract unique years from publications for the filter dropdown
 const availableYears = Array.from(
   new Set(
@@ -131,6 +135,14 @@ const availableYears = Array.from(
       .filter((year) => year)
   )
 ).sort();
+
+// Filtered publications
+const filteredPublications = useFilteredPublications(publications, { searchText, filterCategory, filterYear, filterType });
+const totalPages = Math.ceil(filteredPublications.length / itemsPerPage);
+const paginatedPublications = filteredPublications.slice(
+  (currentPage - 1) * itemsPerPage,
+  currentPage * itemsPerPage
+);
 
 
  return (
@@ -376,8 +388,8 @@ const availableYears = Array.from(
                 </tr>
               </thead>
               <tbody>
-                {/* Filtered publications */}
-                {useFilteredPublications(publications, { searchText, filterCategory, filterYear, filterType }).map(pub => (
+                {/* Paginated publications */}
+                {paginatedPublications.map(pub => (
                   <tr key={pub.id} className="border-b hover:bg-gray-50">
                     <td className="px-4 py-2">{pub.pub_refno}</td>
                     <td className="px-4 py-2">{pub.title}</td>
@@ -403,6 +415,24 @@ const availableYears = Array.from(
                 ))}
               </tbody>
             </table>
+          </div>
+          {/* Pagination controls */}
+          <div className="flex justify-center items-center mt-4 space-x-2">
+            <button
+              onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+              disabled={currentPage === 1}
+              className={`px-3 py-1 rounded ${currentPage === 1 ? 'bg-gray-200 text-gray-400' : 'bg-blue-600 text-white hover:bg-blue-700'}`}
+            >
+              Previous
+            </button>
+            <span className="px-2">Page {currentPage} of {totalPages}</span>
+            <button
+              onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
+              disabled={currentPage === totalPages || totalPages === 0}
+              className={`px-3 py-1 rounded ${currentPage === totalPages || totalPages === 0 ? 'bg-gray-200 text-gray-400' : 'bg-blue-600 text-white hover:bg-blue-700'}`}
+            >
+              Next
+            </button>
           </div>
         </div>
       </div>

@@ -15,8 +15,15 @@ interface GrantFiltersProps {
 export function GrantFilters({ filters, grants, onFiltersChange }: GrantFiltersProps) {
 
   const getAvailableYears = () => {
-    const years = [...new Set(grants.map(grant => new Date(grant.date).getFullYear()))]
-    return years.sort((a, b) => b - a)
+    const years = [...new Set(
+      grants
+        .map(grant => {
+          const d = new Date(grant.PRO_DATESTART);
+          return isNaN(d.getTime()) ? null : d.getFullYear();
+        })
+        .filter(year => year !== null)
+    )];
+    return years.sort((a, b) => b - a);
   }
 
   const getMonthOptions = () => [

@@ -1,12 +1,11 @@
 'use client';
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import ConditionalNavbar from '@/components/admin-sidebar/conditional-navbar';
 import Navbar from '@/components/navbar';
 import Footer from '@/components/Footer';
-import { PublicationLogic } from '@/hooks/publication-logic';
+import { createClient } from '@/utils/supabase/client';
 import { PublicationPieChart } from '@/components/pub-piechart';
-
 // Importing the Pie chart component for publication types
 import {
   LineChart,
@@ -18,8 +17,71 @@ import {
   ResponsiveContainer
 } from 'recharts';
 
+// Define the Publication type
+interface Publication {
+  id: number;
+  pub_refno: string;
+  status: string;
+  type: string;
+  category: string;
+  journal: string;
+  title: string;
+  impact: number;
+  date: string;
+  level: string;
+  author_name: string;
+  author_id: number;
+  research_alliance: string;
+  rg_name: string;
+}
+
 const PublicationsDashboard: React.FC = () => {
-  const { publications, loading, error } = PublicationLogic();
+  // Use the Publication type for state
+  const [publications, setPublications] = useState<Publication[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10;
+
+  // Fetch all publications in batches of 1000
+  useEffect(() => {
+    const fetchAllPublications = async () => {
+      setLoading(true);
+      setError(null);
+      const supabase = createClient();
+      let allPubs: any[] = [];
+      let from = 0;
+      let to = 999;
+      let keepFetching = true;
+      while (keepFetching) {
+        const { data, error } = await supabase
+          .from('publications')
+          .select('*')
+          .order('date', { ascending: false })
+          .range(from, to);
+        if (error) {
+          setError(error.message);
+          setLoading(false);
+          return;
+        }
+        if (data && data.length > 0) {
+          allPubs = allPubs.concat(data);
+          if (data.length < 1000) {
+            keepFetching = false;
+          } else {
+            from += 1000;
+            to += 1000;
+          }
+        } else {
+          keepFetching = false;
+        }
+      }
+      setPublications(allPubs);
+      setLoading(false);
+    };
+    fetchAllPublications();
+  }, []);
+
   const [searchText, setSearchText] = useState('');
   const [filterCategory, setFilterCategory] = useState<string>('');
   const [filterYear, setFilterYear] = useState<string>('');
@@ -106,6 +168,13 @@ const PublicationsDashboard: React.FC = () => {
     return Array.from(years).sort().reverse();
   }, [publications]);
   
+  // Pagination logic for display
+  const totalPages = Math.ceil(filteredPublications.length / itemsPerPage);
+  const paginatedPublications = filteredPublications.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  );
+
   if (loading) {
     return (
       <ConditionalNavbar>
@@ -273,8 +342,8 @@ const PublicationsDashboard: React.FC = () => {
                 </tr>
               </thead>
               <tbody>
-                {filteredPublications.length > 0 ? (
-                  filteredPublications.map(pub => (
+                {paginatedPublications.length > 0 ? (
+                  paginatedPublications.map(pub => (
                     <tr key={pub.id} className="border-b hover:bg-gray-50">
                       <td className="px-4 py-2">{pub.pub_refno}</td>
                       <td className="px-4 py-2">{pub.title}</td>
@@ -296,6 +365,24 @@ const PublicationsDashboard: React.FC = () => {
               </tbody>
             </table>
           </div>
+          {/* Pagination controls */}
+          <div className="flex justify-center items-center mt-4 space-x-2">
+          <button
+            onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+            disabled={currentPage === 1}
+            className={`px-3 py-1 rounded ${currentPage === 1 ? 'bg-gray-200 text-gray-400' : 'bg-blue-600 text-white hover:bg-blue-700'}`}
+          >
+            Previous
+          </button>
+          <span className="px-2">Page {currentPage} of {totalPages}</span>
+          <button
+            onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
+            disabled={currentPage === totalPages || totalPages === 0}
+            className={`px-3 py-1 rounded ${currentPage === totalPages || totalPages === 0 ? 'bg-gray-200 text-gray-400' : 'bg-blue-600 text-white hover:bg-blue-700'}`}
+          >
+            Next
+          </button>
+        </div>
         </div>
       </main>
 
