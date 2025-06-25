@@ -160,3 +160,5 @@ export function PublicationDataTable({ data, onEdit, onDelete }: PublicationData
       </div>
       <DataTable columns={columns} data={data} table={table} />
     </div>
+  )
+}
