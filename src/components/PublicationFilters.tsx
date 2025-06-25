@@ -48,7 +48,7 @@ export function PublicationFilters({ filters, publications, onFiltersChange }: P
         {/* Status Filter */}
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">
-            Filter by Status
+            Filter by Category
           </label>
           <Select
             value={filters.selectedStatus}
