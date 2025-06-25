@@ -1,9 +1,10 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { EventLogic, type Event } from '@/hooks/event-logic';
+import { EventModal, DeleteConfirmationModal, EventInfoModal } from '@/components/admin-components/event-form';
 import ConditionalNavbar from '@/components/admin-sidebar/conditional-navbar';
 import Footer from '@/components/Footer';
 import Navbar from '@/components/navbar';

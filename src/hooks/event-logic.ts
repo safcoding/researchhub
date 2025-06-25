@@ -36,7 +36,7 @@ export function EventLogic() {
         .from('events')
         .select('*')
         .order('date', { ascending: true });
-      
+        
      if (error) {
         console.error('Error fetching events:', error);
         throw error;

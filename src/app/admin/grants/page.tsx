@@ -4,6 +4,10 @@ import { useState } from 'react';
 import { GrantLogic, type Grant } from '@/hooks/grant-logic';
 import { GrantModal } from '@/components/admin-components/grants/grant-form';
 import { ConfirmationModal } from '@/components/reusable/confirmation-popup';
+
+import { GrantDataTable } from '@/components/admin-components/grants/grant-data-table';
+import { GrantFilters } from '@/components/admin-components/grants/grant-filters';
+
 import { Button } from '@/components/ui/button';
 import { AdminSidebar } from "@/components/admin-sidebar/sidebar-content";
 import { Separator } from "@/components/ui/separator";
@@ -13,18 +17,15 @@ import {
   SidebarTrigger,
 } from "@/components/ui/sidebar";
 
-import { GrantDataTable } from '@/components/admin-components/grants/grant-data-table';
-import { GrantFilters } from '@/components/admin-components/grants/grant-filters';
 
 export default function GrantDBPage() {
-  const { grants, loading, error, addGrant, updateGrant, deleteGrant } = GrantLogic();
+  const { grants, error, addGrant, updateGrant, deleteGrant } = GrantLogic();
   const [showGrantModal, setShowGrantModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [selectedGrant, setSelectedGrant] = useState<Grant | null>(null);
   const [selectedYear, setSelectedYear] = useState<string>('all');
   const [selectedMonth, setSelectedMonth] = useState<string>('all');
-  const [dateFilter, setDateFilter] = useState<'all' | 'upcoming' | 'past' | 'thisMonth' | 'nextMonth'>('all');
-  const [searchQuery, setSearchQuery] = useState<string>("");
+  const [dateFilter] = useState<'all' | 'upcoming' | 'past' | 'thisMonth' | 'nextMonth'>('all');
   const [selectedStatus, setSelectedStatus] = useState<string>('all');
 
   const handleUpdateGrant = async (updatedGrant: Partial<Grant>) => {
@@ -32,8 +33,7 @@ export default function GrantDBPage() {
       await updateGrant(selectedGrant.PROJECTID, updatedGrant);
       setShowGrantModal(false);
       setSelectedGrant(null);
-    }
-  };
+    };
 
   const handleAddGrant = async (newGrant: Partial<Grant>) => {
     await addGrant(newGrant);
@@ -184,4 +184,5 @@ export default function GrantDBPage() {
       </SidebarInset>
     </SidebarProvider>
   );
+}
 }
