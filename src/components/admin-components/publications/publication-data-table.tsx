@@ -15,7 +15,7 @@ import { ArrowUpDown } from "lucide-react"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { DataTable } from "@/components/ui/data-table"
-import type { Publication } from "@/hooks/publication-logic"
+import type { Publication } from "@/hooks/logic/publication-logic"
 
 interface PublicationDataTableProps {
   data: Publication[]

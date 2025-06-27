@@ -1,19 +1,61 @@
-import type { Lab } from '@/hooks/lab-logic';
+import { useEffect, useState } from 'react';
+import type { Lab } from '@/hooks/logic/lab-logic';
+import { useEquipmentLogic } from '@/hooks/logic/equipment-logic';
+import { LAB_TYPES, LAB_STATUS } from '@/constants/lab-options';
+import { useLabForm } from '@/hooks/forms/useLabForm';
+import { useLabEquipmentLogic } from '@/hooks/logic/lab-equipment-logic';
 import { FormField } from '@/components/reusable/formfield';
 import { TextAreaField } from '@/components/reusable/textarea';
 import { SelectField } from '@/components/reusable/selectfield';
-import { LAB_TYPES, LAB_STATUS, RESEARCH_AREA } from '@/constants/lab-options';
-import { useLabForm } from '@/hooks/forms/useLabForm';
 import { Button } from '@/components/ui/button';
+import { Combobox } from '@/components/reusable/combobox';
 
 interface LabModalProps {
     lab?: Lab;
-    onSave: (labData: Partial<Lab>) => void;
+    onSave: (labData: Partial<Lab>) => Promise<string>;
     onClose: () => void;
 }
 
-export function LabModal({ lab, onSave, onClose }: LabModalProps) {
-    const { formData, errors, isSubmitting, handleChange, handleSubmit } = useLabForm(lab);
+export function LabFormModal({ lab, onSave, onClose }: LabModalProps) {
+    const { formData, errors, isSubmitting, handleChange } = useLabForm(lab);
+    const { equipment } = useEquipmentLogic(); 
+    const [selectedEquipment, setSelectedEquipment] = useState<{ id: string, name: string, quantity: number }[]>([]);
+    const { assignEquipmentToLab } = useLabEquipmentLogic();
+
+    const handleEquipmentSelect = (equipmentId: string) => {
+    if (!selectedEquipment.some(eq => eq.id === equipmentId)) {
+        const eq = equipment.find(e => e.id === equipmentId);
+        if (eq) {
+        setSelectedEquipment([...selectedEquipment, { id: equipmentId, name: eq.name, quantity: 1 }]);
+        }
+    }
+    };
+    const handleQuantityChange = (equipmentId: string, quantity: number) => {
+    setSelectedEquipment(selectedEquipment.map(eq =>
+        eq.id === equipmentId ? { ...eq, quantity } : eq
+    ));
+    };
+
+    const handleRemoveEquipment = (equipmentId: string) => {
+    setSelectedEquipment(selectedEquipment.filter(eq => eq.id !== equipmentId));
+    };
+
+const handleLabSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    try {
+        console.log('Submitting formData:', formData);
+        const labId = await onSave(formData);
+        console.log('Lab ID returned from onSave:', labId);
+        for (const eq of selectedEquipment) {
+            await assignEquipmentToLab(labId, eq.id, eq.quantity);
+        }
+        onClose();
+    } catch (err) {
+        console.error('Error saving lab or assigning equipment:', err);
+        alert('Error saving lab or assigning equipment: ' + (err instanceof Error ? err.message : JSON.stringify(err)));
+        // Do NOT close the modal if there is an error
+    }
+};
 
     return (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
@@ -23,8 +65,7 @@ export function LabModal({ lab, onSave, onClose }: LabModalProps) {
                         {lab ? 'Edit Lab' : 'Add New Lab'}
                     </h2>
                 </div>
-                
-                <form onSubmit={(e) => handleSubmit(e, onSave, onClose)} className="p-6 space-y-8">
+                <form onSubmit={handleLabSubmit} className="p-6 space-y-8">
                     {/* 🧪 Basic Information */}
                     <div className="space-y-4">
                         <h3 className="text-lg font-semibold text-gray-900 border-b border-gray-200 pb-2 flex items-center gap-2">
@@ -150,19 +191,37 @@ export function LabModal({ lab, onSave, onClose }: LabModalProps) {
                             onChange={handleChange}
                             placeholder="Describe the lab's purpose, capabilities, and objectives..."
                         />
+                        <Combobox
+                            options={equipment
+                                .filter(eq => !selectedEquipment.some(sel => sel.id === eq.id))
+                                .map(eq => ({ value: eq.id, label: eq.name }))}
+                            value=""
+                            onChange={handleEquipmentSelect}
+                            placeholder="Select equipment..."
+                            />
 
-                        <TextAreaField
-                            label="Equipment List"
-                            name="EQUIPMENT_LIST"
-                            value={formData.EQUIPMENT_LIST ?? ''}
-                            required={false}
-                            disabled={isSubmitting}
-                            error={errors.EQUIPMENT_LIST}
-                            rows={3}
-                            onChange={handleChange}
-                            placeholder="List major equipment, separated by commas (e.g., Microscopes, Computers, Spectrometers...)"
-                        />
-                    </div>
+                            {selectedEquipment.map(eq => (
+                            <div key={eq.id} className="flex items-center gap-2 mt-2">
+                                <span className="flex-1">{eq.name}</span>
+                                <input
+                                type="number"
+                                min={1}
+                                className="w-20 border rounded px-2 py-1"
+                                value={eq.quantity}
+                                onChange={e => handleQuantityChange(eq.id, Number(e.target.value))}
+                                disabled={isSubmitting}
+                            />
+                            <Button
+                                type="button"
+                                variant="ghost"
+                                onClick={() => handleRemoveEquipment(eq.id)}
+                                disabled={isSubmitting}
+                                >
+                                Remove
+                             </Button>
+                            </div>
+                                ))}
+                        </div>
 
                     {/* Buttons */}
                     <div className="flex gap-3 pt-6 border-t border-gray-200">

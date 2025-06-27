@@ -1,4 +1,4 @@
-import type { Grant } from '@/hooks/grant-logic';
+import type { Grant } from '@/hooks/logic/grant-logic';
 import { REQUIRED_GRANT_FIELDS } from '@/constants/grant-options';
 import { useFormLogic } from './useFormLogic';
 

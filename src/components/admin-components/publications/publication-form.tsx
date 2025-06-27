@@ -1,4 +1,4 @@
-import { type Publication } from '@/hooks/publication-logic';
+import { type Publication } from '@/hooks/logic/publication-logic';
 import { PUBLICATION_TYPES, PUBLICATION_CATEGORIES } from '@/constants/publication-options';
 import { usePublicationForm } from '@/hooks/forms/usePublicationForm';
 import { FormField } from "../../reusable/formfield";

@@ -1,4 +1,4 @@
-import type { Publication } from "@/hooks/publication-logic";
+import type { Publication } from "@/hooks/logic/publication-logic";
 
 export const PUBLICATION_TYPES: Publication['type'][] =[
     'BOOK CHAPTER',

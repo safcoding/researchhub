@@ -14,7 +14,6 @@ export type Lab = {
     LAB_STATUS: string;
     LAB_TYPE: string;
     CONTACT_PHONE: string;
-    EQUIPMENT_LIST?: string;
 }
 
 export function LabLogic() {
@@ -39,8 +38,7 @@ export function LabLogic() {
                     LOCATION,
                     LAB_STATUS,
                     LAB_TYPE,
-                    CONTACT_PHONE,
-                    EQUIPMENT_LIST
+                    CONTACT_PHONE
                 `);
             
             if (error) {
@@ -58,68 +56,31 @@ export function LabLogic() {
         }
     };
     
-    const addLab = async (newLab: Partial<Lab>) => {
-        try {
-            setLoading(true);
-            console.log('Adding new lab:', newLab);
-            
-            // Auto-generate LABID if not provided
-            const labToInsert = { ...newLab };
-            if (!labToInsert.LABID) {
-                // Generate a unique LABID based on timestamp and random string
-                const timestamp = Date.now().toString(36);
-                const randomStr = Math.random().toString(36).substring(2, 8);
-                labToInsert.LABID = `LAB_${timestamp}_${randomStr}`.toUpperCase();            }
-            
-            const supabase = createClient();
-            const { data, error } = await supabase.from('labs').insert([labToInsert]).select().single();
-            
-            if (error) {
-                console.error('Error adding lab:', error);
-                throw error;
-            }
-            
-            console.log('Lab added successfully:', data);
-            setLabs(prevLabs => [...prevLabs, data]);
-            return data;
-        } catch (e) {
-            console.error('Error in addLab:', e);
-            setError(e instanceof Error ? e.message : 'Unknown error');
-            throw e;
-        } finally {
-            setLoading(false);
+const addLab = async (newLab: Partial<Lab>) => {
+    try {
+        setLoading(true);
+        const { LABID, ...labToInsert } = newLab;
+        Object.keys(labToInsert).forEach(
+            key => (labToInsert[key] === undefined || labToInsert[key] === null) && delete labToInsert[key]
+        );
+        console.log('Inserting lab:', labToInsert);
+        const supabase = createClient();
+        const { data, error } = await supabase.from('labs').insert([labToInsert]).select().single();
+        if (error) {
+            console.error('Error adding lab:', error);
+            throw error;
         }
-    };
-
-    const addBulkLabs = async (newLabs: Omit<Lab, 'LABID'>[], filePath: string) => {
-        try {
-            setLoading(true);
-            console.log(`Adding ${newLabs.length} labs in bulk with file path: ${filePath}`);
-              // Add file_path to each lab
-            const labsWithFilePath = newLabs.map(lab => ({
-                ...lab,
-                file_path: filePath
-            }));
-            
-            const supabase = createClient();
-            const { data, error } = await supabase.from('labs').insert(labsWithFilePath).select();
-            
-            if (error) {
-                console.error('Error adding bulk labs:', error);
-                throw error;
-            }
-            
-            console.log(`Successfully added ${data?.length || 0} labs`);
-            setLabs(prevLabs => [...prevLabs, ...(data || [])]);
-            return data;
-        } catch (e) {
-            console.error('Error in addBulkLabs:', e);
-            setError(e instanceof Error ? e.message : 'Unknown error');
-            throw e;
-        } finally {
-            setLoading(false);
-        }
-    };
+        console.log('Lab added successfully:', data);
+        setLabs(prevLabs => [...prevLabs, data]);
+        return data.LABID;
+    } catch (e) {
+        console.error('Error in addLab:', e);
+        setError(e instanceof Error ? e.message : 'Unknown error');
+        throw e;
+    } finally {
+        setLoading(false);
+    }
+};
 
     const updateLab = async (labId: string, updatedLab: Partial<Lab>) => {        try {
             setLoading(true);
@@ -190,7 +151,7 @@ useEffect(() => {
             LOCATION,
             LAB_STATUS,
             LAB_TYPE,
-            CONTACT_PHONE,            EQUIPMENT_LIST
+            CONTACT_PHONE
           `)
           .order('LAB_NAME');
         
@@ -215,7 +176,6 @@ useEffect(() => {
         loading,
         error,
         addLab,
-        addBulkLabs,
         updateLab,
         deleteLab,
         refetch: fetchLabs

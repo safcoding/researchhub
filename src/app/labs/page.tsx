@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import ConditionalNavbar from '@/components/admin-sidebar/conditional-navbar';
 import Navbar from '@/components/navbar';
 import { useRouter } from 'next/navigation';
-import { type Lab } from '@/hooks/lab-logic';
+import { type Lab } from '@/hooks/logic/lab-logic';
 import { createClient } from '@/utils/supabase/client';
 // Fixed import path to match the actual file name (Footer.tsx with capital F)
 import Footer from '@/components/Footer';
@@ -25,7 +25,7 @@ const OurLabs = () => {
   const [selectedLab, setSelectedLab] = useState<Lab | null>(null);
   const [showLabModal, setShowLabModal] = useState(false);
   const router = useRouter();
-  // Fetch labs from Supabase
+
   useEffect(() => {
     const fetchLabs = async () => {
       try {

@@ -9,7 +9,7 @@ import {
   Legend,
   ResponsiveContainer,
 } from 'recharts';
-import type { Publication } from '@/hooks/publication-logic';
+import type { Publication } from '@/hooks/logic/publication-logic';
 
 interface Props {
   publications: Publication[];

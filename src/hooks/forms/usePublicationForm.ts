@@ -1,4 +1,4 @@
-import type { Publication } from '../publication-logic';
+import type { Publication } from '../logic/publication-logic';
 import { REQUIRED_PUBLICATION_FIELDS } from '@/constants/publication-options';
 import { useFormLogic } from './useFormLogic';
 

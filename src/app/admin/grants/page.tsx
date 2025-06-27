@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { GrantLogic, type Grant } from '@/hooks/grant-logic';
+import { GrantLogic, type Grant } from '@/hooks/logic/grant-logic';
 import { GrantModal } from '@/components/admin-components/grants/grant-form';
 import { ConfirmationModal } from '@/components/reusable/confirmation-popup';
 import { Button } from '@/components/ui/button';

@@ -8,7 +8,7 @@ import Navbar from '@/components/navbar';
 // Fixed import path to match the actual file name (Footer.tsx with capital F)
 import Footer from '@/components/Footer';
 // Import EventLogic hook to get real announcements data
-import { EventLogic, type Event } from '@/hooks/event-logic';
+import { EventLogic, type Event } from '@/hooks/logic/event-logic';
 
 const SUPABASE_EVENT_PICS_URL = "https://fqtizehthryjvqxqvpkl.supabase.co/storage/v1/object/public/event-pics/";
 

@@ -1,8 +1,8 @@
 'use client';
 
-import { LabLogic, type Lab } from '@/hooks/lab-logic';
+import { LabLogic, type Lab } from '@/hooks/logic/lab-logic';
 import { LabTable } from '@/components/admin-components/labs/lab-table';
-import { LabModal } from '@/components/admin-components/labs/lab-form';
+import { LabFormModal } from '@/components/admin-components/labs/lab-form';
 import { useState } from 'react';
 
 import { AdminSidebar } from "@/components/admin-sidebar/sidebar-content"
@@ -29,8 +29,10 @@ export default function LabsPage() {
     }>({ field: 'LAB_NAME', direction: 'asc' });
 
     const handleAddLab = async (newLab: Partial<Lab>) => {
-        await addLab(newLab);
-        setShowAddModal(false);
+    console.log('handleAddLab called', newLab);
+    const labId = await addLab(newLab); 
+    console.log('Returned labId from addLab:', labId);
+    return labId;
     };
 
     const handleUpdateLab = async (updatedLab: Partial<Lab>) => {
@@ -38,6 +40,8 @@ export default function LabsPage() {
             await updateLab(selectedLab.LABID, updatedLab);
             setShowEditModal(false);
             setSelectedLab(null);
+            return selectedLab.LABID;
+
         }
     };
       const handleEditClick = (lab: Lab) => {
@@ -238,14 +242,14 @@ export default function LabsPage() {
                 )}
 
                 {showAddModal && (
-                    <LabModal
+                    <LabFormModal
                         onSave={handleAddLab}
                         onClose={() => setShowAddModal(false)}
                     />
                 )}
 
                 {showEditModal && selectedLab && (
-                    <LabModal
+                    <LabFormModal
                         lab={selectedLab}
                         onSave={handleUpdateLab}
                         onClose={() => setShowEditModal(false)}

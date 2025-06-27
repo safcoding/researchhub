@@ -18,7 +18,6 @@ export interface Grant {
     SUBSPONSOR_NAME: string;
     PRO_APPROVED: number;
     SPONSOR_NAME: string;
-    file_path?: string;
 }
 
 export interface GrantStats {

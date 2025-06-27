@@ -1,5 +1,5 @@
 import React from 'react';
-import { type Lab } from '@/hooks/lab-logic';
+import { type Lab } from '@/hooks/logic/lab-logic';
 import { EquipmentBadges } from './equiment-badge';
 
 interface LabModalProps {

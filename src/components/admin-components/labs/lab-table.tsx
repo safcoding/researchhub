@@ -1,4 +1,4 @@
-import type {Lab} from '@/hooks/lab-logic';
+import type {Lab} from '@/hooks/logic/lab-logic';
 import { useState } from 'react';
 
 export interface LabsTableProps {

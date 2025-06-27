@@ -1,4 +1,4 @@
-import type { Event } from "@/hooks/event-logic";
+import type { Event } from "@/hooks/logic/event-logic";
 
 export const EVENT_CATEGORIES: Event['category'][] =[
     'Conference',

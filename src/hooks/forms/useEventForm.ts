@@ -1,4 +1,4 @@
-import type { Event } from '@/hooks/event-logic';
+import type { Event } from '@/hooks/logic/event-logic';
 import { REQUIRED_EVENT_FIELDS } from '@/constants/event-options';
 import { useFormLogic } from './useFormLogic';
 

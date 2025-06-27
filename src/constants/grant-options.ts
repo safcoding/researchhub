@@ -1,4 +1,4 @@
-import type { Grant } from "@/hooks/grant-logic";
+import type { Grant } from "@/hooks/logic/grant-logic";
 
 export const GRANT_TYPES: Grant['GRANT_TYPE'][] =[
     'University Grant',

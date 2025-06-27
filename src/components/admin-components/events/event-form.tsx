@@ -1,5 +1,5 @@
 import { useState, useRef, type ChangeEvent } from 'react';
-import type { Event } from '@/hooks/event-logic';
+import type { Event } from '@/hooks/logic/event-logic';
 import { FormField } from '../../reusable/formfield';
 import { TextAreaField } from '../../reusable/textarea';
 import { SelectField } from '../../reusable/selectfield';

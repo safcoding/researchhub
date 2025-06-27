@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { EventLogic, type Event } from '@/hooks/event-logic';
+import { EventLogic, type Event } from '@/hooks/logic/event-logic';
 import ConditionalNavbar from '@/components/admin-sidebar/conditional-navbar';
 import Footer from '@/components/Footer';
 import Navbar from '@/components/navbar';

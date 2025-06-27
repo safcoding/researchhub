@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { EventLogic, type Event } from '@/hooks/event-logic';
+import { EventLogic, type Event } from '@/hooks/logic/event-logic';
 import { EventModal } from '@/components/admin-components/events/event-form';
 import { ConfirmationModal } from '@/components/reusable/confirmation-popup';
 import { EventsDataTable } from '@/components/admin-components/events/events-data-table';

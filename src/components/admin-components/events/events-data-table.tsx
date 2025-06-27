@@ -13,7 +13,7 @@ import {
 } from "@tanstack/react-table"
 import { Input } from "@/components/ui/input"
 import { DataTable } from "@/components/ui/data-table"
-import type { Event } from "@/hooks/event-logic"
+import type { Event } from "@/hooks/logic/event-logic"
 import { Button } from "../../ui/button"
 import { ArrowUpDown } from "lucide-react"
 

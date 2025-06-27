@@ -1,4 +1,4 @@
-import type { Lab } from '@/hooks/lab-logic';
+import type { Lab } from '@/hooks/logic/lab-logic';
 import { REQUIRED_LAB_FIELDS } from '@/constants/lab-options';
 import { useFormLogic } from './useFormLogic';
 

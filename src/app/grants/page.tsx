@@ -5,7 +5,7 @@ import GrantsPie from './gantchart1';
 import LineChart from './linechart';
 import ConditionalNavbar from '@/components/admin-sidebar/conditional-navbar'; 
 import Footer from '@/components/Footer';
-import { GrantLogic } from '@/hooks/grant-logic';
+import { GrantLogic } from '@/hooks/logic/grant-logic';
 import Navbar from '@/components/navbar';
 
 export default function GrantsDashboard() {

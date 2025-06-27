@@ -1,5 +1,5 @@
-import type {Grant} from '@/hooks/grant-logic';
-import { GrantLogic } from '@/hooks/grant-logic';
+import type {Grant} from '@/hooks/logic/grant-logic';
+import { GrantLogic } from '@/hooks/logic/grant-logic';
 import { useState } from 'react';
 
 export interface GrantsTableProps {

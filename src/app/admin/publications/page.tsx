@@ -10,11 +10,11 @@ import {
   SidebarTrigger,
 } from "@/components/ui/sidebar"
 
-import { PublicationLogic, type Publication } from '@/hooks/publication-logic';
+import { PublicationLogic, type Publication } from '@/hooks/logic/publication-logic';
 import { ConfirmationModal } from '@/components/reusable/confirmation-popup';
 import { PublicationModal } from '@/components/admin-components/publications/publication-form';
 import { PublicationDataTable } from '@/components/admin-components/publications/publication-data-table';
-import { PublicationFilters } from '@/components/PublicationFilters';
+import { PublicationFilters } from '@/components/admin-components/publications/publication-filters';
 
 export default function PublicationCRUDPage() {
   const { publications, loading, error, addPublication, updatePublication, deletePublication } = PublicationLogic();
