@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useState, useEffect } from 'react';
 import type { Lab } from '@/hooks/logic/lab-logic';
 import { useEquipmentLogic } from '@/hooks/logic/equipment-logic';
 import { LAB_TYPES, LAB_STATUS } from '@/constants/lab-options';
@@ -20,7 +20,7 @@ export function LabFormModal({ lab, onSave, onClose }: LabModalProps) {
     const { formData, errors, isSubmitting, handleChange } = useLabForm(lab);
     const { equipment } = useEquipmentLogic(); 
     const [selectedEquipment, setSelectedEquipment] = useState<{ id: string, name: string, quantity: number }[]>([]);
-    const { assignEquipmentToLab } = useLabEquipmentLogic();
+    const { assignEquipmentToLab, labEquipment, loading, fetchLabEquipment } = useLabEquipmentLogic();
 
     const handleEquipmentSelect = (equipmentId: string) => {
     if (!selectedEquipment.some(eq => eq.id === equipmentId)) {
@@ -53,12 +53,38 @@ const handleLabSubmit = async (e: React.FormEvent) => {
     } catch (err) {
         console.error('Error saving lab or assigning equipment:', err);
         alert('Error saving lab or assigning equipment: ' + (err instanceof Error ? err.message : JSON.stringify(err)));
-        // Do NOT close the modal if there is an error
     }
 };
 
+useEffect(() => {
+  if (lab && labEquipment.length > 0) {
+    setSelectedEquipment(
+      labEquipment.map(eq => ({
+        id: eq.equipment?.id || eq.equipment_id,
+        name: eq.equipment?.name || 'Unknown',
+        quantity: eq.quantity,
+      }))
+    );
+  } else if (lab && labEquipment.length === 0) {
+    setSelectedEquipment([]);
+  }
+}, [lab, labEquipment]);
+
+useEffect(() => {
+  if (lab?.LABID) {
+    fetchLabEquipment(lab.LABID);
+  }
+}, [lab?.LABID, fetchLabEquipment]);
+
     return (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+        <div
+            className ="fixed inset-0 bg-black/30 flex items-center justify-center z-50 p-4"
+            onClick={e => {
+            if (e.target === e.currentTarget) {
+                onClose();
+            }
+            }}
+        >
             <div className="bg-white rounded-lg shadow-xl w-full max-w-4xl max-h-[90vh] overflow-y-auto">
                 <div className="p-6 border-b border-gray-200">
                     <h2 className="text-2xl font-bold text-gray-900">
@@ -254,4 +280,6 @@ const handleLabSubmit = async (e: React.FormEvent) => {
             </div>
         </div>
     );
+
+
 }

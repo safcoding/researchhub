@@ -4,7 +4,8 @@ import { useState } from 'react';
 export interface LabsTableProps {
     labs: Lab[];
     onEdit?: (lab: Lab) => void;
-    onDelete?: (labId: string) => void;
+    onDelete: (lab: Lab) => void;
+    onDetails?: (lab: Lab) => void;
 }
 
 export function LabTable({ labs, onEdit, onDelete }: LabsTableProps) {
