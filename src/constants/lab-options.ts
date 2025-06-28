@@ -1,19 +1,17 @@
 import type { Lab } from "@/hooks/logic/lab-logic";
 
 export const LAB_TYPES: Lab['LAB_TYPE'][] =[
-    'Conference',
-    'Workshop',
-    'Seminar',
-    'Grant',
-    'Competition',
-    'Networking',
-    'Others'
+    'i-Kohza',
+    'Research Lab',
+    'Satellite Lab',
+    'Teaching Lab',
+    'Service Lab',
 ] as const;
 
 export const LAB_STATUS: Lab['LAB_STATUS'][] =[
-    'High',
-    'Medium',
-    'Low',
+    'Active',
+    'Under Maintanence',
+    'Unavailable',
 ] as const;
 
 export const REQUIRED_LAB_FIELDS = [

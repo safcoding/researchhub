@@ -1,6 +1,6 @@
 import { EVENT_CATEGORIES } from "@/constants/event-options"
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select"
-import { Input } from "@/components/ui/input"
+import { Button } from "@/components/ui/button";
 
 interface EventFiltersProps {
   filters: {
@@ -14,6 +14,15 @@ interface EventFiltersProps {
 }
 
 export function EventFilters({ filters, events, onFiltersChange }: EventFiltersProps) {
+
+    const handleReset = () => {
+    onFiltersChange({
+      selectedCategory: "all",
+      dateFilter: "",
+      selectedYear: "all",
+      selectedMonth: "all",
+    });
+  };
 
   const getAvailableYears = () => {
     const years = [...new Set(events.map(event => new Date(event.date).getFullYear()))]
@@ -120,6 +129,15 @@ export function EventFilters({ filters, events, onFiltersChange }: EventFiltersP
           </Select>
         </div>
       </div>
+      <div className="flex justify-end mt-4">
+        <Button
+          type="button"
+          variant="outline"
+          onClick={handleReset}
+        >
+          Reset Filters
+        </Button>
+      </div>     
     </div>
   )
 }

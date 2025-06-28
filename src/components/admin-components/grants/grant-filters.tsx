@@ -1,5 +1,5 @@
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select"
-import { Input } from "@/components/ui/input"
+import { Button } from "@/components/ui/button";
 
 interface GrantFiltersProps {
   filters: {
@@ -13,6 +13,15 @@ interface GrantFiltersProps {
 }
 
 export function GrantFilters({ filters, grants, onFiltersChange }: GrantFiltersProps) {
+
+    const handleReset = () => {
+    onFiltersChange({
+      dateFilter: "",
+      selectedYear: "all",
+      selectedMonth: "all",
+      selectedStatus: "all",
+    });
+  };
 
   const getAvailableYears = () => {
     const years = [...new Set(
@@ -107,6 +116,15 @@ export function GrantFilters({ filters, grants, onFiltersChange }: GrantFiltersP
             </SelectContent>
           </Select>
         </div>
+      </div>
+      <div className="flex justify-end mt-4">
+        <Button
+          type="button"
+          variant="outline"
+          onClick={handleReset}
+        >
+          Reset Filters
+        </Button>
       </div>
     </div>
   )

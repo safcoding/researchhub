@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { LabLogic, type Lab } from '@/hooks/logic/lab-logic';
 import { LabDataTable } from '@/components/admin-components/labs/lab-data-table';
 import { LabFormModal } from '@/components/admin-components/labs/lab-form';
@@ -13,10 +13,12 @@ import {
   SidebarProvider,
   SidebarTrigger,
 } from "@/components/ui/sidebar"
+import { LabFilters } from '@/components/admin-components/labs/lab-filters';
+import { useEquipmentLogic } from '@/hooks/logic/equipment-logic';
 
 export default function LabsPage() {
-  const { labs, loading, error, addLab, updateLab, deleteLab } = LabLogic();
-
+  const { labs, loading, error, addLab, updateLab, deleteLab, } = LabLogic();
+  const { equipment } = useEquipmentLogic();
   const [showAddModal, setShowAddModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
   const [showDetailsModal, setShowDetailsModal] = useState(false);
@@ -40,28 +42,47 @@ export default function LabsPage() {
     return "";
     };
 
-  const handleEditClick = (lab: Lab) => {
+     const handleEditClick = (lab: Lab) => {
     setSelectedLab(lab);
     setShowEditModal(true);
-  };
+    };
 
-  const handleDeleteClick = (lab: Lab) => {
+    const handleDeleteClick = (lab: Lab) => {
     setSelectedLab(lab);
     setShowDeleteModal(true);
-  };
+    };
 
-  const handleDeleteConfirm = async () => {
+    const handleDeleteConfirm = async () => {
     if (selectedLab?.LABID) {
       await deleteLab(selectedLab.LABID);
       setShowDeleteModal(false);
       setSelectedLab(null);
     }
-  };
+    };
 
-  const handleDetailsClick = (lab: Lab) => {
+    const handleDetailsClick = (lab: Lab) => {
     setSelectedLab(lab);
     setShowDetailsModal(true);
-  };
+    };
+
+    const [filters, setFilters] = useState({
+    labType: "",
+    labName: "",
+    equipmentId: "",
+    });
+
+  // 2. Handler for filter changes
+    const handleFiltersChange = (changed: Partial<typeof filters>) => {
+        setFilters(prev => ({ ...prev, ...changed }));
+    };
+
+    const filteredLabs = useMemo(() => {
+      return labs.filter(lab => {
+        const matchesType = !filters.labType || lab.LAB_TYPE === filters.labType;
+        const matchesName = !filters.labName || lab.LAB_NAME.toLowerCase().includes(filters.labName.toLowerCase());
+        return matchesType && matchesName;
+      });
+    }, [labs, filters]);
 
   return (
     <SidebarProvider style={{ "--sidebar-width": "19rem" } as React.CSSProperties}>
@@ -88,6 +109,12 @@ export default function LabsPage() {
             </div>
           </div>
 
+          <LabFilters
+            filters={filters}
+            onFiltersChange={handleFiltersChange}
+            equipmentList={equipment.map(eq => ({ id: eq.id, name: eq.name }))}
+          />
+          
           {error && (
             <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
               {error}
@@ -101,7 +128,7 @@ export default function LabsPage() {
             </div>
           ) : (
             <LabDataTable
-            data={labs}
+            data={filteredLabs}
             onEdit={handleEditClick}
             onDelete={handleDeleteClick}
             onDetails={handleDetailsClick}

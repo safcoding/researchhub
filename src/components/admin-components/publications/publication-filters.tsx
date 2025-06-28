@@ -1,5 +1,6 @@
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select"
-
+import { Button } from "@/components/ui/button"
+import { PUBLICATION_TYPES, PUBLICATION_CATEGORIES } from "@/constants/publication-options"
 interface PublicationFiltersProps {
   filters: {
     dateFilter: string
@@ -12,6 +13,15 @@ interface PublicationFiltersProps {
 }
 
 export function PublicationFilters({ filters, publications, onFiltersChange }: PublicationFiltersProps) {
+
+  const handleReset = () => {
+    onFiltersChange({
+      dateFilter: "",
+      selectedYear: "all",
+      selectedMonth: "all",
+      selectedStatus: "all",
+    });
+  };
 
   const getAvailableYears = () => {
     const years = [...new Set(
@@ -57,14 +67,32 @@ export function PublicationFilters({ filters, publications, onFiltersChange }: P
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="all">All Categories</SelectItem>
-              <SelectItem value="INDEXED PUBLICATION">Indexed</SelectItem>
-              <SelectItem value="NON-INDEXED PUBLICATION">Non Indexed</SelectItem>
-              <SelectItem value="OTHERS">Others</SelectItem>
-              {/* Add more statuses as needed */}
+              {PUBLICATION_CATEGORIES.map(type => (
+                <SelectItem key={type} value={type}>{type}</SelectItem>
+              ))}
             </SelectContent>
           </Select>
         </div>
-        {/* Year Filter */}
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            Filter by Type
+          </label>
+          <Select
+            value={filters.selectedStatus}
+            onValueChange={value => onFiltersChange({ selectedStatus: value })}
+          >
+            <SelectTrigger>
+              <SelectValue placeholder="All Types" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All Types</SelectItem>
+              {PUBLICATION_TYPES.map(type => (
+                <SelectItem key={type} value={type}>{type}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">
             Filter by Year
@@ -104,6 +132,15 @@ export function PublicationFilters({ filters, publications, onFiltersChange }: P
             </SelectContent>
           </Select>
         </div>
+      </div>
+      <div className="flex justify-end mt-4">
+        <Button
+          type="button"
+          variant="outline"
+          onClick={handleReset}
+        >
+          Reset Filters
+        </Button>
       </div>
     </div>
   )
