@@ -1,19 +1,17 @@
-import type { Publication } from "@/hooks/logic/publication-logic";
-
-export const PUBLICATION_TYPES: Publication['type'][] =[
-    'BOOK CHAPTER',
-    'ORIGINAL BOOK',
-    'SCOPUS',
-    'WEB OF SCIENCE',
-    'CONFERENCE PAPER',
-    'PROCEEDINGS',
-    'OTHERS'
+export const PUBLICATION_TYPES = [
+    'Book Chapter',
+    'Original Book',
+    'Scopus',
+    'Web of Science',
+    'Conference Paper',
+    'Proceedings',
+    'Others'
 ] as const;
 
-export const PUBLICATION_CATEGORIES: Publication['category'][] =[
-    'INDEXED PUBLICATION',
-    'NON-INDEXED PUBLICATION',
-    'OTHERS',
+export const PUBLICATION_CATEGORIES = [
+    'Indexed Publication',
+    'Non Indexed Publication',
+    'Other Publication',
 ] as const;
 
 export const REQUIRED_PUBLICATION_FIELDS = [

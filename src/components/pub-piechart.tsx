@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useMemo } from 'react';
+import { PUBLICATION_TYPES } from '@/constants/publication-options';
 import {
   PieChart,
   Pie,

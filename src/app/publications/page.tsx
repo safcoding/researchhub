@@ -4,9 +4,11 @@ import React, { useState, useMemo, useEffect } from 'react';
 import ConditionalNavbar from '@/components/admin-sidebar/conditional-navbar';
 import Navbar from '@/components/navbar';
 import Footer from '@/components/Footer';
-import { createClient } from '@/utils/supabase/client';
+import { PublicationLogic, type Publication, type PublicationFilters } from '@/hooks/logic/publication-logic';
+import { PUBLICATION_TYPES, PUBLICATION_CATEGORIES } from '@/constants/publication-options';
+import { PublicationFilters as PublicationFiltersComponent } from '@/components/admin-components/publications/publication-filters';
 import { PublicationPieChart } from '@/components/pub-piechart';
-// Importing the Pie chart component for publication types
+import type { AggregatedTypeCount } from '@/components/pub-piechart';
 import {
   LineChart,
   Line,
@@ -17,138 +19,55 @@ import {
   ResponsiveContainer
 } from 'recharts';
 
-// Define the Publication type
-interface Publication {
-  id: number;
-  pub_refno: string;
-  status: string;
-  type: string;
-  category: string;
-  journal: string;
-  title: string;
-  impact: number;
-  date: string;
-  level: string;
-  author_name: string;
-  author_id: number;
-  research_alliance: string;
-  rg_name: string;
-}
 
 const PublicationsDashboard: React.FC = () => {
-  // Use the Publication type for state
-  const [publications, setPublications] = useState<Publication[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
+  const [currentPage, setCurrentPage] = useState(1);
+  const [filters, setFilters] = useState<PublicationFilters>({
+    year: 'all',
+    month: 'all',
+    category: 'all',
+    type: 'all',
+    searchText: '',
+  });
 
-  // Fetch all publications in batches of 1000
+  const {
+    publications,
+    loading,
+    error,
+    refreshPublications,
+    totalCount,
+    fetchPublicationTypeCounts,
+  } = PublicationLogic();
+
   useEffect(() => {
-    const fetchAllPublications = async () => {
-      setLoading(true);
-      setError(null);
-      const supabase = createClient();
-      let allPubs: any[] = [];
-      let from = 0;
-      let to = 999;
-      let keepFetching = true;
-      while (keepFetching) {
-        const { data, error } = await supabase
-          .from('publications')
-          .select('*')
-          .order('date', { ascending: false })
-          .range(from, to);
-        if (error) {
-          setError(error.message);
-          setLoading(false);
-          return;
-        }
-        if (data && data.length > 0) {
-          allPubs = allPubs.concat(data);
-          if (data.length < 1000) {
-            keepFetching = false;
-          } else {
-            from += 1000;
-            to += 1000;
-          }
-        } else {
-          keepFetching = false;
-        }
-      }
-      setPublications(allPubs);
-      setLoading(false);
-    };
-    fetchAllPublications();
-  }, []);
+    refreshPublications({ page: currentPage, itemsPerPage, filters });
+  }, [currentPage, itemsPerPage, filters, refreshPublications]);
 
-  const [searchText, setSearchText] = useState('');
-  const [filterCategory, setFilterCategory] = useState<string>('');
-  const [filterYear, setFilterYear] = useState<string>('');
-  const [filterType, setFilterType] = useState<string>('');
-  const [selectedChartYear, setSelectedChartYear] = useState(new Date().getFullYear().toString());  // Calculate monthly data from actual publications
+  // For charts and stats
+  const [selectedChartYear, setSelectedChartYear] = useState(new Date().getFullYear().toString());
+  const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
   const monthlyData = useMemo(() => {
-    const months: number[] = Array.from({ length: 12 }, () => 0);
-    if (!publications) return months;
-      publications
+    const monthsArr: number[] = Array.from({ length: 12 }, () => 0);
+    publications
       .filter(pub => pub.date && new Date(pub.date).getFullYear().toString() === selectedChartYear)
       .forEach(pub => {
         const month = new Date(pub.date).getMonth();
-        if (month >= 0 && month < 12 && months[month] !== undefined) {
-          months[month]++;
+        if (month >= 0 && month < 12 && monthsArr[month] !== undefined) {
+          monthsArr[month]++;
         }
       });
-    return months;
+    return monthsArr;
   }, [publications, selectedChartYear]);
-
-  const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-  const chartData = months.map((month, index) => ({ 
-    month, 
-    publications: monthlyData[index] 
+  const chartData = months.map((month, index) => ({
+    month,
+    publications: monthlyData[index]
   }));
-  
-  //FILTERING LOGIC 
-  const filteredPublications = useMemo(() => {
-  const knownTypes = [
-    'book chapter',
-    'original book',
-    'publication in web of science',
-    'conference paper',
-    'proceedings',
-    'scopus'
-  ];
-
-  return publications.filter(pub => {
-    const matchesSearch = searchText === '' || 
-      pub.title.toLowerCase().includes(searchText.toLowerCase()) || 
-      pub.journal.toLowerCase().includes(searchText.toLowerCase()) ||
-      pub.author_name.toLowerCase().includes(searchText.toLowerCase());
-
-    const matchesCategory = filterCategory === '' || 
-      pub.category.toLowerCase() === filterCategory.toLowerCase();
-    
-    const matchesYear = filterYear === '' || 
-      new Date(pub.date).getFullYear().toString() === filterYear;
-    
-    const pubType = pub.type.toLowerCase();
-
-    const matchesType =
-      filterType === '' || 
-      filterType === 'All Types' ||
-      (filterType === 'Others'
-        ? !knownTypes.includes(pubType)
-        : pubType === filterType.toLowerCase());
-
-    return matchesSearch && matchesCategory && matchesYear && matchesType;
-  });
-}, [publications, searchText, filterCategory, filterYear, filterType]);
-
 
   // Calculate statistics
   const currentYear = new Date().getFullYear().toString();
   const currentQuarter = Math.floor((new Date().getMonth() + 3) / 3);
-
-  const totalPublications = publications.length;
+  const totalPublications = totalCount;
   const publicationsThisYear = publications.filter(
     pub => new Date(pub.date).getFullYear().toString() === currentYear
   ).length;
@@ -159,21 +78,26 @@ const PublicationsDashboard: React.FC = () => {
     return pubYear === currentYear && pubQuarter === currentQuarter;
   }).length;
 
-
   // Available years for filtering
   const availableYears = useMemo(() => {
-    const years = new Set(publications.map(pub => 
+    const years = new Set(publications.map(pub =>
       new Date(pub.date).getFullYear().toString()
     ));
     return Array.from(years).sort().reverse();
   }, [publications]);
-  
+
+
   // Pagination logic for display
-  const totalPages = Math.ceil(filteredPublications.length / itemsPerPage);
-  const paginatedPublications = filteredPublications.slice(
-    (currentPage - 1) * itemsPerPage,
-    currentPage * itemsPerPage
-  );
+  const totalPages = Math.ceil(totalCount / itemsPerPage);
+  const paginatedPublications = publications;
+
+  // Pie chart aggregated data
+  const [pieChartData, setPieChartData] = useState<AggregatedTypeCount[]>([]);
+  useEffect(() => {
+    fetchPublicationTypeCounts(filters).then(setPieChartData);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [filters]);
+
 
   if (loading) {
     return (
@@ -252,7 +176,7 @@ const PublicationsDashboard: React.FC = () => {
 <div className="w-full lg:w-1/3 bg-white p-6 rounded-xl shadow-md">
   <h3 className="text-xl font-semibold mb-6">Publication Distribution</h3>
   <div className="flex flex-col items-center justify-center gap-6 pt-4 pb-6">
-    <PublicationPieChart publications={filteredPublications} />
+    <PublicationPieChart aggregatedData={pieChartData} />
   </div>
 </div>
 
@@ -269,62 +193,30 @@ const PublicationsDashboard: React.FC = () => {
                     className="text-sm px-2 py-1 rounded-full ml-2"
                     style={{ backgroundColor: '#D6F0E7', color: '#2B9167' }}
                   >
-                  {filteredPublications.length}
+                  {publications.length}
                 </span>
               </h3>
             </div>
 
 
-           {/* Category Filter*/}
-            <div className="flex gap-2">              
-              <select 
-                value={filterCategory} 
-                onChange={(e) => setFilterCategory(e.target.value)} 
-                className="border px-3 py-2 rounded text-sm"
-                aria-label="Filter by category"
-              >
-                <option value="">All Categories</option>
-                <option value="INDEXED PUBLICATION">Indexed Publication</option>
-                <option value="NON INDEXED PUBLICATION">Non-Indexed Publication</option>
-                <option value="OTHERS PUBLICATION">Others</option>
-              </select>    
-
-              <select 
-                value={filterYear} 
-                onChange={(e) => setFilterYear(e.target.value)} 
-                className="border px-3 py-2 rounded text-sm"
-                aria-label="Filter by year"
-              >
-                <option value="">All Years</option>
-                {availableYears.map(year => (
-                  <option key={year} value={year}>{year}</option>
-                ))}
-              </select>              <select 
-                value={filterType} 
-                onChange={(e) => setFilterType(e.target.value)} 
-                className="border px-3 py-2 rounded text-sm"
-                aria-label="Filter by type"
-              >
-
-                {/*TYPES FILTER*/}
-                <option value="All Types">All Types</option>
-                <option value="BOOK CHAPTER">Book Chapter</option>
-                <option value="ORIGINAL BOOK">Research Book</option>
-                <option value="Scopus">Scopus</option>
-                <option value="PUBLICATION IN WEB OF SCIENCE">Web of Science</option>
-                <option value="CONFERENCE PAPER">Conference</option>
-                <option value="PROCEEDINGS">Proceeding</option>
-                <option value="Others">Others</option>
-              </select>
-
-              <input
-                type="text"
-                placeholder="Search titles or authors..."
-                value={searchText}
-                onChange={(e) => setSearchText(e.target.value)}
-                className="border px-3 py-2 rounded text-sm w-40"
-              />
-            </div>
+            {/* Filters */}
+            <PublicationFiltersComponent
+              filters={{
+                category: (filters.category ?? '') as typeof PUBLICATION_CATEGORIES[number] | 'all',
+                type: (filters.type ?? '') as typeof PUBLICATION_TYPES[number] | 'all',
+                year: filters.year ?? '',
+                month: filters.month ?? '',
+                searchText: filters.searchText ?? '',
+                dateFrom: filters.dateFrom ?? '',
+                dateTo: filters.dateTo ?? '',
+              }}
+              publicationTypes={PUBLICATION_TYPES}
+              publicationCategories={PUBLICATION_CATEGORIES}
+              onFiltersChange={updated => {
+                setFilters(prev => ({ ...prev, ...updated }));
+                setCurrentPage(1);
+              }}
+            />
           </div>
 
           <div className="overflow-auto max-h-96">
@@ -367,22 +259,22 @@ const PublicationsDashboard: React.FC = () => {
           </div>
           {/* Pagination controls */}
           <div className="flex justify-center items-center mt-4 space-x-2">
-          <button
-            onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
-            disabled={currentPage === 1}
-            className={`px-3 py-1 rounded ${currentPage === 1 ? 'bg-gray-200 text-gray-400' : 'bg-blue-600 text-white hover:bg-blue-700'}`}
-          >
-            Previous
-          </button>
-          <span className="px-2">Page {currentPage} of {totalPages}</span>
-          <button
-            onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
-            disabled={currentPage === totalPages || totalPages === 0}
-            className={`px-3 py-1 rounded ${currentPage === totalPages || totalPages === 0 ? 'bg-gray-200 text-gray-400' : 'bg-blue-600 text-white hover:bg-blue-700'}`}
-          >
-            Next
-          </button>
-        </div>
+            <button
+              onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+              disabled={currentPage === 1}
+              className={`px-3 py-1 rounded ${currentPage === 1 ? 'bg-gray-200 text-gray-400' : 'bg-blue-600 text-white hover:bg-blue-700'}`}
+            >
+              Previous
+            </button>
+            <span className="px-2">Page {currentPage} of {totalPages}</span>
+            <button
+              onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
+              disabled={currentPage === totalPages || totalPages === 0}
+              className={`px-3 py-1 rounded ${currentPage === totalPages || totalPages === 0 ? 'bg-gray-200 text-gray-400' : 'bg-blue-600 text-white hover:bg-blue-700'}`}
+            >
+              Next
+            </button>
+          </div>
         </div>
       </main>
 

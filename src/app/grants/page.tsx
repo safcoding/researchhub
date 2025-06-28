@@ -12,7 +12,6 @@ export default function GrantsDashboard() {
   const { 
     loading, 
     error, 
-    grants,
     getGrantStats, 
     getGrantTypeData, 
     getSponsorCategoryData,

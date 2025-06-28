@@ -149,14 +149,6 @@ export function PublicationDataTable({ data, onEdit, onDelete }: PublicationData
     <div className="bg-white shadow-md rounded-lg overflow-hidden">
       <div className="px-6 py-4 border-b border-gray-200 flex items-center">
         <h2 className="text-xl font-semibold text-gray-800 flex-1">All Publications</h2>
-        <Input
-          placeholder="Filter by Publication Reference number..."
-          value={(table.getColumn("pub_refno")?.getFilterValue() as string) ?? ""}
-          onChange={event =>
-            table.getColumn("pub_refno")?.setFilterValue(event.target.value)
-          }
-          className="max-w-sm"
-        />
       </div>
       <DataTable columns={columns} data={data} table={table} />
     </div>

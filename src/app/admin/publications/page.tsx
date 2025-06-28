@@ -1,95 +1,82 @@
 'use client';
 
-import React, { useState } from 'react';
-import { AdminSidebar } from "@/components/admin-sidebar/sidebar-content"
-import { Separator } from "@/components/ui/separator"
+import React, { useState, useEffect } from 'react';
+import { AdminSidebar } from "@/components/admin-sidebar/sidebar-content";
+import { Separator } from "@/components/ui/separator";
 import { Button } from '@/components/ui/button';
 import {
   SidebarInset,
   SidebarProvider,
   SidebarTrigger,
-} from "@/components/ui/sidebar"
-
-import { PublicationLogic, type Publication } from '@/hooks/logic/publication-logic';
+} from "@/components/ui/sidebar";
+import { PublicationLogic, type Publication, type PublicationFilters } from '@/hooks/logic/publication-logic';
 import { ConfirmationModal } from '@/components/reusable/confirmation-popup';
 import { PublicationModal } from '@/components/admin-components/publications/publication-form';
 import { PublicationDataTable } from '@/components/admin-components/publications/publication-data-table';
-import { PublicationFilters } from '@/components/admin-components/publications/publication-filters';
+import { PublicationFilters as PublicationFiltersComponent } from '@/components/admin-components/publications/publication-filters';
+import { PUBLICATION_TYPES, PUBLICATION_CATEGORIES } from '@/constants/publication-options';
 
 export default function PublicationCRUDPage() {
-  const { publications, loading, error, addPublication, updatePublication, deletePublication } = PublicationLogic();
+  const itemsPerPage = 10;
+  const [currentPage, setCurrentPage] = useState(1);
+  const [filters, setFilters] = useState<PublicationFilters>({
+    year: 'all',
+    month: 'all',
+    category: 'all', 
+    type: 'all',    
+    searchText: '',
+  });
+
+  const {
+    publications,
+    loading,
+    error,
+    addPublication,
+    updatePublication,
+    deletePublication,
+    refreshPublications,
+  } = PublicationLogic();
+
+  const { totalCount } = PublicationLogic();
+
+  useEffect(() => {
+    refreshPublications({ page: currentPage, itemsPerPage, filters });
+  }, [currentPage, itemsPerPage, filters, refreshPublications]);
+
+  // Modal state
   const [showPublicationModal, setShowPublicationModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [selectedPublication, setSelectedPublication] = useState<Publication | null>(null);
-  const [selectedYear, setSelectedYear] = useState<string>('all');
-  const [selectedMonth, setSelectedMonth] = useState<string>('all');
-  const [dateFilter, setDateFilter] = useState<'all' | 'upcoming' | 'past' | 'thisMonth' | 'nextMonth'>('all');
-  const [selectedStatus, setSelectedStatus] = useState<string>('all');
 
+  // CRUD handlers
+  const handleAddPublication = async (newPublication: Partial<Publication>) => {
+    await addPublication(newPublication as Omit<Publication, 'id'>, { page: currentPage, itemsPerPage, filters });
+    setShowPublicationModal(false);
+  };
 
-  //State Management
   const handleUpdatePublication = async (updatedPublication: Partial<Publication>) => {
     if (selectedPublication?.id) {
-      await updatePublication(selectedPublication.id, updatedPublication);
+      await updatePublication(selectedPublication.id, updatedPublication, { page: currentPage, itemsPerPage, filters });
       setShowPublicationModal(false);
       setSelectedPublication(null);
     }
   };
 
-  const handleAddPublication = async (newPublication: Partial<Publication>) => {
-    await addPublication(newPublication as Omit<Publication, 'id'>);
-    setShowPublicationModal(false);
-  };
-
-  const handleEditClick = (publication: Publication) => {
-    setSelectedPublication(publication);
-    setShowPublicationModal(true);
-  };
-
-  const handleDeleteClick = (publication: Publication) => {
-    setSelectedPublication(publication);
-    setShowDeleteModal(true);
-  };
-
   const handleDeleteConfirm = async () => {
     if (selectedPublication?.id) {
-      await deletePublication(selectedPublication.id);
+      await deletePublication(selectedPublication.id, { page: currentPage, itemsPerPage, filters });
       setShowDeleteModal(false);
       setSelectedPublication(null);
     }
   };
 
-  // Filtering logic
-  const filteredPublications = publications.filter(publication => {
-    const publicationDate = new Date(publication.date);
-    const today = new Date();
-    const currentMonth = today.getMonth();
-    const currentYear = today.getFullYear();
-
-    let matchesDate = true;
-    switch (dateFilter) {
-      case 'upcoming':
-        matchesDate = publicationDate >= today;
-        break;
-      case 'past':
-        matchesDate = publicationDate < today;
-        break;
-      case 'thisMonth':
-        matchesDate = publicationDate.getMonth() === currentMonth && publicationDate.getFullYear() === currentYear;
-        break;
-      case 'nextMonth':
-        const nextMonth = currentMonth === 11 ? 0 : currentMonth + 1;
-        const nextMonthYear = currentMonth === 11 ? currentYear + 1 : currentYear;
-        matchesDate = publicationDate.getMonth() === nextMonth && publicationDate.getFullYear() === nextMonthYear;
-        break;
-      default:
-        matchesDate = true;
-    }
-    const matchesYear = selectedYear === 'all' || publicationDate.getFullYear().toString() === selectedYear;
-    const matchesMonth = selectedMonth === 'all' || publicationDate.getMonth().toString() === selectedMonth;
-    const matchesStatus = selectedStatus === 'all' || publication.status === selectedStatus;
-    return matchesDate && matchesYear && matchesMonth && matchesStatus;
-  });
+  // Filter change handler
+  const handleFiltersChange = (updated: Partial<PublicationFilters>) => {
+    // Prevent category/type from being set together if not intended
+    // Only update the field that changed
+    setFilters(prev => ({ ...prev, ...updated }));
+    setCurrentPage(1); // Reset to first page on filter change
+  };
 
   return (
     <SidebarProvider style={{ "--sidebar-width": "19rem" } as React.CSSProperties}>
@@ -124,33 +111,58 @@ export default function PublicationCRUDPage() {
                 Error: {error}
               </div>
             )}
-            
-            <PublicationFilters
+
+            <PublicationFiltersComponent
               filters={{
-                dateFilter,
-                selectedYear,
-                selectedMonth,
-                selectedStatus,
+                category: (filters.category ?? '') as typeof PUBLICATION_CATEGORIES[number] | 'all',
+                type: (filters.type ?? '') as typeof PUBLICATION_TYPES[number] | 'all',
+                year: filters.year ?? '',
+                month: filters.month ?? '',
+                searchText: filters.searchText ?? '',
+                dateFrom: filters.dateFrom ?? '',
+                dateTo: filters.dateTo ?? '',
               }}
-              publications={publications}
-              onFiltersChange={(updated: { selectedYear?: string; selectedMonth?: string; selectedStatus?: string }) => {
-                if (updated.selectedYear !== undefined) setSelectedYear(updated.selectedYear);
-                if (updated.selectedMonth !== undefined) setSelectedMonth(updated.selectedMonth);
-                if (updated.selectedStatus !== undefined) setSelectedStatus(updated.selectedStatus);
-              }}
+              publicationTypes={PUBLICATION_TYPES}
+              publicationCategories={PUBLICATION_CATEGORIES}
+              onFiltersChange={handleFiltersChange}
             />
 
             <PublicationDataTable
-              data={filteredPublications}
-              onEdit={handleEditClick}
-              onDelete={handleDeleteClick}
+              data={publications}
+              onEdit={pub => {
+                setSelectedPublication(pub);
+                setShowPublicationModal(true);
+              }}
+              onDelete={pub => {
+                setSelectedPublication(pub);
+                setShowDeleteModal(true);
+              }}
             />
+
+            {/* Pagination Controls */}
+            <div className="flex justify-center items-center mt-4 space-x-2">
+              <Button
+                variant="outline"
+                onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                disabled={currentPage === 1}
+              >
+                Previous
+              </Button>
+              <span className="px-2">Page {currentPage} of {Math.ceil((totalCount || 1) / itemsPerPage)}</span>
+              <Button
+                variant="outline"
+                onClick={() => setCurrentPage(prev => prev + 1)}
+                disabled={currentPage * itemsPerPage >= totalCount}
+              >
+                Next
+              </Button>
+            </div>
 
             {/* Modals */}
             {showPublicationModal && (
               <PublicationModal
                 publication={selectedPublication ?? undefined}
-                onSave={selectedPublication? handleUpdatePublication : handleAddPublication}
+                onSave={selectedPublication ? handleUpdatePublication : handleAddPublication}
                 onClose={() => {
                   setShowPublicationModal(false);
                   setSelectedPublication(null);
