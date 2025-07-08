@@ -1,25 +1,22 @@
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select"
 import { Button } from "@/components/ui/button";
+import { type GrantFilters } from '@/hooks/logic/grant-logic';
 
-interface GrantFiltersProps {
-  filters: {
-    dateFilter: string
-    selectedYear: string
-    selectedMonth: string
-    selectedStatus: string
-  }
+interface GrantFiltersComponentProps {
+  filters: GrantFilters
   grants: any[]
-  onFiltersChange: (filters: Partial<GrantFiltersProps["filters"]>) => void
+  onFiltersChange: (filters: Partial<GrantFilters>) => void
 }
 
-export function GrantFilters({ filters, grants, onFiltersChange }: GrantFiltersProps) {
+export function GrantFilters({ filters, grants, onFiltersChange }: GrantFiltersComponentProps) {
 
-    const handleReset = () => {
+  const handleReset = () => {
     onFiltersChange({
-      dateFilter: "",
-      selectedYear: "all",
-      selectedMonth: "all",
-      selectedStatus: "all",
+      year: "all",
+      month: "all",
+      status: "all",
+      grantType: "all",
+      searchText: "",
     });
   };
 
@@ -59,8 +56,8 @@ export function GrantFilters({ filters, grants, onFiltersChange }: GrantFiltersP
             Filter by Status
           </label>
           <Select
-            value={filters.selectedStatus}
-            onValueChange={value => onFiltersChange({ selectedStatus: value })}
+            value={filters.status || 'all'}
+            onValueChange={value => onFiltersChange({ status: value })}
           >
             <SelectTrigger>
               <SelectValue placeholder="All Statuses" />
@@ -71,19 +68,45 @@ export function GrantFilters({ filters, grants, onFiltersChange }: GrantFiltersP
               <SelectItem value="COMPLETED">Completed</SelectItem>
               <SelectItem value="TERMINATED">Terminated</SelectItem>
               <SelectItem value="ENDED">Ended</SelectItem>
-              <SelectItem value="REACTIVATE WITH FINAL REPORT">Reactivate with Final Report</SelectItem>
+              <SelectItem value="END - NEED TO SUBMIT FINAL REPORT">End - Need to Submit Final Report</SelectItem>
               {/* Add more statuses as needed */}
             </SelectContent>
           </Select>
         </div>
+        
+        {/* Grant Type Filter */}
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            Filter by Grant Type
+          </label>
+          <Select
+            value={filters.grantType || 'all'}
+            onValueChange={value => onFiltersChange({ grantType: value })}
+          >
+            <SelectTrigger>
+              <SelectValue placeholder="All Grant Types" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All Grant Types</SelectItem>
+              <SelectItem value="International Grant">International Grant</SelectItem>
+              <SelectItem value="UTM Encouragement Research">UTM Encouragement Research</SelectItem>
+              <SelectItem value="Potential Academic Staff">Potential Academic Staff</SelectItem>
+              <SelectItem value="Matching Grant">Matching Grant</SelectItem>
+              <SelectItem value="Contract">Contract</SelectItem>
+              <SelectItem value="COLLABORATIVE RESEARCH AND EXTERNAL GRANT">Collaborative Research and External Grant</SelectItem>
+              {/* Add more grant types as needed */}
+            </SelectContent>
+          </Select>
+        </div>
+        
         {/* Year Filter */}
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">
             Filter by Year
           </label>
           <Select
-            value={filters.selectedYear}
-            onValueChange={value => onFiltersChange({ selectedYear: value })}
+            value={filters.year || 'all'}
+            onValueChange={value => onFiltersChange({ year: value })}
           >
             <SelectTrigger>
               <SelectValue placeholder="All Years" />
@@ -96,14 +119,15 @@ export function GrantFilters({ filters, grants, onFiltersChange }: GrantFiltersP
             </SelectContent>
           </Select>
         </div>
+        
         {/* Month Filter */}
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">
             Filter by Month
           </label>
           <Select
-            value={filters.selectedMonth}
-            onValueChange={value => onFiltersChange({ selectedMonth: value })}
+            value={filters.month || 'all'}
+            onValueChange={value => onFiltersChange({ month: value })}
           >
             <SelectTrigger>
               <SelectValue placeholder="All Months" />

@@ -14,9 +14,37 @@ const SUPABASE_EVENT_PICS_URL = "https://fqtizehthryjvqxqvpkl.supabase.co/storag
 
 const HomePage = () => { 
   // Get events data from the EventLogic hook
-  const { events, loading } = EventLogic();
+  const { 
+    events, 
+    loading, 
+    getUpcomingEventsForHomepage 
+  } = EventLogic();
   
-  // Function to get the top 3 events closest to their deadline
+  // State for homepage events
+  const [upcomingEvents, setUpcomingEvents] = React.useState<Event[]>([]);
+  const [upcomingConferences, setUpcomingConferences] = React.useState<Event[]>([]);
+  
+  // Fetch homepage events on component mount
+  React.useEffect(() => {
+    const fetchHomepageData = async () => {
+      try {
+        // Get upcoming events optimized for homepage
+        const events = await getUpcomingEventsForHomepage(3);
+        setUpcomingEvents(events);
+        
+        // Get upcoming conferences specifically
+        const conferences = await getUpcomingEventsForHomepage(4);
+        const conferenceOnly = conferences.filter(event => event.category === 'Conference');
+        setUpcomingConferences(conferenceOnly);
+      } catch (error) {
+        console.error('Error fetching homepage data:', error);
+      }
+    };
+    
+    fetchHomepageData();
+  }, [getUpcomingEventsForHomepage]);
+  
+  // Legacy functions for backward compatibility (can be removed later)
   const getUpcomingEvents = (): Event[] => {
     const currentDate = new Date();
     
@@ -66,8 +94,6 @@ const HomePage = () => {
     return sortedConferences.slice(0, 4);
   };
   
-  const upcomingEvents = getUpcomingEvents();
-  const upcomingConferences = getUpcomingConferences();
   return (
       <ConditionalNavbar> 
       <Navbar />

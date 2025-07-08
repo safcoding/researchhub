@@ -31,13 +31,12 @@ export default function PublicationCRUDPage() {
     publications,
     loading,
     error,
+    totalCount,
     addPublication,
     updatePublication,
     deletePublication,
     refreshPublications,
   } = PublicationLogic();
-
-  const { totalCount } = PublicationLogic();
 
   useEffect(() => {
     refreshPublications({ page: currentPage, itemsPerPage, filters });
@@ -137,26 +136,13 @@ export default function PublicationCRUDPage() {
                 setSelectedPublication(pub);
                 setShowDeleteModal(true);
               }}
+              totalCount={totalCount}
+              currentPage={currentPage}
+              itemsPerPage={itemsPerPage}
+              onPageChange={setCurrentPage}
+              searchValue={filters.searchText || ''}
+              onSearchChange={(value) => setFilters(prev => ({ ...prev, searchText: value }))}
             />
-
-            {/* Pagination Controls */}
-            <div className="flex justify-center items-center mt-4 space-x-2">
-              <Button
-                variant="outline"
-                onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
-                disabled={currentPage === 1}
-              >
-                Previous
-              </Button>
-              <span className="px-2">Page {currentPage} of {Math.ceil((totalCount || 1) / itemsPerPage)}</span>
-              <Button
-                variant="outline"
-                onClick={() => setCurrentPage(prev => prev + 1)}
-                disabled={currentPage * itemsPerPage >= totalCount}
-              >
-                Next
-              </Button>
-            </div>
 
             {/* Modals */}
             {showPublicationModal && (

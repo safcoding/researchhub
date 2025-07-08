@@ -6,6 +6,7 @@ import { LabDataTable } from '@/components/admin-components/labs/lab-data-table'
 import { LabFormModal } from '@/components/admin-components/labs/lab-form';
 import LabDetailsModal from '@/components/admin-components/labs/table-details-modal';
 import { ConfirmationModal } from '@/components/reusable/confirmation-popup';
+import { Button } from '@/components/ui/button';
 import { AdminSidebar } from "@/components/admin-sidebar/sidebar-content"
 import { Separator } from "@/components/ui/separator"
 import {
@@ -96,18 +97,17 @@ export default function LabsPage() {
           />
         </header>
 
-        <div className="container mx-auto p-4">
-          <div className="flex justify-between items-center mb-4">
-            <h1 className="text-2xl font-bold">Laboratory Database</h1>
-            <div className="flex gap-2">
-              <button
+        <div className="min-h-screen bg-gray-50">
+          <div className="container mx-auto px-4 py-8">
+            <div className="flex justify-between items-center mb-6">
+              <h1 className="text-3xl font-bold text-gray-800">Admin: Manage Labs</h1>
+              <Button
                 onClick={() => setShowAddModal(true)}
-                className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition-colors"
+                className="bg-blue-600 hover:bg-blue-700"
               >
                 Add Lab
-              </button>
+              </Button>
             </div>
-          </div>
 
           <LabFilters
             filters={filters}
@@ -156,6 +156,7 @@ export default function LabsPage() {
               onClose={() => setShowDetailsModal(false)}
             />
           )}
+          </div>
 
           {showDeleteModal && selectedLab && (
             <ConfirmationModal

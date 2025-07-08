@@ -21,11 +21,28 @@ interface GrantDataTableProps {
   data: Grant[]
   onEdit: (grant: Grant) => void
   onDelete: (grant: Grant) => void
+  totalCount: number
+  currentPage: number
+  itemsPerPage: number
+  onPageChange: (page: number) => void
+  searchValue: string
+  onSearchChange: (value: string) => void
 }
 
-export function GrantDataTable({ data, onEdit, onDelete }: GrantDataTableProps) {
+export function GrantDataTable({ 
+  data, 
+  onEdit, 
+  onDelete,
+  totalCount,
+  currentPage,
+  itemsPerPage,
+  onPageChange,
+  searchValue,
+  onSearchChange 
+}: GrantDataTableProps) {
   const [sorting, setSorting] = React.useState<SortingState>([])
-  const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([])
+  
+  // Remove client-side filtering since we're doing server-side
 
   const columns: ColumnDef<Grant>[] = [
     {
@@ -33,15 +50,14 @@ export function GrantDataTable({ data, onEdit, onDelete }: GrantDataTableProps) 
       header: "Project ID",
       cell: ({ row }) => {
         const grant = row.original
-        return <div className="text-sm font-medium text-gray-900">{grant.PROJECTID}</div>
-      },
-    },
-    {
-      accessorKey: "PL_NAME",
-      header: "Project Leader",
-      cell: ({ row }) => {
-        const grant = row.original
-        return <div className="text-sm font-medium text-gray-900">{grant.PL_NAME}</div>
+        return (
+          <div>
+            <div className="text-sm font-medium text-gray-900">{grant.PROJECTID}</div>
+            <div className="text-sm text-gray-500 truncate max-w-xs">
+              {grant.PL_NAME}
+            </div>
+          </div>
+        )
       },
     },
     {
@@ -54,16 +70,18 @@ export function GrantDataTable({ data, onEdit, onDelete }: GrantDataTableProps) 
     },
     {
       accessorKey: "PRO_APPROVED",
-      header: ({ column }) => (
-        <Button
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-          className="hover:bg-transparent p-0 h-auto font-medium text-xs text-gray-500 uppercase tracking-wider"
-        >
-          Amount
-          <ArrowUpDown className="ml-2 h-4 w-4" />
-        </Button>
-      ),
+      header: ({ column }) => {
+        return (
+          <Button
+            variant="ghost"
+            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+            className="hover:bg-transparent p-0 h-auto font-medium text-xs text-gray-500 uppercase tracking-wider"
+          >
+            Amount
+            <ArrowUpDown className="ml-2 h-4 w-4" />
+          </Button>
+        )
+      },
       cell: ({ row }) => <div className="text-sm text-gray-900">{row.getValue("PRO_APPROVED")}</div>,
     },
     {
@@ -84,16 +102,18 @@ export function GrantDataTable({ data, onEdit, onDelete }: GrantDataTableProps) 
     },
     {
       accessorKey: "PRO_DATESTART",
-      header: ({ column }) => (
-        <Button
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-          className="hover:bg-transparent p-0 h-auto font-medium text-xs text-gray-500 uppercase tracking-wider"
-        >
-          Date Start
-          <ArrowUpDown className="ml-2 h-4 w-4" />
-        </Button>
-      ),
+      header: ({ column }) => {
+        return (
+          <Button
+            variant="ghost"
+            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+            className="hover:bg-transparent p-0 h-auto font-medium text-xs text-gray-500 uppercase tracking-wider"
+          >
+            Date Start
+            <ArrowUpDown className="ml-2 h-4 w-4" />
+          </Button>
+        )
+      },
       cell: ({ row }) => <div className="text-sm text-gray-900">{row.getValue("PRO_DATESTART")}</div>,
     },
     {
@@ -130,30 +150,39 @@ export function GrantDataTable({ data, onEdit, onDelete }: GrantDataTableProps) 
     columns,
     onSortingChange: setSorting,
     getCoreRowModel: getCoreRowModel(),
-    getPaginationRowModel: getPaginationRowModel(),
     getSortedRowModel: getSortedRowModel(),
-    onColumnFiltersChange: setColumnFilters,
-    getFilteredRowModel: getFilteredRowModel(),
+    manualPagination: true, // Enable manual pagination for server-side
+    pageCount: Math.ceil(totalCount / itemsPerPage),
     state: {
       sorting,
-      columnFilters,
+      pagination: {
+        pageIndex: currentPage - 1,
+        pageSize: itemsPerPage,
+      },
     },
   })
 
   return (
     <div className="bg-white shadow-md rounded-lg overflow-hidden">
       <div className="px-6 py-4 border-b border-gray-200 flex items-center">
-        <h2 className="text-xl font-semibold text-gray-800 flex-1">All Grants</h2>
-        <Input
-          placeholder="Filter by Project ID..."
-          value={(table.getColumn("PROJECTID")?.getFilterValue() as string) ?? ""}
-          onChange={event =>
-            table.getColumn("PROJECTID")?.setFilterValue(event.target.value)
-          }
-          className="max-w-sm"
+        <h2 className="text-xl font-semibold text-gray-800 flex-1">All Grants ({totalCount})</h2>
+        <input
+          type="text"
+          placeholder="Search grants..."
+          value={searchValue}
+          onChange={(e) => onSearchChange(e.target.value)}
+          className="max-w-sm px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
         />
       </div>
-      <DataTable columns={columns} data={data} table={table} />
+      <DataTable 
+        columns={columns} 
+        data={data} 
+        table={table}
+        totalCount={totalCount}
+        currentPage={currentPage}
+        itemsPerPage={itemsPerPage}
+        onPageChange={onPageChange}
+      />
     </div>
   )
 }

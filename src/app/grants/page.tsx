@@ -1,5 +1,6 @@
 'use client';
 import Link from 'next/link';
+import { useEffect } from 'react';
 import StatsCard from './statcards';
 import GrantsPie from './gantchart1';
 import LineChart from './linechart';
@@ -10,14 +11,21 @@ import Navbar from '@/components/navbar';
 
 export default function GrantsDashboard() {
   const { 
+    grants,
     loading, 
     error, 
+    fetchDashboardStats,
     getGrantStats, 
     getGrantTypeData, 
     getSponsorCategoryData,
     getTimelineData,
     getTotalApprovedAmount
   } = GrantLogic();
+
+  // Fetch optimized dashboard data
+  useEffect(() => {
+    fetchDashboardStats();
+  }, [fetchDashboardStats]);
 
   if (loading) {
     return (
@@ -31,6 +39,7 @@ export default function GrantsDashboard() {
       </div>
     );
   }
+  
   if (error) {
     return (
       <div className="min-h-screen flex flex-col">
@@ -38,6 +47,20 @@ export default function GrantsDashboard() {
         <main className="flex-grow container mx-auto px-4 py-8 bg-gray-50">
           <div className="flex justify-center items-center h-64">
             <div className="text-xl text-red-600">Error: {error}</div>
+          </div>
+        </main>
+      </div>
+    );
+  }
+
+  // Only calculate analytics if we have grants data
+  if (!grants || grants.length === 0) {
+    return (
+      <div className="min-h-screen flex flex-col">
+        <ConditionalNavbar />
+        <main className="flex-grow container mx-auto px-4 py-8 bg-gray-50">
+          <div className="flex justify-center items-center h-64">
+            <div className="text-xl">No grant data available...</div>
           </div>
         </main>
       </div>
@@ -88,8 +111,8 @@ export default function GrantsDashboard() {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           {/* Line Chart - Spans full width */}
           <div className="lg:col-span-2 bg-white p-6 rounded-xl shadow-md">
-            <h2 className="text-xl font-semibold mb-4">Grants Timeline (Last 12 Months)</h2>
-            <p className="text-sm text-gray-600 mb-4">Values in thousands (RM '000)</p>
+            <h2 className="text-xl font-semibold mb-4">Cumulative Grants Value for {new Date().getFullYear()}</h2>
+            <p className="text-sm text-gray-600 mb-4">Running total of grant amounts received throughout {new Date().getFullYear()} (RM)</p>
             <div className="h-80">
               <LineChart data={timelineData} />
             </div>

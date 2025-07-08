@@ -7,8 +7,7 @@ import Footer from '@/components/Footer';
 import { PublicationLogic, type Publication, type PublicationFilters } from '@/hooks/logic/publication-logic';
 import { PUBLICATION_TYPES, PUBLICATION_CATEGORIES } from '@/constants/publication-options';
 import { PublicationFilters as PublicationFiltersComponent } from '@/components/admin-components/publications/publication-filters';
-import { PublicationPieChart } from '@/components/pub-piechart';
-import type { AggregatedTypeCount } from '@/components/pub-piechart';
+import { PublicationPieChart, type AggregatedTypeCount } from '@/components/pub-piechart';
 import {
   LineChart,
   Line,

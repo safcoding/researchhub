@@ -21,11 +21,28 @@ interface EventsDataTableProps {
   data: Event[]
   onEdit: (event: Event) => void
   onDelete: (event: Event) => void
+  totalCount: number
+  currentPage: number
+  itemsPerPage: number
+  onPageChange: (page: number) => void
+  searchValue: string
+  onSearchChange: (value: string) => void
 }
 
-export function EventsDataTable({ data, onEdit, onDelete }: EventsDataTableProps) {
+export function EventsDataTable({ 
+  data, 
+  onEdit, 
+  onDelete, 
+  totalCount, 
+  currentPage, 
+  itemsPerPage, 
+  onPageChange,
+  searchValue,
+  onSearchChange 
+}: EventsDataTableProps) {
   const [sorting, setSorting] = React.useState<SortingState>([])
-  const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([])
+  
+  // Remove client-side filtering since we're doing server-side
   const columns: ColumnDef<Event>[] = [
     {
       accessorKey: "title",
@@ -115,30 +132,38 @@ export function EventsDataTable({ data, onEdit, onDelete }: EventsDataTableProps
     columns,
     onSortingChange: setSorting,
     getCoreRowModel: getCoreRowModel(),
-    getPaginationRowModel: getPaginationRowModel(),
     getSortedRowModel: getSortedRowModel(),
-    onColumnFiltersChange: setColumnFilters,
-    getFilteredRowModel: getFilteredRowModel(),
+    manualPagination: true, // Enable manual pagination for server-side
+    pageCount: Math.ceil(totalCount / itemsPerPage),
     state: {
       sorting,
-      columnFilters,
+      pagination: {
+        pageIndex: currentPage - 1,
+        pageSize: itemsPerPage,
+      },
     },
   })
 
   return (
     <div className="bg-white shadow-md rounded-lg overflow-hidden">
       <div className="px-6 py-4 border-b border-gray-200 flex items-center">
-        <h2 className="text-xl font-semibold text-gray-800 flex-1">All Events</h2>
+        <h2 className="text-xl font-semibold text-gray-800 flex-1">All Events ({totalCount})</h2>
         <Input
-          placeholder="Filter by Title..."
-          value={(table.getColumn("title")?.getFilterValue() as string) ?? ""}
-          onChange={event =>
-            table.getColumn("title")?.setFilterValue(event.target.value)
-          }
+          placeholder="Search events..."
+          value={searchValue}
+          onChange={event => onSearchChange(event.target.value)}
           className="max-w-sm"
         />
       </div>
-      <DataTable columns={columns} data={data} table={table} />
+      <DataTable 
+        columns={columns} 
+        data={data} 
+        table={table}
+        totalCount={totalCount}
+        currentPage={currentPage}
+        itemsPerPage={itemsPerPage}
+        onPageChange={onPageChange}
+      />
     </div>
   )
 }

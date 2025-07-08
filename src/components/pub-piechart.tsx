@@ -12,8 +12,15 @@ import {
 } from 'recharts';
 import type { Publication } from '@/hooks/logic/publication-logic';
 
+// Type for aggregated data from the server
+export type AggregatedTypeCount = {
+  name: string;
+  value: number;
+};
+
 interface Props {
-  publications: Publication[];
+  publications?: Publication[];
+  aggregatedData?: AggregatedTypeCount[];
 }
 
 const COLORS = [
@@ -27,8 +34,18 @@ const COLORS = [
   '#E11D48'  // Red
 ];
 
-export const PublicationPieChart: React.FC<Props> = ({ publications }) => {
+export const PublicationPieChart: React.FC<Props> = ({ publications, aggregatedData }) => {
   const data = useMemo(() => {
+    // If aggregated data is provided, use it (server-side calculation)
+    if (aggregatedData && aggregatedData.length > 0) {
+      return aggregatedData;
+    }
+
+    // Fallback to client-side calculation if publications are provided
+    if (!publications || publications.length === 0) {
+      return [];
+    }
+
     const typeCounts: Record<string, number> = {};
 
     const knownTypes = [
@@ -52,7 +69,7 @@ export const PublicationPieChart: React.FC<Props> = ({ publications }) => {
       name: type,
       value: count,
     }));
-  }, [publications]);
+  }, [publications, aggregatedData]);
 
   if (data.length === 0) {
     return <p className="text-gray-500">No data to display.</p>;

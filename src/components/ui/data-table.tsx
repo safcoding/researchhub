@@ -8,12 +8,20 @@ interface DataTableProps<TData, TValue> {
   columns: any
   data: TData[]
   table: any // Pass the table instance from useReactTable
+  totalCount?: number
+  currentPage?: number
+  itemsPerPage?: number
+  onPageChange?: (page: number) => void
 }
 
 export function DataTable<TData, TValue>({
   columns,
   data,
   table,
+  totalCount,
+  currentPage,
+  itemsPerPage,
+  onPageChange,
 }: DataTableProps<TData, TValue>) {
   return (
     <div>
@@ -59,23 +67,46 @@ export function DataTable<TData, TValue>({
           </TableBody>
         </Table>
       </div>
-      <div className="flex items-center justify-end space-x-2 py-4">
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={() => table.previousPage()}
-          disabled={!table.getCanPreviousPage()}
-        >
-          Previous
-        </Button>
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={() => table.nextPage()}
-          disabled={!table.getCanNextPage()}
-        >
-          Next
-        </Button>
+      <div className="flex items-center justify-between space-x-2 py-4 px-4">
+        {/* Show pagination info if server-side */}
+        {totalCount !== undefined && currentPage !== undefined && itemsPerPage !== undefined && (
+          <div className="text-sm text-gray-700">
+            {totalCount > 0 
+              ? `Showing ${(currentPage - 1) * itemsPerPage + 1} to ${Math.min(currentPage * itemsPerPage, totalCount)} of ${totalCount} results`
+              : "No results found"
+            }
+          </div>
+        )}
+        
+        <div className="flex items-center space-x-2">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => onPageChange ? onPageChange(currentPage! - 1) : table.previousPage()}
+            disabled={onPageChange ? currentPage === 1 : !table.getCanPreviousPage()}
+          >
+            Previous
+          </Button>
+          
+          {/* Show current page info */}
+          {totalCount !== undefined && currentPage !== undefined && itemsPerPage !== undefined && totalCount > 0 && (
+            <span className="text-sm text-gray-700">
+              Page {currentPage} of {Math.max(1, Math.ceil(totalCount / itemsPerPage))}
+            </span>
+          )}
+          
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => onPageChange ? onPageChange(currentPage! + 1) : table.nextPage()}
+            disabled={onPageChange 
+              ? totalCount === 0 || (currentPage || 1) >= Math.ceil(totalCount! / itemsPerPage!) 
+              : !table.getCanNextPage()
+            }
+          >
+            Next
+          </Button>
+        </div>
       </div>
     </div>
   )

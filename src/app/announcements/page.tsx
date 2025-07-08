@@ -10,65 +10,66 @@ import Navbar from '@/components/navbar';
 
 export default function AnnouncementsPage() {
   // ===== STATE MANAGEMENT =====
-  const { events, loading, error} = EventLogic();
+  const [filters, setFilters] = useState({
+    category: 'all',
+    status: 'all',
+    searchText: '',
+    year: 'all',
+    month: 'all'
+  });
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 5;
 
-  //const { events, loading, error, addEvent, updateEvent, deleteEvent } = EventLogic();
-  
+  const { 
+    events, 
+    loading, 
+    error, 
+    totalCount,
+    refreshEvents 
+  } = EventLogic();
+
+  // Fetch events with current pagination and filters
+  React.useEffect(() => {
+    refreshEvents({ page: currentPage, itemsPerPage, filters });
+  }, [currentPage, filters, refreshEvents]);
+
   const [selectedCategory, setSelectedCategory] = useState<string>('All');
   const [searchQuery, setSearchQuery] = useState('');
-  //const [showEventModal, setShowEventModal] = useState(false); redundant, put it below for better finding
-  const [currentPage, setCurrentPage] = useState(1);
 
   // State for the event info modal
   const [showInfoModal, setShowInfoModal] = useState(false);
-  //for the above ^ determines if the modal/[pop] is visible or not
-  const [infoModalEvent, setInfoModalEvent] = useState<Event | null>(null);
-  //for the above ^ data to be shown
-  
-
-  // ===== CONSTANTS =====
-  const eventsPerPage = 5;  
+  const [infoModalEvent, setInfoModalEvent] = useState<Event | null>(null);  // ===== CONSTANTS =====
   const categories = ['All', 'Conference', 'Workshop', 'Seminar', 'Grant', 'Competition', 'Networking', 'Others'];
   const SUPABASE_EVENT_PICS_URL = "https://fqtizehthryjvqxqvpkl.supabase.co/storage/v1/object/public/event-pics/";
 
   // ===== EVENT FILTERING =====
-  const filteredEvents = events.filter(event => {
-    // Handle case sensitivity and potential data inconsistencies
-    const eventCategory = event.category?.toString().trim();
-    const selectedCategoryNormalized = selectedCategory.trim();
-    
-    // better category matching
-    let matchesCategory = false;
-    if (selectedCategoryNormalized === 'All') {
-      matchesCategory = true;
-    } else {
-      // Try exact match first
-      matchesCategory = eventCategory === selectedCategoryNormalized;
-      
-      // If no exact match, try case-insensitive match
-      if (!matchesCategory && eventCategory) {
-        matchesCategory = eventCategory.toLowerCase() === selectedCategoryNormalized.toLowerCase();
-      }
-    }
-    
-    // Check if the event matches the search query
-    const matchesSearch = event.title?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                       event.description?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                       event.organizer?.toLowerCase().includes(searchQuery.toLowerCase());
-    
-    return matchesCategory && matchesSearch;
-  });
+  // Update filters when category or search changes
+  const handleCategoryChange = (category: string) => {
+    setSelectedCategory(category);
+    setFilters(prev => ({
+      ...prev,
+      category: category === 'All' ? 'all' : category.toLowerCase()
+    }));
+    setCurrentPage(1);
+  };
+
+  const handleSearchChange = (search: string) => {
+    setSearchQuery(search);
+    setFilters(prev => ({
+      ...prev,
+      searchText: search
+    }));
+    setCurrentPage(1);
+  };
 
   // ===== PAGINATION LOGIC =====
-  const totalPages = Math.ceil(filteredEvents.length / eventsPerPage);
-  const startIndex = (currentPage - 1) * eventsPerPage;
-  const endIndex = startIndex + eventsPerPage;
-  const currentEvents = filteredEvents.slice(startIndex, endIndex);
+  const totalPages = Math.ceil(totalCount / itemsPerPage);
+  const currentEvents = events; // Events are already paginated from server
 
-  // Reset to first page when filters change
-  React.useEffect(() => {
-    setCurrentPage(1);
-  }, [selectedCategory, searchQuery]);
+  // Handle page changes
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+  };
 
   // UTILITY FUNCTIONS 
   
@@ -182,7 +183,7 @@ export default function AnnouncementsPage() {
                       boxShadow: '0 0 0 2px #2B9167'
                     }}
                     value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
+                    onChange={(e) => handleSearchChange(e.target.value)}
                   />
                   <div className="absolute left-3 top-3.5 text-gray-400">
                     <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -197,7 +198,7 @@ export default function AnnouncementsPage() {
                 {categories.map(category => (
                   <button
                     key={category}
-                    onClick={() => setSelectedCategory(category)}
+                    onClick={() => handleCategoryChange(category)}
                     className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
                       selectedCategory === category
                         ? 'text-white'
@@ -302,11 +303,11 @@ export default function AnnouncementsPage() {
           </div>
 
           {/* ===== PAGINATION CONTROLS ===== */}
-          {filteredEvents.length > 0 && totalPages > 1 && (
+          {totalCount > 0 && totalPages > 1 && (
             <div className="mt-8 flex justify-center items-center space-x-2">
               {/* Previous page button */}
               <button
-                onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                onClick={() => handlePageChange(Math.max(currentPage - 1, 1))}
                 disabled={currentPage === 1}
                 aria-label="Previous page"
                 className={`px-3 py-2 rounded-md ${
@@ -328,7 +329,7 @@ export default function AnnouncementsPage() {
                 return (
                   <button
                     key={pageNumber}
-                    onClick={() => setCurrentPage(pageNumber)}
+                    onClick={() => handlePageChange(pageNumber)}
                     className={`px-3 py-2 rounded-md ${
                       isCurrentPage
                         ? 'text-white'
@@ -343,7 +344,7 @@ export default function AnnouncementsPage() {
 
               {/* Next page button */}
               <button
-                onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+                onClick={() => handlePageChange(Math.min(currentPage + 1, totalPages))}
                 disabled={currentPage === totalPages}
                 aria-label="Next page"
                 className={`px-3 py-2 rounded-md ${
@@ -360,15 +361,15 @@ export default function AnnouncementsPage() {
           )}
 
           {/* ===== RESULTS SUMMARY ===== */}
-          {filteredEvents.length > 0 && (
+          {totalCount > 0 && (
             <div className="mt-4 text-center text-sm text-gray-600">
-              Showing {startIndex + 1}-{Math.min(endIndex, filteredEvents.length)} of {filteredEvents.length} events
+              Showing {(currentPage - 1) * itemsPerPage + 1}-{Math.min(currentPage * itemsPerPage, totalCount)} of {totalCount} events
               {totalPages > 1 && ` (Page ${currentPage} of ${totalPages})`}
             </div>
           )}
 
           {/* ===== NO RESULTS MESSAGE ===== */}
-          {currentEvents.length === 0 && filteredEvents.length === 0 && (
+          {currentEvents.length === 0 && totalCount === 0 && (
             <div className="text-center py-12">
               <svg xmlns="http://www.w3.org/2000/svg" className="h-16 w-16 mx-auto text-gray-400 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />

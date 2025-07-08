@@ -1,42 +1,71 @@
 'use client';
 
-import { useState } from 'react';
-import { GrantLogic, type Grant } from '@/hooks/logic/grant-logic';
-import { GrantModal } from '@/components/admin-components/grants/grant-form';
-import { ConfirmationModal } from '@/components/reusable/confirmation-popup';
-import { Button } from '@/components/ui/button';
+import React, { useState, useEffect } from 'react';
 import { AdminSidebar } from "@/components/admin-sidebar/sidebar-content";
 import { Separator } from "@/components/ui/separator";
+import { Button } from '@/components/ui/button';
 import {
   SidebarInset,
   SidebarProvider,
   SidebarTrigger,
 } from "@/components/ui/sidebar";
-
+import { GrantLogic, type Grant, type GrantFilters } from '@/hooks/logic/grant-logic';
+import { ConfirmationModal } from '@/components/reusable/confirmation-popup';
+import { GrantModal } from '@/components/admin-components/grants/grant-form';
 import { GrantDataTable } from '@/components/admin-components/grants/grant-data-table';
-import { GrantFilters } from '@/components/admin-components/grants/grant-filters';
+import { GrantFilters as GrantFiltersComponent } from '@/components/admin-components/grants/grant-filters';
 
 export default function GrantDBPage() {
-  const { grants, loading, error, addGrant, updateGrant, deleteGrant } = GrantLogic();
+  const itemsPerPage = 10;
+  const [currentPage, setCurrentPage] = useState(1);
+  const [filters, setFilters] = useState<GrantFilters>({
+    year: 'all',
+    month: 'all',
+    status: 'all',
+    grantType: 'all',
+    searchText: '',
+  });
+
+  const {
+    grants,
+    loading,
+    error,
+    totalCount,
+    addGrant,
+    updateGrant,
+    deleteGrant,
+    refreshGrants,
+  } = GrantLogic();
+
+  useEffect(() => {
+    refreshGrants({ page: currentPage, itemsPerPage, filters });
+  }, [currentPage, itemsPerPage, filters, refreshGrants]);
+
+  // Modal state
   const [showGrantModal, setShowGrantModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [selectedGrant, setSelectedGrant] = useState<Grant | null>(null);
-  const [selectedYear, setSelectedYear] = useState<string>('all');
-  const [selectedMonth, setSelectedMonth] = useState<string>('all');
-  const [dateFilter, setDateFilter] = useState<'all' | 'upcoming' | 'past' | 'thisMonth' | 'nextMonth'>('all');
-  const [selectedStatus, setSelectedStatus] = useState<string>('all');
 
-    //State Management
+  // CRUD handlers
+  const handleAddGrant = async (newGrant: Partial<Grant>) => {
+    await addGrant(newGrant as Omit<Grant, 'grant_id'>, { page: currentPage, itemsPerPage, filters });
+    setShowGrantModal(false);
+  };
+
   const handleUpdateGrant = async (updatedGrant: Partial<Grant>) => {
     if (selectedGrant?.PROJECTID) {
-      await updateGrant(selectedGrant.PROJECTID, updatedGrant);
+      await updateGrant(selectedGrant.PROJECTID, updatedGrant, { page: currentPage, itemsPerPage, filters });
       setShowGrantModal(false);
       setSelectedGrant(null);
     }
   };
-  const handleAddGrant = async (newGrant: Partial<Grant>) => {
-    await addGrant(newGrant);
-    setShowGrantModal(false);
+
+  const handleDeleteConfirm = async () => {
+    if (selectedGrant?.PROJECTID) {
+      await deleteGrant(selectedGrant.PROJECTID, { page: currentPage, itemsPerPage, filters });
+      setShowDeleteModal(false);
+      setSelectedGrant(null);
+    }
   };
 
   const handleEditClick = (grant: Grant) => {
@@ -49,47 +78,17 @@ export default function GrantDBPage() {
     setShowDeleteModal(true);
   };
 
-  const handleDeleteConfirm = async () => {
-    if (selectedGrant?.PROJECTID) {
-      await deleteGrant(selectedGrant.PROJECTID);
-      setShowDeleteModal(false);
-      setSelectedGrant(null);
-    }
+  // Filter change handler
+  const handleFiltersChange = (updated: Partial<GrantFilters>) => {
+    setFilters(prev => ({ ...prev, ...updated }));
+    setCurrentPage(1); // Reset to first page on filter change
   };
 
-  // Filtering logic
-  const filteredGrants = grants.filter(grant => {
-
-    const grantDate = new Date(grant.PRO_DATESTART);
-    const today = new Date();
-    const currentMonth = today.getMonth();
-    const currentYear = today.getFullYear();
-
-    let matchesDate = true;
-    switch (dateFilter) {
-      case 'upcoming':
-        matchesDate = grantDate >= today;
-        break;
-      case 'past':
-        matchesDate = grantDate < today;
-        break;
-      case 'thisMonth':
-        matchesDate = grantDate.getMonth() === currentMonth && grantDate.getFullYear() === currentYear;
-        break;
-      case 'nextMonth':
-        const nextMonth = currentMonth === 11 ? 0 : currentMonth + 1;
-        const nextMonthYear = currentMonth === 11 ? currentYear + 1 : currentYear;
-        matchesDate = grantDate.getMonth() === nextMonth && grantDate.getFullYear() === nextMonthYear;
-        break;
-      default:
-        matchesDate = true;
-    }
-
-    const matchesYear = selectedYear === 'all' || grantDate.getFullYear().toString() === selectedYear;
-    const matchesMonth = selectedMonth === 'all' || grantDate.getMonth().toString() === selectedMonth;
-    const matchesStatus = selectedStatus === 'all' || grant.PROJECT_STATUS === selectedStatus;
-    return matchesDate && matchesYear && matchesMonth && matchesStatus;
-  });
+  // Search change handler
+  const handleSearchChange = (searchText: string) => {
+    setFilters(prev => ({ ...prev, searchText }));
+    setCurrentPage(1); // Reset to first page on search
+  };
 
   return (
     <SidebarProvider style={{ "--sidebar-width": "19rem" } as React.CSSProperties}>
@@ -125,25 +124,22 @@ export default function GrantDBPage() {
               </div>
             )}
             
-            <GrantFilters
-              filters={{
-                dateFilter,
-                selectedYear,
-                selectedMonth,
-                selectedStatus,
-              }}
+            <GrantFiltersComponent
+              filters={filters}
               grants={grants}
-              onFiltersChange={updated => {
-                if (updated.selectedYear !== undefined) setSelectedYear(updated.selectedYear);
-                if (updated.selectedMonth !== undefined) setSelectedMonth(updated.selectedMonth);
-                if (updated.selectedStatus !== undefined) setSelectedStatus(updated.selectedStatus);
-              }}
+              onFiltersChange={handleFiltersChange}
             />
 
             <GrantDataTable
-              data={filteredGrants}
+              data={grants}
               onEdit={handleEditClick}
               onDelete={handleDeleteClick}
+              totalCount={totalCount}
+              currentPage={currentPage}
+              itemsPerPage={itemsPerPage}
+              onPageChange={setCurrentPage}
+              searchValue={filters.searchText || ''}
+              onSearchChange={handleSearchChange}
             />
 
             {/* Modals */}

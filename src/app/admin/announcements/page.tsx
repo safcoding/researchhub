@@ -1,12 +1,12 @@
 'use client';
 
-import { useState } from 'react';
-import { EventLogic, type Event } from '@/hooks/logic/event-logic';
+import { useState, useEffect } from 'react';
+import { EventLogic, type Event, type EventFilters } from '@/hooks/logic/event-logic';
 import { EventModal } from '@/components/admin-components/events/event-form';
 import { ConfirmationModal } from '@/components/reusable/confirmation-popup';
 import { EventsDataTable } from '@/components/admin-components/events/events-data-table';
 import { Button } from '@/components/ui/button';
-import { EventFilters } from "@/components/admin-components/events/event-filters";
+import { EventFilters as EventFiltersComponent } from "@/components/admin-components/events/event-filters";
 import { AdminSidebar } from "@/components/admin-sidebar/sidebar-content";
 import { Separator } from "@/components/ui/separator";
 import {
@@ -16,76 +16,102 @@ import {
 } from "@/components/ui/sidebar";
 
 export default function AnnouncementCRUDPage() {
-  const { events, error, addEvent, updateEvent, deleteEvent } = EventLogic();
+  const { 
+    events, 
+    totalCount,
+    loading,
+    error, 
+    fetchEvents,
+    addEvent, 
+    updateEvent, 
+    deleteEvent,
+    fetchAvailableYears 
+  } = EventLogic();
+
   const [showEventModal, setShowEventModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [selectedEvent, setSelectedEvent] = useState<Event | null>(null);
-  const [selectedCategory, setSelectedCategory] = useState<string>('all');
-  const [dateFilter, setDateFilter] = useState<'all' | 'upcoming' | 'past' | 'thisMonth' | 'nextMonth'>('all');
-  const [selectedYear, setSelectedYear] = useState<string>('all');
-  const [selectedMonth, setSelectedMonth] = useState<string>('all');
+  
+  // Pagination and filters
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(10);
+  const [filters, setFilters] = useState<EventFilters>({
+    category: 'all',
+    status: 'all',
+    priority: 'all',
+    searchText: '',
+    dateFilter: 'all',
+    year: 'all',
+    month: 'all',
+  });
+  const [availableYears, setAvailableYears] = useState<string[]>([]);
 
-    //State Management
+  // Fetch available years on mount
+  useEffect(() => {
+    let isMounted = true;
+    const getYears = async () => {
+      const years = await fetchAvailableYears();
+      if (!isMounted) return;
+      setAvailableYears(years.map(String));
+    };
+    getYears();
+    return () => { isMounted = false; };
+  }, [fetchAvailableYears]);
+
+  // Fetch events on filter/page change
+  useEffect(() => {
+    fetchEvents({ page: currentPage, itemsPerPage, filters });
+  }, [currentPage, itemsPerPage, filters, fetchEvents]);
+
+  // CRUD handlers with server-side refresh
   const handleAddEvent = async (newEvent: Omit<Event, 'id' | 'created_at' | 'updated_at'>) => {
-    await addEvent(newEvent);
+    await addEvent(newEvent, { page: currentPage, itemsPerPage, filters });
     setShowEventModal(false);
   };
+
   const handleUpdateEvent = async (updatedEvent: Omit<Event, 'id' | 'created_at' | 'updated_at'>) => {
     if (selectedEvent?.id) {
-      await updateEvent(selectedEvent.id, updatedEvent);
+      await updateEvent(selectedEvent.id, updatedEvent, { page: currentPage, itemsPerPage, filters });
       setShowEventModal(false);
       setSelectedEvent(null);
     }
   };
+
   const handleEditClick = (event: Event) => {
     setSelectedEvent(event);
     setShowEventModal(true);
   };
+
   const handleDeleteClick = (event: Event) => {
     setSelectedEvent(event);
     setShowDeleteModal(true);
   };
+
   const handleDeleteConfirm = async () => {
     if (selectedEvent?.id) {
-      await deleteEvent(selectedEvent.id);
+      await deleteEvent(selectedEvent.id, { page: currentPage, itemsPerPage, filters });
       setShowDeleteModal(false);
       setSelectedEvent(null);
     }
   };
 
-  // Filtering logic
-  const filteredEvents = events.filter(event => {
-    const matchesCategory = selectedCategory === 'all' || event.category === selectedCategory;
-
-
-    const eventDate = new Date(event.date);
-    const today = new Date();
-    const currentMonth = today.getMonth();
-    const currentYear = today.getFullYear();
-    let matchesDate = true;
-    switch (dateFilter) {
-      case 'upcoming':
-        matchesDate = eventDate >= today;
-        break;
-      case 'past':
-        matchesDate = eventDate < today;
-        break;
-      case 'thisMonth':
-        matchesDate = eventDate.getMonth() === currentMonth && eventDate.getFullYear() === currentYear;
-        break;
-      case 'nextMonth':
-        const nextMonth = currentMonth === 11 ? 0 : currentMonth + 1;
-        const nextMonthYear = currentMonth === 11 ? currentYear + 1 : currentYear;
-        matchesDate = eventDate.getMonth() === nextMonth && eventDate.getFullYear() === nextMonthYear;
-        break;
-      default:
-        matchesDate = true;
-    }
-
-    const matchesYear = selectedYear === 'all' || eventDate.getFullYear().toString() === selectedYear;
-    const matchesMonth = selectedMonth === 'all' || eventDate.getMonth().toString() === selectedMonth;
-    return matchesCategory && matchesDate && matchesYear && matchesMonth;
-  });
+  // Filter change handler
+  const handleFiltersChange = (updated: Partial<{
+    selectedCategory: string;
+    dateFilter: string;
+    selectedYear: string;
+    selectedMonth: string;
+  }>) => {
+    const newFilters: EventFilters = {
+      category: updated.selectedCategory !== 'all' ? updated.selectedCategory : undefined,
+      searchText: filters.searchText,
+      dateFilter: updated.dateFilter as any || 'all',
+      year: updated.selectedYear !== 'all' ? updated.selectedYear : undefined,
+      month: updated.selectedMonth !== 'all' ? updated.selectedMonth : undefined,
+    };
+    setFilters(newFilters);
+    setCurrentPage(1); // Reset to first page when filters change
+  };
 
   return (
     <SidebarProvider style={{ "--sidebar-width": "19rem" } as React.CSSProperties}>
@@ -121,26 +147,29 @@ export default function AnnouncementCRUDPage() {
               </div>
             )}
 
-            <EventFilters
+            {/* Filters */}
+            <EventFiltersComponent
               filters={{
-                selectedCategory,
-                dateFilter,
-                selectedYear,
-                selectedMonth,
+                selectedCategory: filters.category || 'all',
+                dateFilter: filters.dateFilter || 'all',
+                selectedYear: filters.year || 'all',
+                selectedMonth: filters.month || 'all',
               }}
               events={events}
-              onFiltersChange={updated => {
-                if (updated.selectedCategory !== undefined) setSelectedCategory(updated.selectedCategory);
-                if (updated.dateFilter !== undefined) setDateFilter(updated.dateFilter as typeof dateFilter);
-                if (updated.selectedYear !== undefined) setSelectedYear(updated.selectedYear);
-                if (updated.selectedMonth !== undefined) setSelectedMonth(updated.selectedMonth);
-              }}
+              onFiltersChange={handleFiltersChange}
             />
 
+            {/* Data Table */}
             <EventsDataTable
-              data={filteredEvents}
+              data={events}
               onEdit={handleEditClick}
               onDelete={handleDeleteClick}
+              totalCount={totalCount}
+              currentPage={currentPage}
+              itemsPerPage={itemsPerPage}
+              onPageChange={setCurrentPage}
+              searchValue={filters.searchText || ''}
+              onSearchChange={(value) => setFilters(prev => ({ ...prev, searchText: value }))}
             />
 
             {/* Modals */}

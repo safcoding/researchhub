@@ -20,19 +20,43 @@ interface PublicationDataTableProps {
   data: Publication[]
   onEdit: (publication: Publication) => void
   onDelete: (publication: Publication) => void
+  totalCount: number
+  currentPage: number
+  itemsPerPage: number
+  onPageChange: (page: number) => void
+  searchValue: string
+  onSearchChange: (value: string) => void
 }
 
-export function PublicationDataTable({ data, onEdit, onDelete }: PublicationDataTableProps) {
+export function PublicationDataTable({ 
+  data, 
+  onEdit, 
+  onDelete, 
+  totalCount, 
+  currentPage, 
+  itemsPerPage, 
+  onPageChange,
+  searchValue,
+  onSearchChange 
+}: PublicationDataTableProps) {
   const [sorting, setSorting] = React.useState<SortingState>([])
-  const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([])
+  
+  // Remove client-side filtering since we're doing server-side
 
   const columns: ColumnDef<Publication>[] = [
     {
-      accessorKey: "pub_refno",
-      header: "Reference Number",
+      accessorKey: "title",
+      header: "Title",
       cell: ({ row }) => {
         const publication = row.original
-        return <div className="text-sm font-medium text-gray-900">{publication.pub_refno}</div>
+        return (
+          <div>
+            <div className="text-sm font-medium text-gray-900">{publication.title}</div>
+            <div className="text-sm text-gray-500">
+              {publication.pub_refno} • {publication.journal}
+            </div>
+          </div>
+        )
       },
     },
     {
@@ -44,20 +68,28 @@ export function PublicationDataTable({ data, onEdit, onDelete }: PublicationData
       },
     },
     {
-      accessorKey: "title",
-      header: "Project Title",
+      accessorKey: "category",
+      header: "Category", 
       cell: ({ row }) => {
         const publication = row.original
-        return <div className="text-sm font-medium text-gray-900">{publication.title}</div>
+        return <div className="text-sm font-medium text-gray-900">{publication.category}</div>
       },
     },
     {
-      accessorKey: "journal",
-      header: "Journal",
-      cell: ({ row }) => {
-        const publication = row.original
-        return <div className="text-sm font-medium text-gray-900">{publication.journal}</div>
+      accessorKey: "date",
+      header: ({ column }) => {
+        return (
+          <Button
+            variant="ghost"
+            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+            className="hover:bg-transparent p-0 h-auto font-medium text-xs text-gray-500 uppercase tracking-wider"
+          >
+            Date
+            <ArrowUpDown className="ml-2 h-4 w-4" />
+          </Button>
+        )
       },
+      cell: ({ row }) => <div className="text-sm text-gray-900">{row.getValue("date")}</div>,
     },
     {
       accessorKey: "type",
@@ -65,39 +97,6 @@ export function PublicationDataTable({ data, onEdit, onDelete }: PublicationData
       cell: ({ row }) => {
         const publication = row.original
         return <div className="text-sm font-medium text-gray-900">{publication.type}</div>
-      },
-    },
-    {
-      accessorKey: "category",
-      header: "Category",
-      cell: ({ row }) => {
-        const publication = row.original
-        return <div className="text-sm font-medium text-gray-900">{publication.category}</div>
-      },
-    },
-    {
-      accessorKey: "impact",
-      header: "Impact",
-      cell: ({ row }) => {
-        const publication = row.original
-        return <div className="text-sm font-medium text-gray-900">{publication.impact}</div>
-      },
-    },
-    {
-      accessorKey: "date",
-      header: ({ column }) => (
-        <Button
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-          className="hover:bg-transparent p-0 h-auto font-medium text-xs text-gray-500 uppercase tracking-wider"
-        >
-          Date
-          <ArrowUpDown className="ml-2 h-4 w-4" />
-        </Button>
-      ),
-      cell: ({ row }) => {
-        const publication = row.original
-        return <div className="text-sm font-medium text-gray-900">{publication.date}</div>
       },
     },
     {
@@ -134,22 +133,39 @@ export function PublicationDataTable({ data, onEdit, onDelete }: PublicationData
     columns,
     onSortingChange: setSorting,
     getCoreRowModel: getCoreRowModel(),
-    getPaginationRowModel: getPaginationRowModel(),
     getSortedRowModel: getSortedRowModel(),
-    onColumnFiltersChange: setColumnFilters,
-    getFilteredRowModel: getFilteredRowModel(),
+    manualPagination: true, // Enable manual pagination for server-side
+    pageCount: Math.ceil(totalCount / itemsPerPage),
     state: {
       sorting,
-      columnFilters,
+      pagination: {
+        pageIndex: currentPage - 1,
+        pageSize: itemsPerPage,
+      },
     },
   })
 
   return (
     <div className="bg-white shadow-md rounded-lg overflow-hidden">
       <div className="px-6 py-4 border-b border-gray-200 flex items-center">
-        <h2 className="text-xl font-semibold text-gray-800 flex-1">All Publications</h2>
+        <h2 className="text-xl font-semibold text-gray-800 flex-1">All Publications ({totalCount})</h2>
+        <input
+          type="text"
+          placeholder="Search publications..."
+          value={searchValue}
+          onChange={(e) => onSearchChange(e.target.value)}
+          className="max-w-sm px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+        />
       </div>
-      <DataTable columns={columns} data={data} table={table} />
+      <DataTable 
+        columns={columns} 
+        data={data} 
+        table={table}
+        totalCount={totalCount}
+        currentPage={currentPage}
+        itemsPerPage={itemsPerPage}
+        onPageChange={onPageChange}
+      />
     </div>
   )
 }
