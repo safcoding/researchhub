@@ -1,13 +1,13 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import ConditionalNavbar from '@/components/admin-sidebar/conditional-navbar';
 import Navbar from '@/components/navbar';
 import { useRouter } from 'next/navigation';
 import { type Lab } from '@/hooks/logic/lab-logic';
 import { createClient } from '@/utils/supabase/client';
-// Fixed import path to match the actual file name (Footer.tsx with capital F)
 import Footer from '@/components/Footer';
+import { useDebouncedSearch } from '@/hooks/use-debounce';
 
 // Import components
 import { LabSidebar } from '@/components/labs/lab-sidebar';
@@ -25,6 +25,17 @@ const OurLabs = () => {
   const [selectedLab, setSelectedLab] = useState<Lab | null>(null);
   const [showLabModal, setShowLabModal] = useState(false);
   const router = useRouter();
+
+  // Debounced search for better performance
+  const { searchValue: debouncedSearchQuery, handleSearchChange: handleSearchQueryChange } = useDebouncedSearch(
+    (value: string) => setSearchQuery(value),
+    300
+  );
+
+  const { searchValue: debouncedEquipmentSearch, handleSearchChange: handleEquipmentSearchChange } = useDebouncedSearch(
+    (value: string) => setEquipmentSearch(value),
+    300
+  );
 
   useEffect(() => {
     const fetchLabs = async () => {
@@ -62,13 +73,13 @@ const OurLabs = () => {
   }, [selectedLabType]);
 
   // Get unique lab types from labs data
-  const getAvailableLabTypes = () => {
+  const getAvailableLabTypes = useCallback(() => {
     const labTypes = [...new Set(labs.map(lab => lab.LAB_TYPE).filter(Boolean))];
     return labTypes.sort();
-  };
+  }, [labs]);
 
-  // Get labs for selected lab type with search filtering
-  const getLabsForSelectedType = () => {
+  // Optimized filtering with useMemo
+  const getLabsForSelectedType = useMemo(() => {
     if (!selectedLabType) return [];
     
     let filtered = labs.filter(lab => lab.LAB_TYPE === selectedLabType);
@@ -103,7 +114,7 @@ const OurLabs = () => {
     }
     
     return filtered;
-  };
+  }, [labs, selectedLabType, searchQuery, equipmentSearch, selectedEquipment]);
 
   const parseEquipmentList = (equipmentList: string | undefined) => {
     if (!equipmentList || equipmentList.trim() === '') {
@@ -143,7 +154,7 @@ const OurLabs = () => {
   }
 
   const availableLabTypes = getAvailableLabTypes();
-  const currentLabs = getLabsForSelectedType();
+  const currentLabs = getLabsForSelectedType;
 
   // If no labs exist, show a message
   if (labs.length === 0) {
@@ -191,10 +202,10 @@ const OurLabs = () => {
 
           {/* Search and Filter Section */}
           <SearchFilters
-            searchQuery={searchQuery}
-            setSearchQuery={setSearchQuery}
-            equipmentSearch={equipmentSearch}
-            setEquipmentSearch={setEquipmentSearch}
+            searchQuery={debouncedSearchQuery}
+            setSearchQuery={handleSearchQueryChange}
+            equipmentSearch={debouncedEquipmentSearch}
+            setEquipmentSearch={handleEquipmentSearchChange}
             selectedEquipment={selectedEquipment}
             setSelectedEquipment={setSelectedEquipment}
             selectedLabType={selectedLabType}
@@ -214,6 +225,8 @@ const OurLabs = () => {
                   setSearchQuery('');
                   setEquipmentSearch('');
                   setSelectedEquipment('');
+                  handleSearchQueryChange('');
+                  handleEquipmentSearchChange('');
                 }}
                 className="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600"
               >

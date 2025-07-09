@@ -1,7 +1,7 @@
 'use client';
 
-import { useState, useMemo } from 'react';
-import { LabLogic, type Lab } from '@/hooks/logic/lab-logic';
+import { useState, useEffect, useCallback } from 'react';
+import { LabLogic, type Lab, type LabFilters } from '@/hooks/logic/lab-logic';
 import { LabDataTable } from '@/components/admin-components/labs/lab-data-table';
 import { LabFormModal } from '@/components/admin-components/labs/lab-form';
 import LabDetailsModal from '@/components/admin-components/labs/table-details-modal';
@@ -14,11 +14,12 @@ import {
   SidebarProvider,
   SidebarTrigger,
 } from "@/components/ui/sidebar"
-import { LabFilters } from '@/components/admin-components/labs/lab-filters';
+import { LabFilters as LabFiltersComponent } from '@/components/admin-components/labs/lab-filters';
 import { useEquipmentLogic } from '@/hooks/logic/equipment-logic';
+import { useDebouncedSearch } from '@/hooks/use-debounce';
 
 export default function LabsPage() {
-  const { labs, loading, error, addLab, updateLab, deleteLab, } = LabLogic();
+  const { labs, loading, error, totalCount, fetchLabs, addLab, updateLab, deleteLab } = LabLogic();
   const { equipment } = useEquipmentLogic();
   const [showAddModal, setShowAddModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
@@ -26,64 +27,104 @@ export default function LabsPage() {
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [selectedLab, setSelectedLab] = useState<Lab | null>(null);
 
+  // Server-side state
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage] = useState(20);
+  const [filters, setFilters] = useState<LabFilters>({
+    searchText: '',
+    labType: '',
+  });
+
+  // Use debounced search hook
+  const { searchValue, handleSearchChange } = useDebouncedSearch(
+    (value: string) => {
+      setFilters(prev => ({ ...prev, searchText: value }));
+      setCurrentPage(1);
+    },
+    300
+  );
+
+  // Load data when filters or page changes
+  useEffect(() => {
+    fetchLabs({
+      page: currentPage,
+      itemsPerPage,
+      filters: {
+        searchText: filters.searchText,
+        labType: filters.labType,
+      },
+    });
+  }, [currentPage, filters, fetchLabs, itemsPerPage]);
+
+  // Filter change handler
+  const handleFiltersChange = useCallback((newFilters: Partial<{ labType: string; labName: string; equipmentId: string }>) => {
+    setFilters(prev => ({
+      ...prev,
+      labType: newFilters.labType || '',
+    }));
+    setCurrentPage(1); // Reset to first page when filtering
+  }, []);
+
+  // Page change handler
+  const handlePageChange = useCallback((page: number) => {
+    setCurrentPage(page);
+  }, []);
+
   // Handlers
-    const handleAddLab = async (newLab: Partial<Lab>) => {
-    const labId = await addLab(newLab as Omit<Lab, 'id'>);
+  const handleAddLab = async (newLab: Partial<Lab>) => {
+    const labId = await addLab(
+      newLab as Omit<Lab, 'LABID'>, 
+      filters, 
+      currentPage, 
+      itemsPerPage
+    );
     setShowAddModal(false);
     return labId;
-    };
+  };
 
-    const handleUpdateLab = async (updatedLab: Partial<Lab>) => {
+  const handleUpdateLab = async (updatedLab: Partial<Lab>) => {
     if (selectedLab?.LABID) {
-        await updateLab(selectedLab.LABID, updatedLab);
-        setShowEditModal(false);
-        setSelectedLab(null);
-        return selectedLab.LABID;
+      await updateLab(
+        selectedLab.LABID, 
+        updatedLab, 
+        filters, 
+        currentPage, 
+        itemsPerPage
+      );
+      setShowEditModal(false);
+      setSelectedLab(null);
+      return selectedLab.LABID;
     }
     return "";
-    };
+  };
 
-     const handleEditClick = (lab: Lab) => {
+  const handleEditClick = (lab: Lab) => {
     setSelectedLab(lab);
     setShowEditModal(true);
-    };
+  };
 
-    const handleDeleteClick = (lab: Lab) => {
+  const handleDeleteClick = (lab: Lab) => {
     setSelectedLab(lab);
     setShowDeleteModal(true);
-    };
+  };
 
-    const handleDeleteConfirm = async () => {
+  const handleDeleteConfirm = async () => {
     if (selectedLab?.LABID) {
-      await deleteLab(selectedLab.LABID);
+      await deleteLab(
+        selectedLab.LABID, 
+        filters, 
+        currentPage, 
+        itemsPerPage
+      );
       setShowDeleteModal(false);
       setSelectedLab(null);
     }
-    };
+  };
 
-    const handleDetailsClick = (lab: Lab) => {
+  const handleDetailsClick = (lab: Lab) => {
     setSelectedLab(lab);
     setShowDetailsModal(true);
-    };
-
-    const [filters, setFilters] = useState({
-    labType: "",
-    labName: "",
-    equipmentId: "",
-    });
-
-  // 2. Handler for filter changes
-    const handleFiltersChange = (changed: Partial<typeof filters>) => {
-        setFilters(prev => ({ ...prev, ...changed }));
-    };
-
-    const filteredLabs = useMemo(() => {
-      return labs.filter(lab => {
-        const matchesType = !filters.labType || lab.LAB_TYPE === filters.labType;
-        const matchesName = !filters.labName || lab.LAB_NAME.toLowerCase().includes(filters.labName.toLowerCase());
-        return matchesType && matchesName;
-      });
-    }, [labs, filters]);
+  };
 
   return (
     <SidebarProvider style={{ "--sidebar-width": "19rem" } as React.CSSProperties}>
@@ -109,53 +150,59 @@ export default function LabsPage() {
               </Button>
             </div>
 
-          <LabFilters
-            filters={filters}
-            onFiltersChange={handleFiltersChange}
-            equipmentList={equipment.map(eq => ({ id: eq.id, name: eq.name }))}
-          />
+            <LabFiltersComponent
+              filters={{ labType: filters.labType, labName: '', equipmentId: '' }}
+              onFiltersChange={handleFiltersChange}
+              equipmentList={equipment.map(eq => ({ id: eq.id, name: eq.name }))}
+            />
           
-          {error && (
-            <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
-              {error}
-            </div>
-          )}
+            {error && (
+              <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
+                {error}
+              </div>
+            )}
 
-          {loading ? (
-            <div className="flex items-center justify-center py-8">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
-              <span className="ml-2">Loading laboratories...</span>
-            </div>
-          ) : (
-            <LabDataTable
-            data={filteredLabs}
-            onEdit={handleEditClick}
-            onDelete={handleDeleteClick}
-            onDetails={handleDetailsClick}
-            />
-          )}
+            {loading ? (
+              <div className="flex items-center justify-center py-8">
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+                <span className="ml-2">Loading laboratories...</span>
+              </div>
+            ) : (
+              <LabDataTable
+                data={labs}
+                onEdit={handleEditClick}
+                onDelete={handleDeleteClick}
+                onDetails={handleDetailsClick}
+                totalCount={totalCount}
+                currentPage={currentPage}
+                itemsPerPage={itemsPerPage}
+                onPageChange={handlePageChange}
+                searchValue={searchValue}
+                onSearchChange={handleSearchChange}
+              />
+            )}
 
-          {showAddModal && (
-            <LabFormModal
-              onSave={handleAddLab}
-              onClose={() => setShowAddModal(false)}
-            />
-          )}
+            {showAddModal && (
+              <LabFormModal
+                onSave={handleAddLab}
+                onClose={() => setShowAddModal(false)}
+              />
+            )}
 
-          {showEditModal && selectedLab && (
-            <LabFormModal
-              lab={selectedLab}
-              onSave={handleUpdateLab}
-              onClose={() => setShowEditModal(false)}
-            />
-          )}
+            {showEditModal && selectedLab && (
+              <LabFormModal
+                lab={selectedLab}
+                onSave={handleUpdateLab}
+                onClose={() => setShowEditModal(false)}
+              />
+            )}
 
-          {showDetailsModal && selectedLab && (
-            <LabDetailsModal
-              lab={selectedLab}
-              onClose={() => setShowDetailsModal(false)}
-            />
-          )}
+            {showDetailsModal && selectedLab && (
+              <LabDetailsModal
+                lab={selectedLab}
+                onClose={() => setShowDetailsModal(false)}
+              />
+            )}
           </div>
 
           {showDeleteModal && selectedLab && (

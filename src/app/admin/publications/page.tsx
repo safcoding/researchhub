@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { AdminSidebar } from "@/components/admin-sidebar/sidebar-content";
 import { Separator } from "@/components/ui/separator";
 import { Button } from '@/components/ui/button';
@@ -15,6 +15,7 @@ import { PublicationModal } from '@/components/admin-components/publications/pub
 import { PublicationDataTable } from '@/components/admin-components/publications/publication-data-table';
 import { PublicationFilters as PublicationFiltersComponent } from '@/components/admin-components/publications/publication-filters';
 import { PUBLICATION_TYPES, PUBLICATION_CATEGORIES } from '@/constants/publication-options';
+import { useDebouncedSearch } from '@/hooks/use-debounce';
 
 export default function PublicationCRUDPage() {
   const itemsPerPage = 10;
@@ -26,6 +27,15 @@ export default function PublicationCRUDPage() {
     type: 'all',    
     searchText: '',
   });
+
+  // Debounced search
+  const { searchValue, handleSearchChange } = useDebouncedSearch(
+    (value: string) => {
+      setFilters(prev => ({ ...prev, searchText: value }));
+      setCurrentPage(1);
+    },
+    300
+  );
 
   const {
     publications,
@@ -71,10 +81,14 @@ export default function PublicationCRUDPage() {
 
   // Filter change handler
   const handleFiltersChange = (updated: Partial<PublicationFilters>) => {
-    // Prevent category/type from being set together if not intended
-    // Only update the field that changed
-    setFilters(prev => ({ ...prev, ...updated }));
-    setCurrentPage(1); // Reset to first page on filter change
+    // Handle search text with debounced search
+    if (updated.searchText !== undefined) {
+      handleSearchChange(updated.searchText);
+    } else {
+      // For other filters, update directly
+      setFilters(prev => ({ ...prev, ...updated }));
+      setCurrentPage(1); // Reset to first page on filter change
+    }
   };
 
   return (
@@ -117,7 +131,7 @@ export default function PublicationCRUDPage() {
                 type: (filters.type ?? '') as typeof PUBLICATION_TYPES[number] | 'all',
                 year: filters.year ?? '',
                 month: filters.month ?? '',
-                searchText: filters.searchText ?? '',
+                searchText: searchValue, // Use debounced search value for display
                 dateFrom: filters.dateFrom ?? '',
                 dateTo: filters.dateTo ?? '',
               }}
@@ -140,8 +154,8 @@ export default function PublicationCRUDPage() {
               currentPage={currentPage}
               itemsPerPage={itemsPerPage}
               onPageChange={setCurrentPage}
-              searchValue={filters.searchText || ''}
-              onSearchChange={(value) => setFilters(prev => ({ ...prev, searchText: value }))}
+              searchValue={searchValue} // Use debounced search value for display
+              onSearchChange={handleSearchChange} // Use debounced search handler
             />
 
             {/* Modals */}

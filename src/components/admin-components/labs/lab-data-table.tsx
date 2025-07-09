@@ -36,15 +36,16 @@ export function LabDataTable({
   onDelete, 
   onDetails,
   totalCount,
-  currentPage,
-  itemsPerPage,
+  currentPage = 1,
+  itemsPerPage = 20,
   onPageChange,
-  searchValue,
+  searchValue = '',
   onSearchChange 
 } : LabDataTableProps) {
   const [sorting, setSorting] = React.useState<SortingState>([])
   
-  // Remove client-side filtering since we might do server-side in the future
+  // Use server-side pagination when props are provided
+  const isServerSide = totalCount !== undefined && onPageChange !== undefined;
 
   const columns: ColumnDef<Lab>[] = [
     {
@@ -129,20 +130,21 @@ export function LabDataTable({
         onSortingChange: setSorting,
         getCoreRowModel: getCoreRowModel(),
         getSortedRowModel: getSortedRowModel(),
-        // Use manual pagination if server-side props are provided
-        ...(totalCount !== undefined && currentPage !== undefined && itemsPerPage !== undefined && {
+        // Use manual pagination for server-side
+        ...(isServerSide && {
           manualPagination: true,
-          pageCount: Math.ceil(totalCount / itemsPerPage),
+          pageCount: Math.ceil(totalCount! / itemsPerPage!),
         }),
-        ...(!totalCount && {
+        // Use client-side pagination as fallback
+        ...(!isServerSide && {
           getPaginationRowModel: getPaginationRowModel(),
         }),
         state: {
             sorting,
-            ...(totalCount !== undefined && currentPage !== undefined && itemsPerPage !== undefined && {
+            ...(isServerSide && {
               pagination: {
-                pageIndex: currentPage - 1,
-                pageSize: itemsPerPage,
+                pageIndex: currentPage! - 1,
+                pageSize: itemsPerPage!,
               },
             }),
         },
@@ -151,9 +153,9 @@ export function LabDataTable({
     <div className="bg-white shadow-md rounded-lg overflow-hidden">
       <div className="px-6 py-4 border-b border-gray-200 flex items-center">
         <h2 className="text-xl font-semibold text-gray-800 flex-1">
-          All Labs {totalCount !== undefined ? `(${totalCount})` : `(${data.length})`}
+          All Labs {isServerSide ? `(${totalCount})` : `(${data.length})`}
         </h2>
-        {(searchValue !== undefined && onSearchChange) ? (
+        {isServerSide && onSearchChange ? (
           <input
             type="text"
             placeholder="Search labs..."
@@ -176,10 +178,10 @@ export function LabDataTable({
         columns={columns} 
         data={data} 
         table={table}
-        totalCount={totalCount}
-        currentPage={currentPage}
-        itemsPerPage={itemsPerPage}
-        onPageChange={onPageChange}
+        totalCount={isServerSide ? totalCount : undefined}
+        currentPage={isServerSide ? currentPage : undefined}
+        itemsPerPage={isServerSide ? itemsPerPage : undefined}
+        onPageChange={isServerSide ? onPageChange : undefined}
       />
     </div>
   )

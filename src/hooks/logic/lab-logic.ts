@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { createClient } from '@/utils/supabase/client';
 
 export type Lab = {
@@ -14,116 +14,129 @@ export type Lab = {
     LAB_STATUS: string;
     LAB_TYPE: string;
     CONTACT_PHONE: string;
+    EQUIPMENT_LIST?: string;
 }
 
-export function LabLogic() {
-    const [labs, setLabs] = useState<Lab[]>([]);
-    const [loading, setLoading] = useState(false);
-    const [error, setError] = useState<string | null>(null);
+export interface LabFilters {
+  searchText: string;
+  labType: string;
+}
 
-    const fetchLabs = async () => {
-        try {
-            setLoading(true);
-            setError(null);
-            const supabase = createClient();
+export const LabLogic = () => {
+  const [labs, setLabs] = useState<Lab[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [totalCount, setTotalCount] = useState(0);
 
-            const { data: labsData, error: labsError } = await supabase
-                .from('labs')
-                .select(`
-                    LABID,
-                    LAB_NAME,
-                    LAB_HEAD,
-                    LAB_HEAD_EMAIL,
-                    RESEARCH_AREA,
-                    LAB_DESCRIPTION,
-                    LOCATION,
-                    LAB_STATUS,
-                    LAB_TYPE,
-                    CONTACT_PHONE
-                `)
-                .order('LAB_NAME');
+  const fetchLabs = useCallback(async ({
+    page = 1,
+    itemsPerPage = 20, 
+    filters = {}
+  }: {
+    page?: number;
+    itemsPerPage?: number;
+    filters?: Partial<LabFilters>;
+  }) => {
+    setLoading(true);
+    setError(null);
 
-            if (labsError) throw labsError;
+    try {
+      const supabase = createClient();
+      let query = supabase
+        .from('labs')
+        .select('*', { count: 'exact' })
+        .order('LAB_NAME', { ascending: true });
 
-            setLabs(labsData || []);
-        } catch (e) {
-            console.error('Error in fetchLabs:', e);
-            setError(e instanceof Error ? e.message : 'Unknown error');
-        } finally {
-            setLoading(false);
+      // Add search functionality
+      if (filters.searchText) {
+        query = query.or(
+          `LAB_NAME.ilike.%${filters.searchText}%,LAB_HEAD.ilike.%${filters.searchText}%,RESEARCH_AREA.ilike.%${filters.searchText}%`
+        );
+      }
+
+      // Add filtering
+      if (filters.labType && filters.labType !== 'all') {
+        query = query.eq('LAB_TYPE', filters.labType);
+      }
+
+      // Apply pagination
+      const from = (page - 1) * itemsPerPage;
+      const to = from + itemsPerPage - 1;
+      const { data, error, count } = await query.range(from, to);
+
+      if (error) throw error;
+
+      setLabs(data || []);
+      setTotalCount(count || 0);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'An error occurred');
+      console.error('Error fetching labs:', err);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+    const refreshLabs = fetchLabs;
+
+    const addLab = useCallback(async (labData: Omit<Lab, 'LABID'>, currentFilters?: Partial<LabFilters>, currentPage?: number, currentItemsPerPage?: number) => {
+        const supabase = createClient();
+        const { data, error } = await supabase
+        .from('labs')
+        .insert([labData])
+        .select();
+
+        if (error) throw error;
+        
+        // Refresh the current page/filters after adding
+        if (currentFilters !== undefined && currentPage !== undefined && currentItemsPerPage !== undefined) {
+          await fetchLabs({ page: currentPage, itemsPerPage: currentItemsPerPage, filters: currentFilters });
         }
-    };
+        
+        return data?.[0];
+    }, [fetchLabs]);
 
-    const addLab = async (newLab: Partial<Lab>) => {
-        try {
-            setLoading(true);
-            const { LABID, ...labToInsert } = newLab;
-            Object.keys(labToInsert).forEach(
-                key => (labToInsert[key] === undefined || labToInsert[key] === null) && delete labToInsert[key]
-            );
-            const supabase = createClient();
-            const { data, error } = await supabase.from('labs').insert([labToInsert]).select().single();
-            if (error) throw error;
-            setLabs(prevLabs => [...prevLabs, data]);
-            return data.LABID;
-        } catch (e) {
-            setError(e instanceof Error ? e.message : 'Unknown error');
-            throw e;
-        } finally {
-            setLoading(false);
+    const updateLab = useCallback(async (id: string, labData: Partial<Lab>, currentFilters?: Partial<LabFilters>, currentPage?: number, currentItemsPerPage?: number) => {
+        const supabase = createClient();
+        const { data, error } = await supabase
+        .from('labs')
+        .update(labData)
+        .eq('LABID', id)
+        .select();
+
+        if (error) throw error;
+        
+        // Refresh the current page/filters after updating
+        if (currentFilters !== undefined && currentPage !== undefined && currentItemsPerPage !== undefined) {
+          await fetchLabs({ page: currentPage, itemsPerPage: currentItemsPerPage, filters: currentFilters });
         }
-    };
+        
+        return data?.[0];
+    }, [fetchLabs]);
 
-    const updateLab = async (labId: string, updatedLab: Partial<Lab>) => {
-        try {
-            setLoading(true);
-            const supabase = createClient();
-            const { data, error } = await supabase
-                .from('labs')
-                .update(updatedLab)
-                .eq('LABID', labId)
-                .select()
-                .single();
+    const deleteLab = useCallback(async (id: string, currentFilters?: Partial<LabFilters>, currentPage?: number, currentItemsPerPage?: number) => {
+        const supabase = createClient();
+        const { error } = await supabase
+        .from('labs')
+        .delete()
+        .eq('LABID', id);
 
-            if (error) throw error;
-
-            setLabs(prevLabs =>
-                prevLabs.map(lab => lab.LABID === labId ? data : lab)
-            );
-            return data;
-        } catch (e) {
-            setError(e instanceof Error ? e.message : 'Unknown error');
-            throw e;
-        } finally {
-            setLoading(false);
+        if (error) throw error;
+        
+        // Refresh the current page/filters after deleting
+        if (currentFilters !== undefined && currentPage !== undefined && currentItemsPerPage !== undefined) {
+          await fetchLabs({ page: currentPage, itemsPerPage: currentItemsPerPage, filters: currentFilters });
         }
-    };
-
-    const deleteLab = async (labId: string) => {
-        try {
-            setLoading(true);
-            const supabase = createClient();
-            const { error } = await supabase.from('labs').delete().eq('LABID', labId);
-
-            if (error) throw error;
-
-            setLabs(prevLabs => prevLabs.filter(lab => lab.LABID !== labId));
-        } catch (e) {
-            setError(e instanceof Error ? e.message : 'Unknown error');
-            throw e;
-        } finally {
-            setLoading(false);
-        }
-    };
+    }, [fetchLabs]);
 
     useEffect(() => {
-        fetchLabs();
     }, []);
 
     return {
         labs,
         loading,
         error,
+        totalCount,
+        fetchLabs,
         addLab,
         updateLab,
         deleteLab,

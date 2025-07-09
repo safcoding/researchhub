@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { AdminSidebar } from "@/components/admin-sidebar/sidebar-content";
 import { Separator } from "@/components/ui/separator";
 import { Button } from '@/components/ui/button';
@@ -14,6 +14,7 @@ import { ConfirmationModal } from '@/components/reusable/confirmation-popup';
 import { GrantModal } from '@/components/admin-components/grants/grant-form';
 import { GrantDataTable } from '@/components/admin-components/grants/grant-data-table';
 import { GrantFilters as GrantFiltersComponent } from '@/components/admin-components/grants/grant-filters';
+import { useDebouncedSearch } from '@/hooks/use-debounce';
 
 export default function GrantDBPage() {
   const itemsPerPage = 10;
@@ -25,6 +26,15 @@ export default function GrantDBPage() {
     grantType: 'all',
     searchText: '',
   });
+
+  // Debounced search
+  const { searchValue, handleSearchChange } = useDebouncedSearch(
+    (value: string) => {
+      setFilters(prev => ({ ...prev, searchText: value }));
+      setCurrentPage(1);
+    },
+    300
+  );
 
   const {
     grants,
@@ -82,12 +92,6 @@ export default function GrantDBPage() {
   const handleFiltersChange = (updated: Partial<GrantFilters>) => {
     setFilters(prev => ({ ...prev, ...updated }));
     setCurrentPage(1); // Reset to first page on filter change
-  };
-
-  // Search change handler
-  const handleSearchChange = (searchText: string) => {
-    setFilters(prev => ({ ...prev, searchText }));
-    setCurrentPage(1); // Reset to first page on search
   };
 
   return (

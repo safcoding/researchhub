@@ -370,7 +370,6 @@ export function GrantLogic() {
     };
 
     useEffect(() => {
-        // Don't auto-fetch on mount since we'll control it with server-side pagination
     }, []);
 
     return {
