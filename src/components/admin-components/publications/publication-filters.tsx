@@ -32,6 +32,10 @@ export function PublicationFilters({ filters, onFiltersChange, publicationTypes,
     });
   };
 
+  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault(); // This prevents page reload
+  };
+
   // Years can be generated dynamically or passed as a prop if needed
   const currentYear = new Date().getFullYear();
   const years = Array.from({ length: 10 }, (_, i) => (currentYear - i).toString());
@@ -53,6 +57,8 @@ export function PublicationFilters({ filters, onFiltersChange, publicationTypes,
 
   return (
     <div className="bg-white shadow-md rounded-lg p-6 mb-6">
+      <form onSubmit={handleSubmit}> {/* Add onSubmit handler here */}
+
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-4">
         {/* Category Filter */}
         <div>
@@ -175,6 +181,7 @@ export function PublicationFilters({ filters, onFiltersChange, publicationTypes,
           Reset Filters
         </Button>
       </div>
+      </form>
     </div>
   )
 }

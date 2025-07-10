@@ -18,14 +18,15 @@ import type { Publication } from "@/hooks/logic/publication-logic"
 
 interface PublicationDataTableProps {
   data: Publication[]
-  onEdit: (publication: Publication) => void
-  onDelete: (publication: Publication) => void
+  onEdit?: (publication: Publication) => void
+  onDelete?: (publication: Publication) => void
   totalCount: number
   currentPage: number
   itemsPerPage: number
   onPageChange: (page: number) => void
   searchValue: string
   onSearchChange: (value: string) => void
+  hideActions?: boolean
 }
 
 export function PublicationDataTable({ 
@@ -36,6 +37,7 @@ export function PublicationDataTable({
   currentPage, 
   itemsPerPage, 
   onPageChange,
+  hideActions = false,
   searchValue,
   onSearchChange 
 }: PublicationDataTableProps) {
@@ -49,9 +51,9 @@ export function PublicationDataTable({
       cell: ({ row }) => {
         const publication = row.original
         return (
-          <div>
-            <div className="text-sm font-medium text-gray-900">{publication.title}</div>
-            <div className="text-sm text-gray-500">
+        <div className="max-w-xs"> {/* Limit width and enable wrapping */}
+          <div className="text-sm font-medium text-gray-900 whitespace-normal break-words">{publication.title}</div>
+          <div className="text-sm text-gray-500 whitespace-normal break-words">
               {publication.pub_refno} • {publication.journal}
             </div>
           </div>
@@ -98,7 +100,10 @@ export function PublicationDataTable({
         return <div className="text-sm font-medium text-gray-900">{publication.type}</div>
       },
     },
-    {
+  ]
+
+if (!hideActions && onEdit && onDelete) {
+    columns.push({
       id: "actions",
       header: "Actions",
       cell: ({ row }) => {
@@ -124,8 +129,8 @@ export function PublicationDataTable({
           </div>
         )
       },
-    },
-  ]
+    });
+  }
 
   const table = useReactTable({
     data,

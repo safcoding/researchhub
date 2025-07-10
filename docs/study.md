@@ -30,3 +30,19 @@
 [JavaScript Mastery - Advanced TypeScript](https://www.youtube.com/watch?v=30LWjhZzg50)
 ✅ Generics explained with examples
 ✅ Real-world usage patterns
+
+Debouncing in React
+[A Complete Guide to useDebounce in React] (https://www.developerway.com/posts/debouncing-in-react)
+Use-Debounce NPM Package https://www.npmjs.com/package/use-debounce
+
+Server-Side Operations
+NextJS Server Side Rendering https://nextjs.org/docs/pages/building-your-application/data-fetching
+Supabase Filtering & Pagination https://supabase.com/docs/reference/javascript/select
+
+Performance Optimization
+React Query for Data Fetching https://tanstack.com/query/latest/docs/framework/react/overview
+Web Performance Optimization https://developer.mozilla.org/en-US/docs/Web/Performance
+
+Video Tutorials
+Server-Side Pagination Tutorial https://www.youtube.com/watch?v=FoRJ0JJBi9I
+React Table with Server-Side Operations https://www.youtube.com/watch?v=Q4NTrsK7x0Q

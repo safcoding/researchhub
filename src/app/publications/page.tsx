@@ -1,11 +1,17 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import ConditionalNavbar from '@/components/admin-sidebar/conditional-navbar';
 import Navbar from '@/components/navbar';
 import Footer from '@/components/Footer';
 import { PublicationLogic } from '@/hooks/logic/publication-logic';
 import { PublicationPieChart } from '@/components/pub-piechart';
+import { PublicationDataTable } from '@/components/admin-components/publications/publication-data-table';
+import { PublicationFilters as PublicationFiltersComponent } from '@/components/admin-components/publications/publication-filters';
+import type { PublicationFilters } from '@/hooks/logic/publication-logic';
+import { PUBLICATION_TYPES, PUBLICATION_CATEGORIES } from '@/constants/publication-options';
+import { useDebounceValue } from '@/hooks/use-debounce-value';
+
 import {
   LineChart,
   Line,
@@ -26,6 +32,20 @@ const StatsCard = ({ title, amount, period }: { title: string; amount: string; p
 );
 
 export default function PublicationsDashboard() {
+
+  const itemsPerPage = 10;
+  const [currentPage, setCurrentPage] = useState(1);
+  const [filters, setFilters] = useState<PublicationFilters>({
+    year: 'all',
+    month: 'all',
+    category: 'all',
+    type: 'all',
+    searchText: '',
+  });
+  
+  // Use debounce for filters to prevent excessive API calls
+  const debouncedFilters = useDebounceValue(filters, 300);
+
   const { 
     loading, 
     error, 
@@ -36,13 +56,25 @@ export default function PublicationsDashboard() {
     getPublicationTypeData,
     getCategoryCounts,
     getTimelineData,
-    getTotalPublications
+    getTotalPublications,
+    refreshPublications,
+    publications,
   } = PublicationLogic();
 
   // Fetch optimized dashboard data
   useEffect(() => {
     fetchDashboardStats();
   }, [fetchDashboardStats]);
+
+  useEffect(() => {
+    refreshPublications({ page: currentPage, itemsPerPage, filters: debouncedFilters });
+  }, [currentPage, itemsPerPage, debouncedFilters, refreshPublications]);
+  
+  // Filter change handler
+  const handleFiltersChange = useCallback((newFilters: Partial<PublicationFilters>) => {
+    setFilters(prev => ({ ...prev, ...newFilters }));
+    setCurrentPage(1); // Reset to first page when filters change
+  }, []);
 
   if (loading || !analyticsLoaded) {
     return (
@@ -170,6 +202,35 @@ export default function PublicationsDashboard() {
             </div>
           </div>
         </div>
+        <div className="mt-12">
+              <h2 className="text-2xl font-bold text-gray-800 mb-6">Publications List</h2>
+              
+              <PublicationFiltersComponent
+                filters={{
+                  category: (filters.category ?? '') as typeof PUBLICATION_CATEGORIES[number] | 'all',
+                  type: (filters.type ?? '') as typeof PUBLICATION_TYPES[number] | 'all',
+                  year: filters.year ?? '',
+                  month: filters.month ?? '',
+                  searchText: filters.searchText ?? '',
+                  dateFrom: filters.dateFrom ?? '',
+                  dateTo: filters.dateTo ?? '',
+                }}
+                publicationTypes={PUBLICATION_TYPES}
+                publicationCategories={PUBLICATION_CATEGORIES}
+                onFiltersChange={handleFiltersChange}
+              />
+              
+              <div className="mt-6">
+                <PublicationDataTable
+                  data={publications}
+                  totalCount={totalCount}
+                  currentPage={currentPage}
+                  itemsPerPage={itemsPerPage}
+                  onPageChange={setCurrentPage}
+                  hideActions={true}
+                />
+              </div>
+            </div>
       </main>
 
       <Footer />
