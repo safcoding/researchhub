@@ -36,6 +36,10 @@ const data = {
           url: "/admin/labs",
         },
         {
+          title: "Equipment Management", 
+          url: "/admin/equipment",
+        },
+        {
           title: "Announcements Management", 
           url: "/admin/announcements",
         },
