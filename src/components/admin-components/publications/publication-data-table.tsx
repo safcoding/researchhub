@@ -41,7 +41,6 @@ export function PublicationDataTable({
 }: PublicationDataTableProps) {
   const [sorting, setSorting] = React.useState<SortingState>([])
   
-  // Remove client-side filtering since we're doing server-side
 
   const columns: ColumnDef<Publication>[] = [
     {
@@ -149,13 +148,6 @@ export function PublicationDataTable({
     <div className="bg-white shadow-md rounded-lg overflow-hidden">
       <div className="px-6 py-4 border-b border-gray-200 flex items-center">
         <h2 className="text-xl font-semibold text-gray-800 flex-1">All Publications ({totalCount})</h2>
-        <input
-          type="text"
-          placeholder="Search publications..."
-          value={searchValue}
-          onChange={(e) => onSearchChange(e.target.value)}
-          className="max-w-sm px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-        />
       </div>
       <DataTable 
         columns={columns} 

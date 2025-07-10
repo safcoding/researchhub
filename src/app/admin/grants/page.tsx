@@ -14,7 +14,7 @@ import { ConfirmationModal } from '@/components/reusable/confirmation-popup';
 import { GrantModal } from '@/components/admin-components/grants/grant-form';
 import { GrantDataTable } from '@/components/admin-components/grants/grant-data-table';
 import { GrantFilters as GrantFiltersComponent } from '@/components/admin-components/grants/grant-filters';
-import { useDebouncedSearch } from '@/hooks/use-debounce';
+import { useDebounceValue } from '@/hooks/use-debounce-value';
 
 export default function GrantDBPage() {
   const itemsPerPage = 10;
@@ -27,14 +27,7 @@ export default function GrantDBPage() {
     searchText: '',
   });
 
-  // Debounced search
-  const { searchValue, handleSearchChange } = useDebouncedSearch(
-    (value: string) => {
-      setFilters(prev => ({ ...prev, searchText: value }));
-      setCurrentPage(1);
-    },
-    300
-  );
+  const debouncedFilters = useDebounceValue(filters, 300);
 
   const {
     grants,
@@ -48,8 +41,8 @@ export default function GrantDBPage() {
   } = GrantLogic();
 
   useEffect(() => {
-    refreshGrants({ page: currentPage, itemsPerPage, filters });
-  }, [currentPage, itemsPerPage, filters, refreshGrants]);
+    refreshGrants({ page: currentPage, itemsPerPage, filters: debouncedFilters });
+  }, [currentPage, itemsPerPage, debouncedFilters, refreshGrants]);
 
   // Modal state
   const [showGrantModal, setShowGrantModal] = useState(false);
@@ -58,13 +51,13 @@ export default function GrantDBPage() {
 
   // CRUD handlers
   const handleAddGrant = async (newGrant: Partial<Grant>) => {
-    await addGrant(newGrant as Omit<Grant, 'grant_id'>, { page: currentPage, itemsPerPage, filters });
+    await addGrant(newGrant as Omit<Grant, 'grant_id'>, { page: currentPage, itemsPerPage, filters: debouncedFilters });
     setShowGrantModal(false);
   };
 
   const handleUpdateGrant = async (updatedGrant: Partial<Grant>) => {
     if (selectedGrant?.PROJECTID) {
-      await updateGrant(selectedGrant.PROJECTID, updatedGrant, { page: currentPage, itemsPerPage, filters });
+      await updateGrant(selectedGrant.PROJECTID, updatedGrant, { page: currentPage, itemsPerPage, filters: debouncedFilters });
       setShowGrantModal(false);
       setSelectedGrant(null);
     }
@@ -72,7 +65,7 @@ export default function GrantDBPage() {
 
   const handleDeleteConfirm = async () => {
     if (selectedGrant?.PROJECTID) {
-      await deleteGrant(selectedGrant.PROJECTID, { page: currentPage, itemsPerPage, filters });
+      await deleteGrant(selectedGrant.PROJECTID, { page: currentPage, itemsPerPage, filters: debouncedFilters });
       setShowDeleteModal(false);
       setSelectedGrant(null);
     }
@@ -88,11 +81,17 @@ export default function GrantDBPage() {
     setShowDeleteModal(true);
   };
 
-  // Filter change handler
-  const handleFiltersChange = (updated: Partial<GrantFilters>) => {
-    setFilters(prev => ({ ...prev, ...updated }));
-    setCurrentPage(1); // Reset to first page on filter change
-  };
+  // Filter change handler with debouncing for search
+  const handleFiltersChange = useCallback((newFilters: Partial<GrantFilters>) => {
+    setFilters(prevFilters => ({ ...prevFilters, ...newFilters }));
+    // Resetting to first page when filters change
+    setCurrentPage(1);
+  }, []);
+
+  // Use debouncedFilters instead of filters
+  useEffect(() => {
+    refreshGrants({ page: currentPage, itemsPerPage, filters: debouncedFilters });
+  }, [currentPage, itemsPerPage, debouncedFilters, refreshGrants]);
 
   return (
     <SidebarProvider style={{ "--sidebar-width": "19rem" } as React.CSSProperties}>
@@ -130,7 +129,6 @@ export default function GrantDBPage() {
             
             <GrantFiltersComponent
               filters={filters}
-              grants={grants}
               onFiltersChange={handleFiltersChange}
             />
 
@@ -142,8 +140,6 @@ export default function GrantDBPage() {
               currentPage={currentPage}
               itemsPerPage={itemsPerPage}
               onPageChange={setCurrentPage}
-              searchValue={filters.searchText || ''}
-              onSearchChange={handleSearchChange}
             />
 
             {/* Modals */}
