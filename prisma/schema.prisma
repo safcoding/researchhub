@@ -1,4 +1,3 @@
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -9,73 +8,106 @@ datasource db {
   directUrl = env("DIRECT_URL")
 }
 
-model Grant  {
-grant_id String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-project_id String
-project_title String
-type String
-status String
-cost_center_code String
-pl_staff_no Int
-pl_name String
-ptj_research_alliance  String
-research_group String
-pro_date_start DateTime
-pro_date_end DateTime
-sponsor_category String
-sponsor_name String
-subsponsor_name String
-approved_amount Float
-
-}
-model Publication  {
-publication_id String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-pub_refno String
-author_id Int
-author_name String
-research_alliance String
-rg_name String
-type String
-status String
-category String
-journal String
-title String
-impact Float
-date DateTime
-level String
+model about_content {
+  id                   Int     @id
+  title                String?
+  intro_paragraph      String?
+  main_paragraph       String?
+  conclusion_paragraph String?
+  closing_statement    String?
 }
 
-model Event{
-event_id String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid 
-title String
-description String
-date DateTime
-time DateTime
-location String
-category String
-organizer String
-registration_required Boolean
-registration_deadline DateTime
-contact_email String
-image String
-priority String
+model equipment {
+  equipment_id  String          @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name          String          @default("")
+  lab_equipment lab_equipment[]
 }
 
-model Lab {
-lab_id String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid 
-lab_name String
-lab_head String
-email String
-research_area String
-description String
-location String
-status String
-type String
-contact_phone String
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+model event {
+  title                 String
+  description           String
+  date                  DateTime  @db.Date
+  time                  String?
+  location              String?
+  category              String
+  organizer             String
+  registration_required Boolean?  @default(false)
+  registration_deadline DateTime? @db.Date
+  contact_email         String
+  image                 String?   @default("/api/placeholder/400/250")
+  priority              String    @default("Medium")
+  status                String    @default("Upcoming")
+  event_id              String    @id(map: "events_pkey") @default(dbgenerated("gen_random_uuid()")) @db.Uuid
 
+  @@index([category], map: "idx_events_category")
+  @@index([date], map: "idx_events_date")
+  @@index([priority], map: "idx_events_priority")
+  @@index([status], map: "idx_events_status")
 }
 
-model Equipment {
-equipment_id String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid 
-name String
+model grant {
+  project_id            String
+  cost_center_code      String?
+  pl_staff_no           BigInt?
+  pl_name               String?
+  ptj_research_alliance String?
+  research_group        String?
+  project_title         String?
+  pro_date_start        DateTime? @db.Date
+  pro_date_end          DateTime? @db.Date
+  type                  String?
+  status                String?
+  sponsor_category      String?
+  subsponsor_name       String?
+  approved_amount       Float?    @db.Real
+  sponsor_name          String?
+  grant_id              String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+}
+
+model lab {
+  lab_id        String          @id(map: "labs_pkey") @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  lab_name      String?
+  lab_head      String?
+  email         String?
+  research_area String?
+  description   String?
+  location      String?
+  status        String?
+  type          String?
+  contact_phone String?
+  lab_equipment lab_equipment[]
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model lab_equipment {
+  id           String    @id @unique @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  quantity     Int       @default(0) @db.SmallInt
+  equipment_id String    @db.Uuid
+  lab_id       String    @db.Uuid
+  equipment    equipment @relation(fields: [equipment_id], references: [equipment_id], onDelete: Cascade, onUpdate: NoAction)
+  lab          lab       @relation(fields: [lab_id], references: [lab_id], onDelete: Cascade, onUpdate: NoAction)
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model project {
+  created_at DateTime @default(now()) @db.Timestamptz(6)
+  project_id String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+}
+
+model publication {
+  pub_refno         String
+  status            String
+  type              String
+  category          String
+  journal           String
+  title             String
+  impact            Float?   @db.Real
+  date              DateTime @db.Date
+  level             String
+  author_id         Int      @db.SmallInt
+  research_alliance String?
+  rg_name           String?
+  author_name       String
+  publication_id    String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
 }
