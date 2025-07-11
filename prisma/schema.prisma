@@ -9,7 +9,7 @@ datasource db {
 }
 
 model about_content {
-  id                   Int     @id
+  id                   Int       @id
   title                String?
   intro_paragraph      String?
   main_paragraph       String?
@@ -19,11 +19,10 @@ model about_content {
 
 model equipment {
   equipment_id  String          @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  name          String          @default("")
+  name          String 
   lab_equipment lab_equipment[]
 }
 
-/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
 model event {
   title                 String
   description           String
@@ -91,8 +90,8 @@ model lab_equipment {
 
 /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
 model project {
+  proj_id    BigInt   @id(map: "projects_pkey") @default(autoincrement())
   created_at DateTime @default(now()) @db.Timestamptz(6)
-  project_id String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
 }
 
 model publication {
