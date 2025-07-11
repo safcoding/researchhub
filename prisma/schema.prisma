@@ -1,20 +1,81 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
 
 generator client {
-    provider = "prisma-client-js"
+  provider = "prisma-client-js"
 }
 
 datasource db {
-    provider = "postgresql"
-    url      = env("DATABASE_URL")
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
 }
 
-model Post {
-    id        Int      @id @default(autoincrement())
-    name      String
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
+model Grant  {
+grant_id String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+project_id String
+project_title String
+type String
+status String
+cost_center_code String
+pl_staff_no Int
+pl_name String
+ptj_research_alliance  String
+research_group String
+pro_date_start DateTime
+pro_date_end DateTime
+sponsor_category String
+sponsor_name String
+subsponsor_name String
+approved_amount Float
 
-    @@index([name])
+}
+model Publication  {
+publication_id String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+pub_refno String
+author_id Int
+author_name String
+research_alliance String
+rg_name String
+type String
+status String
+category String
+journal String
+title String
+impact Float
+date DateTime
+level String
+}
+
+model Event{
+event_id String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid 
+title String
+description String
+date DateTime
+time DateTime
+location String
+category String
+organizer String
+registration_required Boolean
+registration_deadline DateTime
+contact_email String
+image String
+priority String
+}
+
+model Lab {
+lab_id String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid 
+lab_name String
+lab_head String
+email String
+research_area String
+description String
+location String
+status String
+type String
+contact_phone String
+
+}
+
+model Equipment {
+equipment_id String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid 
+name String
 }
