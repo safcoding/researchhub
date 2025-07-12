@@ -41,7 +41,7 @@ export const columns: ColumnDef<Grant>[] = [
        cell: ({ row }) => {
             const amount = row.getValue("approved_amount") as number | null
             return (
-                <div className="w-[150px] text-center">
+                <div className="w-[120px] text-center">
                     {amount ? formatCurrency(amount) : "N/A"}  {/* Fixed syntax */}
                 </div>
             )
@@ -52,7 +52,7 @@ export const columns: ColumnDef<Grant>[] = [
         header: "Type",
         size: 120,
         cell: ({ row }) => (
-            <div className="w-[180px] truncate" title={row.getValue("type") || ""}>
+            <div className="w-[120px] truncate" title={row.getValue("type") || ""}>
                 {row.getValue("type") || "N/A"}
             </div>
         ),
@@ -60,17 +60,17 @@ export const columns: ColumnDef<Grant>[] = [
     {
         accessorKey: "sponsor_category",
         header: "Sponsor Category",
-        size: 150,
+        size: 120,
         cell: ({ row }) => (
-            <div className="w-[150px]">{row.getValue("sponsor_category") || "N/A"}</div>
+            <div className="w-[120px]">{row.getValue("sponsor_category") || "N/A"}</div>
         ),
     },
     {
         accessorKey: "sponsor_name",
         header: "Sponsor Name",
-        size: 180,
+        size: 120,
         cell: ({ row }) => (
-            <div className="w-[180px] truncate" title={row.getValue("sponsor_name") || ""}>
+            <div className="w-[120px] truncate" title={row.getValue("sponsor_name") || ""}>
                 {row.getValue("sponsor_name") || "N/A"}
             </div>
         ),
@@ -90,7 +90,9 @@ export const columns: ColumnDef<Grant>[] = [
         header: "Status",
         size: 120,
         cell: ({ row }) => (
-            <div className="w-[120px]">{row.getValue("status") || "N/A"}</div>
+            <div className="w-[120px] truncate" title={row.getValue("status") || ""}>
+            {row.getValue("status") || "N/A"}
+            </div>
         ),
     },
     {

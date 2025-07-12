@@ -3,10 +3,14 @@
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { addGrant } from "../_actions/grants"
+import { addGrant } from "../../_actions/grants"
+import { useFormState } from "react-dom"
+import { useFormStatus } from "react-dom"
 
 export function GrantForm(){
-    return <form action={addGrant} className="space-y-8">
+    const[formState, action] = useFormState(addGrant, {})
+//error handling not added
+    return <form action={action} className="space-y-8">
         <div className="space-y-2">
             <Label htmlFor="project_id">Project ID</Label>
             <Input type="text" id="project_id" name="project_id" required />
@@ -81,8 +85,14 @@ export function GrantForm(){
             <Label htmlFor="approved_amount">Approved Amount</Label>
             <Input type="number" step="0.01" id="approved_amount" name="approved_amount" />
         </div>
-
-        <Button type="submit">Save</Button>
-
+        <SubmitButton/>
     </form>
+}
+
+function SubmitButton(){
+    const { pending } = useFormStatus()
+    return (
+        <Button type="submit" disabled={pending}>{pending ? "Saving..." : "Save"}</Button>
+    )
+
 }

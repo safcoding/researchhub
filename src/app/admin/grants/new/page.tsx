@@ -1,4 +1,4 @@
-import { GrantForm } from "../../_components/grantForm";
+import { GrantForm } from "./grantForm";
 
 export default function Page(){
     return(

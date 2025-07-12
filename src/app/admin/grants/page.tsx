@@ -15,11 +15,20 @@ async function getData(): Promise<Grant[]>{
       sponsor_name: true, 
       subsponsor_name: true, 
       status: true, 
-      pro_date_start: true  }
+      pro_date_start: true  
+    },
+    orderBy:{ createdAt: 'desc'}
     })
     console.log('Grants data:', grants)
     return grants
 }
+
+
+/*TODO
+  -ADD SERVER SIDED PAGINATION
+  -ADD SEARCH AND FILTER BY TYPE,SPONSOR CATEGORY, STATUS, DATE
+  -ADD EDIT/DELETE ACTIONS
+*/
 
 export default async function Page() {
   const grants = await getData()
