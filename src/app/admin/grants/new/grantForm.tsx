@@ -4,16 +4,20 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { addGrant } from "../../_actions/grants"
+import { useFormStatus, } from "react-dom"
 import { useFormState } from "react-dom"
-import { useFormStatus } from "react-dom"
 
 export function GrantForm(){
-    const[formState, action] = useFormState(addGrant, {})
 //error handling not added
+    const [formState, action] = useFormState(addGrant, {})
+
     return <form action={action} className="space-y-8">
         <div className="space-y-2">
             <Label htmlFor="project_id">Project ID</Label>
             <Input type="text" id="project_id" name="project_id" required />
+            {formState.errors?.project_id && (
+                <div className="text-destructive text-sm">{formState.errors.project_id[0]}</div>
+            )}
         </div>
 
         <div className="space-y-2">
@@ -59,6 +63,9 @@ export function GrantForm(){
         <div className="space-y-2">
             <Label htmlFor="type">Grant Type</Label>
             <Input type="text" id="type" name="type" />
+            {formState.errors?.project_id && (
+                <div className="text-destructive text-sm">{formState.errors.type[0]}</div>
+            )}
         </div>
 
         <div className="space-y-2">
@@ -74,6 +81,9 @@ export function GrantForm(){
         <div className="space-y-2">
             <Label htmlFor="sponsor_category">Sponsor Category</Label>
             <Input type="text" id="sponsor_category" name="sponsor_category" />
+            {formState.errors?.project_id && (
+                <div className="text-destructive text-sm">{formState.errors.sponsor_category[0]}</div>
+            )}
         </div>
 
         <div className="space-y-2">
@@ -84,6 +94,9 @@ export function GrantForm(){
         <div className="space-y-2">
             <Label htmlFor="approved_amount">Approved Amount</Label>
             <Input type="number" step="0.01" id="approved_amount" name="approved_amount" />
+            {formState.errors?.project_id && (
+                <div className="text-destructive text-sm">{formState.errors.approved_amount[0]}</div>
+            )}
         </div>
         <SubmitButton/>
     </form>

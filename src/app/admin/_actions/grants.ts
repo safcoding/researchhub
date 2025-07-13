@@ -26,7 +26,7 @@ export async function addGrant(formState: unknown, formData: FormData) {
   const result = addSchema.safeParse(Object.fromEntries(formData.entries()))
   
   if (result.success === false) {
-    return result.error.flatten().fieldErrors
+    return result.error
   }
     
     const data = result.data
