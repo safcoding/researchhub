@@ -1,8 +1,8 @@
 "use server"
+
 import {z} from "zod"
-import db
- from "@/db/db"
-import { redirect } from "next/navigation"
+import db from "@/db/db"
+import { redirect, notFound  } from "next/navigation"
 
 const addSchema = z.object({
     project_id:             z.string().min(1, "Project ID is required"),
@@ -22,11 +22,19 @@ const addSchema = z.object({
     approved_amount:        z.coerce.number().int().min(1, "Amount is required"),
 })
 
-export async function addGrant(formState: unknown, formData: FormData) {
+type FormState = {
+    errors?: {
+        [key: string]: string[]
+    }
+    success?: boolean
+}
+
+export async function addGrant(prevState: FormState, formData: FormData):  Promise<FormState> {
   const result = addSchema.safeParse(Object.fromEntries(formData.entries()))
   
   if (result.success === false) {
-    return result.error
+    return {errors: result.error.flatten().fieldErrors
+    }
   }
     
     const data = result.data
@@ -51,4 +59,9 @@ export async function addGrant(formState: unknown, formData: FormData) {
         }})
     
     redirect("/admin/grants")
+}
+
+export async function deleteGrant(grant_id: string) {
+  const grant = await db.grant.delete({where: { grant_id } })
+  if (grant == null) return notFound()
 }

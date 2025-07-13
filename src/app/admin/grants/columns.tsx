@@ -2,8 +2,24 @@
 
 import { ColumnDef } from "@tanstack/react-table"
 import { formatCurrency, formatNumber } from "@/lib/formatters"
+import { MoreHorizontal } from "lucide-react"
+import { Button } from "@/components/ui/button"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
+import Link from "next/link"
+
+import { deleteGrant } from "../_actions/grants"
+import { startTransition } from "react"
+import { useRouter } from "next/navigation"
 
 export type Grant = {
+    grant_id: string
     project_id:            string
     project_title:         string | null
     approved_amount:       number | null
@@ -15,7 +31,9 @@ export type Grant = {
     pro_date_start:        Date | null
 }
 
+
 export const columns: ColumnDef<Grant>[] = [
+
     {
         accessorKey: "project_id",
         header: "Project ID",
@@ -108,4 +126,45 @@ export const columns: ColumnDef<Grant>[] = [
             )
         },
     },
+  {
+    id: "actions",
+    cell: ({ row }) => {
+      const grant = row.original
+      const router = useRouter()
+
+ 
+      return (
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="ghost" className="h-8 w-8 p-0">
+              <span className="sr-only">Open menu</span>
+              <MoreHorizontal className="h-4 w-4" />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end">
+            <DropdownMenuLabel>Actions</DropdownMenuLabel>
+            <DropdownMenuItem>
+                <Link href={`/admin/grants/${grant.grant_id}/edit`}> Edit</Link>
+            </DropdownMenuItem>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem               
+            variant = "destructive"
+              onClick={ () => {
+                if (confirm("Are you sure you want to delete this grant?")) {
+                    startTransition(async () => {
+                        await deleteGrant(grant.grant_id)
+                        router.refresh()
+                    })
+
+                }
+              }}
+            >
+              Delete
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      )
+    },
+  },
+
 ]

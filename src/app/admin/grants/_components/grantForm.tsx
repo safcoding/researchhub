@@ -6,15 +6,16 @@ import { Label } from "@/components/ui/label"
 import { addGrant } from "../../_actions/grants"
 import { useFormStatus, } from "react-dom"
 import { useFormState } from "react-dom"
+import { grant } from "@prisma/client"
 
-export function GrantForm(){
-//error handling not added
+export function GrantForm( {grant }: { grant?: grant} ){
+
     const [formState, action] = useFormState(addGrant, {})
 
     return <form action={action} className="space-y-8">
         <div className="space-y-2">
             <Label htmlFor="project_id">Project ID</Label>
-            <Input type="text" id="project_id" name="project_id" required />
+            <Input type="text" id="project_id" name="project_id" required defaultValue={grant?.project_id || ""} />
             {formState.errors?.project_id && (
                 <div className="text-destructive text-sm">{formState.errors.project_id[0]}</div>
             )}
@@ -22,79 +23,79 @@ export function GrantForm(){
 
         <div className="space-y-2">
             <Label htmlFor="project_title">Project Title</Label>
-            <Input type="text" id="project_title" name="project_title" />
+            <Input type="text" id="project_title" name="project_title" defaultValue={grant?.project_title || ""} />
         </div>
 
         <div className="space-y-2">
             <Label htmlFor="pro_date_start">Project Start Date</Label>
-            <Input type="date" id="pro_date_start" name="pro_date_start" />
+            <Input type="date" id="pro_date_start" name="pro_date_start" defaultValue={grant?.pro_date_start ? new Date(grant.pro_date_start).toISOString().split('T')[0] : ""} />
         </div>
 
         <div className="space-y-2">
             <Label htmlFor="pro_date_end">Project End Date</Label>
-            <Input type="date" id="pro_date_end" name="pro_date_end" />
+            <Input type="date" id="pro_date_end" name="pro_date_end" defaultValue={grant?.pro_date_end ? new Date(grant.pro_date_end).toISOString().split('T')[0] : ""} />
         </div>
 
         <div className="space-y-2">
             <Label htmlFor="cost_center_code">Cost Center Code</Label>
-            <Input type="text" id="cost_center_code" name="cost_center_code" />
+            <Input type="text" id="cost_center_code" name="cost_center_code" defaultValue={grant?.cost_center_code || ""} />
         </div>
 
         <div className="space-y-2">
             <Label htmlFor="pl_staff_no">Project Leader Staff Number</Label>
-            <Input type="number" id="pl_staff_no" name="pl_staff_no" />
+            <Input type="number" id="pl_staff_no" name="pl_staff_no" defaultValue={grant?.pl_staff_no?.toString() || ""} />
         </div>
 
         <div className="space-y-2">
             <Label htmlFor="pl_name">Project Leader Name</Label>
-            <Input type="text" id="pl_name" name="pl_name" />
+            <Input type="text" id="pl_name" name="pl_name" defaultValue={grant?.pl_name || ""} />
         </div>
 
         <div className="space-y-2">
             <Label htmlFor="ptj_research_alliance"> Research Alliance</Label>
-            <Input type="text" id="ptj_research_alliance" name="ptj_research_alliance" />
+            <Input type="text" id="ptj_research_alliance" name="ptj_research_alliance" defaultValue={grant?.ptj_research_alliance || ""} />
         </div>
 
         <div className="space-y-2">
             <Label htmlFor="research_group">Research Group</Label>
-            <Input type="text" id="research_group" name="research_group" />
+            <Input type="text" id="research_group" name="research_group" defaultValue={grant?.research_group || ""} />
         </div>
 
         <div className="space-y-2">
             <Label htmlFor="type">Grant Type</Label>
-            <Input type="text" id="type" name="type" />
-            {formState.errors?.project_id && (
+            <Input type="text" id="type" name="type" defaultValue={grant?.type || ""} />
+            {formState.errors?.type && (
                 <div className="text-destructive text-sm">{formState.errors.type[0]}</div>
             )}
         </div>
 
         <div className="space-y-2">
             <Label htmlFor="status">Status</Label>
-            <Input type="text" id="status" name="status" />
+            <Input type="text" id="status" name="status" defaultValue={grant?.status || ""} />
         </div>
 
         <div className="space-y-2">
             <Label htmlFor="sponsor_name">Sponsor Name</Label>
-            <Input type="text" id="sponsor_name" name="sponsor_name" />
+            <Input type="text" id="sponsor_name" name="sponsor_name" defaultValue={grant?.sponsor_name || ""} />
         </div>
 
         <div className="space-y-2">
             <Label htmlFor="sponsor_category">Sponsor Category</Label>
-            <Input type="text" id="sponsor_category" name="sponsor_category" />
-            {formState.errors?.project_id && (
+            <Input type="text" id="sponsor_category" name="sponsor_category" defaultValue={grant?.sponsor_category || ""} />
+            {formState.errors?.sponsor_category && (
                 <div className="text-destructive text-sm">{formState.errors.sponsor_category[0]}</div>
             )}
         </div>
 
         <div className="space-y-2">
             <Label htmlFor="subsponsor_name">Sub-sponsor Name</Label>
-            <Input type="text" id="subsponsor_name" name="subsponsor_name" />
+            <Input type="text" id="subsponsor_name" name="subsponsor_name" defaultValue={grant?.subsponsor_name || ""} />
         </div>
 
         <div className="space-y-2">
             <Label htmlFor="approved_amount">Approved Amount</Label>
-            <Input type="number" step="0.01" id="approved_amount" name="approved_amount" />
-            {formState.errors?.project_id && (
+            <Input type="number" step="0.01" id="approved_amount" name="approved_amount" defaultValue={grant?.approved_amount?.toString() || ""} />
+            {formState.errors?.approved_amount && (
                 <div className="text-destructive text-sm">{formState.errors.approved_amount[0]}</div>
             )}
         </div>

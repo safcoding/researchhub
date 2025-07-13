@@ -7,6 +7,7 @@ import db from "@/db/db";
 async function getData(): Promise<Grant[]>{
   const grants = await  db.grant.findMany({
     select: {
+        grant_id: true, // ← ADD THIS LINE
       project_id: true, 
       project_title: true, 
       approved_amount: true, 
