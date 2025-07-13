@@ -28,7 +28,6 @@ async function getData(): Promise<Grant[]>{
 /*TODO
   -ADD SERVER SIDED PAGINATION
   -ADD SEARCH AND FILTER BY TYPE,SPONSOR CATEGORY, STATUS, DATE
-  -ADD EDIT/DELETE ACTIONS
 */
 
 export default async function GrantAdminPage() {
