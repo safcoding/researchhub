@@ -15,7 +15,7 @@ import {
 import Link from "next/link"
 
 import { deleteGrant } from "../_actions/grants"
-import { startTransition } from "react"
+import { useTransition } from "react"
 import { useRouter } from "next/navigation"
 
 export type Grant = {
@@ -131,8 +131,8 @@ export const columns: ColumnDef<Grant>[] = [
     cell: ({ row }) => {
       const grant = row.original
       const router = useRouter()
+      const [isPending, startTransition] = useTransition()
 
- 
       return (
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
@@ -143,23 +143,25 @@ export const columns: ColumnDef<Grant>[] = [
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
             <DropdownMenuLabel>Actions</DropdownMenuLabel>
-            <DropdownMenuItem>
-                <Link href={`/admin/grants/${grant.grant_id}/edit`}> Edit</Link>
+            <DropdownMenuItem 
+              asChild
+            >
+              <Link href={`/admin/grants/${grant.grant_id}/edit`}>Edit</Link>
             </DropdownMenuItem>
             <DropdownMenuSeparator />
             <DropdownMenuItem               
-            variant = "destructive"
-              onClick={ () => {
+              className="text-destructive focus:text-destructive"
+              disabled={isPending}
+              onClick={() => {
                 if (confirm("Are you sure you want to delete this grant?")) {
-                    startTransition(async () => {
-                        await deleteGrant(grant.grant_id)
-                        router.refresh()
-                    })
-
+                  startTransition(async () => {
+                    await deleteGrant(grant.grant_id)
+                    router.refresh()
+                  })
                 }
               }}
             >
-              Delete
+              {isPending ? "Deleting..." : "Delete"}
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>

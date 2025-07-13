@@ -3,14 +3,14 @@
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { addGrant } from "../../_actions/grants"
+import { addGrant, editGrant } from "../../_actions/grants"
 import { useFormStatus, } from "react-dom"
 import { useFormState } from "react-dom"
 import { grant } from "@prisma/client"
 
 export function GrantForm( {grant }: { grant?: grant} ){
 
-    const [formState, action] = useFormState(addGrant, {})
+    const [formState, action] = useFormState( grant ==  null ? addGrant : editGrant.bind(null, grant.grant_id), {})
 
     return <form action={action} className="space-y-8">
         <div className="space-y-2">

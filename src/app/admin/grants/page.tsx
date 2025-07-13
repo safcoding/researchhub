@@ -31,7 +31,7 @@ async function getData(): Promise<Grant[]>{
   -ADD EDIT/DELETE ACTIONS
 */
 
-export default async function Page() {
+export default async function GrantAdminPage() {
   const grants = await getData()
 
   return(
