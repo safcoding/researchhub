@@ -1,16 +1,16 @@
-import { GrantForm } from "../../_components/grantForm"
+import { PublicationForm } from "../../_components/publicationForm"
 import db from "@/db/db"
 import { notFound } from "next/navigation"
 import { BackButton } from "@/components/backButton"
-export default async function EditGrantPage(
+export default async function EditPublicationPage(
     {params}: {
         params: Promise<{ id: string }>
     }
 ){
     const { id } = await params
-    const grant = await db.grant.findUnique({ where: { grant_id: id } })
+    const publication = await db.publication.findUnique({ where: { publication_id: id } })
     
-    if (!grant) {
+    if (!publication) {
         notFound()
     }
     
@@ -18,9 +18,9 @@ export default async function EditGrantPage(
         <div className="space-y-6">
             <div className="space-y-4">
                 <BackButton />
-                <h1 className="text-2xl font-bold">Add New Publication</h1>
+                <h1 className="text-2xl font-bold">Edit Publication</h1>
             </div>
-            <GrantForm grant={grant} />
+            <PublicationForm publication={publication} />
         </div>
     )
 }

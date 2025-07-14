@@ -2,10 +2,10 @@
 
 import {
   ColumnDef,
+  ColumnFiltersState,
+  getFilteredRowModel,
   flexRender,
   getCoreRowModel,
-  getPaginationRowModel,
-
   useReactTable,
 } from "@tanstack/react-table"
 
@@ -18,6 +18,7 @@ import {
   TableRow,
 } from "@/components/ui/table"
 import { PaginationWithLinks } from "@/components/ui/pagination-with-links"
+
 
 
 interface DataTableProps<TData, TValue> {
@@ -39,7 +40,9 @@ export function DataTable<TData, TValue>({
     data,
     columns,
     getCoreRowModel: getCoreRowModel(),
-  })
+  }
+
+)
 
   return (
     <div>

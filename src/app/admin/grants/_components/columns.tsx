@@ -14,7 +14,7 @@ import {
 } from "@/components/ui/dropdown-menu"
 import Link from "next/link"
 
-import { deleteGrant } from "../_actions/grants"
+import { deleteGrant } from "../../_actions/grants"
 import { useTransition } from "react"
 import { useRouter } from "next/navigation"
 

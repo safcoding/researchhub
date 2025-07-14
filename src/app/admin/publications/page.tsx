@@ -1,11 +1,11 @@
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import { columns } from "./_components/columns"
+import { columns, Publication } from "./_components/columns"
 import { DataTable } from "../_components/data-table";
 import db from "@/db/db";
 import Search from "@/components/ui/search";
 import { Suspense } from "react";
-import { Plus } from "lucide-react";
+import { Plus } from "lucide-react"
 
 async function getData(page: number = 1, pageSize: number = 10, query?: string) {
   const skip = (page - 1) * pageSize
@@ -13,7 +13,7 @@ async function getData(page: number = 1, pageSize: number = 10, query?: string) 
   const where = query ? {
     OR: [
       {
-        project_title: {
+        title: {
           contains: query,
           mode: 'insensitive' as const,
         },
@@ -21,31 +21,30 @@ async function getData(page: number = 1, pageSize: number = 10, query?: string) 
     ],
   } : {}
   
-  const totalCount = await db.grant.count({ where })
+  const totalCount = await db.publication.count({ where })
 
-    const grants = await  db.grant.findMany({
+    const publication = await  db.publication.findMany({
       where,
       select: {
-        grant_id: true,
-        project_id: true, 
-        project_title: true, 
-        approved_amount: true, 
+        publication_id: true,
+        pub_refno: true, 
+        title: true, 
+        journal: true, 
         type: true, 
-        sponsor_category: true, 
-        sponsor_name: true, 
-        subsponsor_name: true, 
+        category: true, 
+        level: true, 
+        date: true, 
         status: true, 
-        pro_date_start: true  
       },
       orderBy:{ createdAt: 'desc'},
       skip: skip,
       take: pageSize,
       })
-      console.log('Grants data:', grants)
+      console.log('Publications data:', publication)
       console.log('Search query:', query)
 
       return {
-        data: grants,
+        data: publication,
         totalCount
       }
   }
@@ -56,7 +55,7 @@ async function getData(page: number = 1, pageSize: number = 10, query?: string) 
   -ADD BACK BUTTON IN EDIT PAGE USING BREADCRUMBS?
 */
 
-export default async function GrantAdminPage({
+export default async function PublicationAdminPage({
   searchParams,
 }: {
   searchParams: Promise<{ page?: string; pageSize?: string; query?: string }>
@@ -65,7 +64,7 @@ export default async function GrantAdminPage({
   const page = Number(params.page) || 1
   const pageSize = Number(params.pageSize) || 10
   const query = params.query || ''
-  const { data: grants, totalCount } = await getData(page, pageSize, query)
+  const { data: publication, totalCount } = await getData(page, pageSize, query)
   
   return (
     <div className="space-y-4">
@@ -75,9 +74,9 @@ export default async function GrantAdminPage({
           <Search placeholder="Search by project title..." />
         </Suspense>
         <Button asChild>
-          <Link href="/admin/grants/new">
+          <Link href="/admin/publications/new">
             <Plus className="h-4 w-4 mr-2" />
-            Add Grant
+            Add Publication
           </Link>
         </Button>
       </div>
@@ -94,7 +93,7 @@ export default async function GrantAdminPage({
       <div className="overflow-x-auto">
         <DataTable 
           columns={columns} 
-          data={grants}
+          data={publication}
           page={page}
           pageSize={pageSize}
           totalCount={totalCount}

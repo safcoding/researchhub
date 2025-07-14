@@ -3,6 +3,13 @@
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
 import { addGrant, editGrant } from "../../_actions/grants"
 import { useFormStatus, } from "react-dom"
 import { useFormState } from "react-dom"
@@ -63,15 +70,39 @@ export function GrantForm( {grant }: { grant?: grant} ){
 
         <div className="space-y-2">
             <Label htmlFor="type">Grant Type</Label>
-            <Input type="text" id="type" name="type" defaultValue={grant?.type || ""} />
+            <Select name="type" defaultValue={grant?.type || ""} required>
+                <SelectTrigger>
+                    <SelectValue placeholder="Select publication type" />
+                </SelectTrigger>
+                <SelectContent>
+                    <SelectItem value="University Grant">University Grant</SelectItem>
+                    <SelectItem value="Government Grant">Government Grant</SelectItem>
+                    <SelectItem value="Industrial Grant">Industrial Grant</SelectItem>
+                    <SelectItem value="Research Contract">Research Contract</SelectItem>
+                    <SelectItem value="Others">Others</SelectItem>
+                </SelectContent>
+            </Select>
             {formState.errors?.type && (
                 <div className="text-destructive text-sm">{formState.errors.type[0]}</div>
             )}
         </div>
 
         <div className="space-y-2">
-            <Label htmlFor="status">Status</Label>
-            <Input type="text" id="status" name="status" defaultValue={grant?.status || ""} />
+            <Label htmlFor="status">Grant Status</Label>
+            <Select name="status" defaultValue={grant?.status || ""} required>
+                <SelectTrigger>
+                    <SelectValue placeholder="Select Grant Status" />
+                </SelectTrigger>
+                <SelectContent>
+                    <SelectItem value="Active">Active</SelectItem>
+                    <SelectItem value="Completed">Completed</SelectItem>
+                    <SelectItem value="Pending">Pending</SelectItem>
+                    <SelectItem value="Suspended">Suspended</SelectItem>
+                </SelectContent>
+            </Select>
+            {formState.errors?.status && (
+                <div className="text-destructive text-sm">{formState.errors.status[0]}</div>
+            )}
         </div>
 
         <div className="space-y-2">
@@ -80,8 +111,18 @@ export function GrantForm( {grant }: { grant?: grant} ){
         </div>
 
         <div className="space-y-2">
-            <Label htmlFor="sponsor_category">Sponsor Category</Label>
-            <Input type="text" id="sponsor_category" name="sponsor_category" defaultValue={grant?.sponsor_category || ""} />
+            <Label htmlFor="sponsor_category">Sponsor  Category</Label>
+            <Select name="sponsor_category" defaultValue={grant?.sponsor_category || ""} required>
+                <SelectTrigger>
+                    <SelectValue placeholder="Select Sponsor Category" />
+                </SelectTrigger>
+                <SelectContent>
+                    <SelectItem value="Government">Government</SelectItem>
+                    <SelectItem value="University">University</SelectItem>
+                    <SelectItem value="Industry">Industry</SelectItem>
+                    <SelectItem value="International">International</SelectItem>
+                </SelectContent>
+            </Select>
             {formState.errors?.sponsor_category && (
                 <div className="text-destructive text-sm">{formState.errors.sponsor_category[0]}</div>
             )}
