@@ -35,7 +35,6 @@ export function EventForm({ event }: { event?: event }) {
     useEffect(() => {
         if (formState.errors && Object.keys(formState.errors).length > 0) {
             setImagePreview(null)
-            // Also clear the file input
             const fileInput = document.getElementById('image') as HTMLInputElement
             if (fileInput) {
                 fileInput.value = ''
