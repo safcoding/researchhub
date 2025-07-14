@@ -31,10 +31,10 @@ model event {
   time                  String?
   location              String?
   category              String
-  organizer             String
-  registration_required Boolean?  @default(false)
+  organizer             String?
+  registration_required Boolean   @default(false)
   registration_deadline DateTime? @db.Date
-  contact_email         String
+  contact_email         String?
   image                 String?   @default("")
   priority              String    @default("")
   status                String    @default("")

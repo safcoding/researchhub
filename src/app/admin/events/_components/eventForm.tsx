@@ -11,10 +11,11 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import { addEvent, editEvent } from "../../_actions/events"
-import { useFormStatus, } from "react-dom"
-import { useFormState } from "react-dom"
+import { useFormStatus, useFormState } from "react-dom"
+import { useState, useEffect } from "react"
 import { event } from "@prisma/client"
 import { Textarea } from "@/components/ui/textarea"
+import imageCompression from 'browser-image-compression'
 
 interface FormState {
   message: string;
@@ -23,9 +24,65 @@ interface FormState {
   };
 }
 
-export function EventForm( {event}: { event?: event} ){
+export function EventForm({ event }: { event?: event }) {
+    const [formState, action] = useFormState(
+        event == null ? addEvent : editEvent.bind(null, event.event_id), 
+        { message: "", errors: {} } as FormState
+    )
+    const [imagePreview, setImagePreview] = useState<string | null>(null)
+    const [isCompressing, setIsCompressing] = useState(false)
 
-    const [formState, action] = useFormState( event ==  null ? addEvent : editEvent.bind(null, event.event_id), { message: "", errors: {} } as FormState)
+    useEffect(() => {
+        if (formState.errors && Object.keys(formState.errors).length > 0) {
+            setImagePreview(null)
+            // Also clear the file input
+            const fileInput = document.getElementById('image') as HTMLInputElement
+            if (fileInput) {
+                fileInput.value = ''
+            }
+        }
+    }, [formState.errors])
+
+    const handleImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0]
+        if (!file) return
+
+        try {
+            setIsCompressing(true)
+            
+            // Compression options
+            const options = {
+                maxSizeMB: 1, // Max 1MB
+                maxWidthOrHeight: 1920, // Max dimensions
+                useWebWorker: true,
+                fileType: 'image/jpeg' as const
+            }
+
+            // Compress the image
+            const compressedFile = await imageCompression(file, options)
+            
+            // Create new file input with compressed image
+            const dataTransfer = new DataTransfer()
+            dataTransfer.items.add(new File([compressedFile], file.name, {
+                type: compressedFile.type,
+                lastModified: Date.now()
+            }))
+            
+            if (e.target) {
+                e.target.files = dataTransfer.files
+            }
+
+            // Show preview
+            const reader = new FileReader()
+            reader.onload = (e) => setImagePreview(e.target?.result as string)
+            reader.readAsDataURL(compressedFile)
+            
+        } catch (error) {
+            console.error('Error compressing image:', error)
+        } finally {
+            setIsCompressing(false)
+        }
+    }
 
     return (
         <form action={action} className="space-y-8">
@@ -158,19 +215,60 @@ export function EventForm( {event}: { event?: event} ){
 
             <div className="space-y-2">
                 <Label htmlFor="contact_email">Contact Email</Label>
-                <Input type="email" id="contact_email" name="contact_email" required defaultValue={event?.contact_email || ""} />
+                <Input type="email" id="contact_email" name="contact_email" defaultValue={event?.contact_email || ""} />
                 {formState.errors?.contact_email && (
                     <div className="text-destructive text-sm">{formState.errors.contact_email[0]}</div>
                 )}
             </div>
 
-            <div className="space-y-2">
-                <Label htmlFor="image">Image URL</Label>
-                <Input type="url" id="image" name="image" defaultValue={event?.image || ""} />
+    <div className="space-y-2">
+                <Label htmlFor="image">Event Image</Label>
+                <Input 
+                    type="file" 
+                    id="image" 
+                    name="image" 
+                    accept="image/*"
+                    required={!event}
+                    onChange={handleImageChange}
+                />
+                
+                {isCompressing && (
+                    <p className="text-sm text-blue-600">Compressing image...</p>
+                )}
+                
+                <p className="text-xs text-gray-500">
+                    Images will be automatically compressed to under 1MB
+                </p>
+                
+                {/* Show preview of new image */}
+                {imagePreview && (
+                    <div className="mt-2">
+                        <p className="text-sm text-gray-600">Preview:</p>
+                        <img 
+                            src={imagePreview} 
+                            alt="Image preview" 
+                            className="w-32 h-32 object-cover rounded border"
+                        />
+                    </div>
+                )}
+                
+                {/* Show current image for editing */}
+                {event?.image && !imagePreview && (
+                    <div className="mt-2">
+                        <p className="text-sm text-gray-600">Current image:</p>
+                        <img 
+                            src={event.image} 
+                            alt="Current event image" 
+                            className="w-32 h-32 object-cover rounded border"
+                        />
+                    </div>
+                )}
+                
                 {formState.errors?.image && (
                     <div className="text-destructive text-sm">{formState.errors.image[0]}</div>
                 )}
             </div>
+
             <SubmitButton/>
         </form>
     )
