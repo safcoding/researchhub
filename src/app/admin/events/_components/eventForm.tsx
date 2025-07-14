@@ -50,18 +50,16 @@ export function EventForm({ event }: { event?: event }) {
         try {
             setIsCompressing(true)
             
-            // Compression options
             const options = {
                 maxSizeMB: 1, // Max 1MB
                 maxWidthOrHeight: 1920, // Max dimensions
                 useWebWorker: true,
-                fileType: 'image/jpeg' as const
+                fileType: 'image/webp' as const,
+                quality: 0.85
             }
 
-            // Compress the image
             const compressedFile = await imageCompression(file, options)
-            
-            // Create new file input with compressed image
+        
             const dataTransfer = new DataTransfer()
             dataTransfer.items.add(new File([compressedFile], file.name, {
                 type: compressedFile.type,
@@ -71,8 +69,6 @@ export function EventForm({ event }: { event?: event }) {
             if (e.target) {
                 e.target.files = dataTransfer.files
             }
-
-            // Show preview
             const reader = new FileReader()
             reader.onload = (e) => setImagePreview(e.target?.result as string)
             reader.readAsDataURL(compressedFile)
