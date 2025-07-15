@@ -70,10 +70,11 @@ export async function getGrantChartData(year: number = new Date().getFullYear())
   }))
 
   const typeMap = new Map<string, number>()
-  
+  /*
   grants.forEach(grant => {
+
     if (grant.type) {
-      let typeKey = grant.type
+      let typeKey = grant.type.toUpperCase()
       const mainTypes = ['UNIVERSITY GRANT', 'GOVERNMENT GRANT', 'INDUSTRIAL GRANT', 'RESEARCH CONTRACT']
       if (!mainTypes.includes(grant.type)) {
         typeKey = 'Others'
@@ -81,10 +82,11 @@ export async function getGrantChartData(year: number = new Date().getFullYear())
       typeMap.set(typeKey, (typeMap.get(typeKey) || 0) + 1)
     }
   })
-
+*/
   const typeData = Array.from(typeMap.entries())
     .map(([type, count]) => ({ type, count }))
     .sort((a, b) => b.count - a.count) 
+    console.log("Type Data:", typeData) 
 
   const totalAmount = grants.reduce((sum, grant) => sum + (grant.approved_amount || 0), 0)
   const totalGrants = grants.length

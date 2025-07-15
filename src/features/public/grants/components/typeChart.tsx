@@ -11,7 +11,7 @@ import {
 import {
   ChartContainer,
   ChartTooltip,
-  ChartTooltipContent,
+  ChartTooltipContent
 } from "@/components/ui/chart"
 import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from "recharts"
 import { ChartConfig } from "@/components/ui/chart"
@@ -30,14 +30,6 @@ const typeChartConfig = {
   },
 } satisfies ChartConfig
 
-const COLORS = [
-  "hsl(var(--chart-1))",
-  "hsl(var(--chart-2))", 
-  "hsl(var(--chart-3))",
-  "hsl(var(--chart-4))",
-  "hsl(var(--chart-5))",
-]
-
 export function GrantTypeChart({
     typeData,
 }: GrantChartProps) {
@@ -48,16 +40,16 @@ export function GrantTypeChart({
             <CardDescription>Number of grants by grant type</CardDescription>
           </CardHeader>
           <CardContent>
-            <ChartContainer config={typeChartConfig}>
+            <ChartContainer config={typeChartConfig} className="h-[300px]">
               <BarChart
                 accessibilityLayer
                 data={typeData}
                 layout="horizontal"
                 margin={{
-                  left: 100,
-                  right: 12,
-                  top: 12,
-                  bottom: 12,
+                  left: 80,
+                  right: 20,
+                  top: 20,
+                  bottom: 20,
                 }}
               >
                 <CartesianGrid horizontal={false} />
@@ -67,21 +59,19 @@ export function GrantTypeChart({
                   tickLine={false}
                   tickMargin={10}
                   axisLine={false}
-                  width={80}
-                  fontSize={12}
+                  width={70}
                 />
-                <XAxis dataKey="count" type="number" hide />
+                <XAxis 
+                  dataKey="count" 
+                  type="number"
+                />
                 <ChartTooltip
                   cursor={false}
                   content={<ChartTooltipContent hideLabel />}
-                  formatter={(value, name) => [
-                    `${value} grants`,
-                    "Count"
-                  ]}
                 />
                 <Bar
                   dataKey="count"
-                  fill="hsl(var(--chart-2))" // Change from var(--color-count) to hsl(var(--chart-2))
+                  fill="hsl(var(--chart-2))"
                   radius={4}
                 />
               </BarChart>

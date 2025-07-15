@@ -61,6 +61,7 @@ const COLORS = [
 export function SponsorTypeChart({
     sponsorData,
 }: GrantChartProps) {
+      return(
         <Card>
           <CardHeader>
             <CardTitle>Grants by Sponsor Category</CardTitle>
@@ -112,4 +113,5 @@ export function SponsorTypeChart({
             </ChartContainer>
           </CardContent>
         </Card>
+      )
 }
