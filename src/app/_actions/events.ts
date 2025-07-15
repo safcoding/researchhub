@@ -69,32 +69,3 @@ export async function getUpcomingConferences(limit: number = 3) {
         return []
     }
 }
-
-export async function getAllEvents() {
-    try {
-        const events = await db.event.findMany({
-            where: {
-                status: "Upcoming"
-            },
-            select: {
-                event_id: true,
-                title: true,
-                description: true,
-                date: true,
-                time: true,
-                location: true,
-                image: true,
-                category: true,
-                organizer: true
-            },
-            orderBy: {
-                date: 'asc' 
-            }
-        })
-        
-        return events
-    } catch (error) {
-        console.error('Error fetching all events:', error)
-        return []
-    }
-}

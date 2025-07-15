@@ -69,7 +69,6 @@ export default async function GrantAdminPage({
   
   return (
     <div className="space-y-4">
-      {/* Single header with search and button */}
       <div className="flex items-center justify-between gap-4">
         <Suspense fallback={<div>Loading search...</div>}>
           <Search placeholder="Search by project title..." />

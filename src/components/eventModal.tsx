@@ -8,18 +8,19 @@ import {
 } from "@/components/ui/dialog"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { Calendar, MapPin, Clock, User, X } from "lucide-react"
+import { Calendar, MapPin, Clock, User} from "lucide-react"
+import { useState } from "react"
 
 interface Event {
   event_id: string
   title: string
   description: string
-  date: string
-  time?: string
-  location?: string
-  image?: string
+  date: Date
+  time?: string |  null
+  location?: string | null
+  image?: string | null
   category: string
-  organizer: string
+  organizer: string |  null
 }
 
 interface EventModalProps {
@@ -29,6 +30,8 @@ interface EventModalProps {
 }
 
 export function EventModal({ event, isOpen, onClose }: EventModalProps) {
+  const [showImageModal, setShowImageModal] = useState(false);
+
   if (!event) return null
 
   return (
@@ -39,9 +42,7 @@ export function EventModal({ event, isOpen, onClose }: EventModalProps) {
             <Badge variant="secondary" className="w-fit">
               {event.category}
             </Badge>
-            <Button variant="ghost" size="sm" onClick={onClose}>
-              <X className="h-4 w-4" />
-            </Button>
+
           </div>
           <DialogTitle className="text-left text-2xl font-bold text-[#046951] mt-2">
             {event.title}
@@ -49,15 +50,30 @@ export function EventModal({ event, isOpen, onClose }: EventModalProps) {
         </DialogHeader>
         
         <div className="space-y-6">
-          {event.image && (
-            <div className="aspect-video overflow-hidden rounded-lg">
-              <img 
-                src={event.image} 
-                alt={event.title}
-                className="w-full h-full object-cover"
-              />
-            </div>
-          )}
+              {event.image && (
+                <>
+                  <div
+                    className="aspect-video overflow-hidden rounded-lg cursor-pointer"
+                    onClick={() => setShowImageModal(true)}
+                    title="Click to view full image"
+                  >
+                    <img 
+                      src={event.image} 
+                      alt={event.title}
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+                  <Dialog open={showImageModal} onOpenChange={setShowImageModal}>
+                    <DialogContent className="p-0 max-w-3xl bg-transparent shadow-none">
+                      <img
+                        src={event.image}
+                        alt={event.title}
+                        className="w-full h-auto max-h-[80vh] object-contain rounded-lg"
+                      />
+                    </DialogContent>
+                  </Dialog>
+                </>
+              )}
           
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
             <div className="flex items-center gap-2 text-gray-600">

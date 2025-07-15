@@ -95,7 +95,6 @@ export function DataTable<TData, TValue>({
           Showing {((page - 1) * pageSize) + 1} to {Math.min(page * pageSize, totalCount)} of {totalCount}
         </div>
         
-        {/* Server-side pagination controls */}
         <PaginationWithLinks 
           page={page} 
           pageSize={pageSize} 
