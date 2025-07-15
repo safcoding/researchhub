@@ -1,0 +1,112 @@
+"use client"
+
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog"
+import { Badge } from "@/components/ui/badge"
+import { Button } from "@/components/ui/button"
+import { Calendar, MapPin, Clock, User, X } from "lucide-react"
+
+interface Event {
+  event_id: string
+  title: string
+  description: string
+  date: string
+  time?: string
+  location?: string
+  image?: string
+  category: string
+  organizer: string
+}
+
+interface EventModalProps {
+  event: Event | null
+  isOpen: boolean
+  onClose: () => void
+}
+
+export function EventModal({ event, isOpen, onClose }: EventModalProps) {
+  if (!event) return null
+
+  return (
+    <Dialog open={isOpen} onOpenChange={onClose}>
+      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+        <DialogHeader>
+          <div className="flex items-center justify-between">
+            <Badge variant="secondary" className="w-fit">
+              {event.category}
+            </Badge>
+            <Button variant="ghost" size="sm" onClick={onClose}>
+              <X className="h-4 w-4" />
+            </Button>
+          </div>
+          <DialogTitle className="text-left text-2xl font-bold text-[#046951] mt-2">
+            {event.title}
+          </DialogTitle>
+        </DialogHeader>
+        
+        <div className="space-y-6">
+          {event.image && (
+            <div className="aspect-video overflow-hidden rounded-lg">
+              <img 
+                src={event.image} 
+                alt={event.title}
+                className="w-full h-full object-cover"
+              />
+            </div>
+          )}
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+            <div className="flex items-center gap-2 text-gray-600">
+              <Calendar className="h-4 w-4" />
+              <span>{new Date(event.date).toLocaleDateString('en-US', { 
+                weekday: 'long', 
+                year: 'numeric', 
+                month: 'long', 
+                day: 'numeric' 
+              })}</span>
+            </div>
+            
+            {event.time && (
+              <div className="flex items-center gap-2 text-gray-600">
+                <Clock className="h-4 w-4" />
+                <span>{event.time}</span>
+              </div>
+            )}
+            
+            {event.location && (
+              <div className="flex items-center gap-2 text-gray-600">
+                <MapPin className="h-4 w-4" />
+                <span>{event.location}</span>
+              </div>
+            )}
+            
+            <div className="flex items-center gap-2 text-gray-600">
+              <User className="h-4 w-4" />
+              <span>Organized by: {event.organizer}</span>
+            </div>
+          </div>
+          
+          <div>
+            <h3 className="font-semibold text-lg mb-2">About this Event</h3>
+            <p className="text-gray-700 leading-relaxed">
+              {event.description}
+            </p>
+          </div>
+          
+          <div className="flex gap-3 pt-4">
+            <Button className="bg-[#046951] hover:bg-[#046951]/90 text-white flex-1">
+              Register for Event
+            </Button>
+            <Button variant="outline" className="border-[#046951] text-[#046951] hover:bg-[#046951] hover:text-white">
+              Share Event
+            </Button>
+          </div>
+        </div>
+      </DialogContent>
+    </Dialog>
+  )
+}

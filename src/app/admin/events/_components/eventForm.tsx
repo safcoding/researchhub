@@ -140,9 +140,9 @@ export function EventForm({ event }: { event?: event }) {
                         <SelectValue placeholder="Select event status" />
                     </SelectTrigger>
                     <SelectContent>
-                        <SelectItem value="Draft">Draft</SelectItem>
-                        <SelectItem value="Published">Published</SelectItem>
-                        <SelectItem value="Cancelled">Cancelled</SelectItem>
+                        <SelectItem value="Upcoming">Draft</SelectItem>
+                        <SelectItem value="Registration Open">Registration Open</SelectItem>
+                        <SelectItem value="Registration Closed">Registration Closed</SelectItem>
                         <SelectItem value="Completed">Completed</SelectItem>
                     </SelectContent>
                 </Select>
