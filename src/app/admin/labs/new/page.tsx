@@ -1,4 +1,4 @@
-import { LabForm } from "../_components/labForm";
+import { LabForm } from "../../../../features/admin/labs/components/labForm";
 import { BackButton } from "@/components/backButton";
 
 export default async function AddLabPage(){

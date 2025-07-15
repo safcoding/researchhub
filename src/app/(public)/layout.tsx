@@ -1,6 +1,6 @@
-import Footer from "@/components/footer";
-import Header from "@/components/header";
-import { AdminNav } from "@/components/adminNav";
+import Footer from "@/app/(public)/_shared/footer";
+import Header from "@/app/(public)/_shared/header";
+import { AdminNav } from "@/app/admin/_shared/adminNav";
 import { SidebarInset, SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { Separator } from "@/components/ui/separator";
 import { createClient } from "@/lib/utils/supabase/server";

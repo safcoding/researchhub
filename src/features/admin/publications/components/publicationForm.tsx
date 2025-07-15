@@ -10,7 +10,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import { addPublication, editPublication } from "../../_actions/publications"
+import { addPublication, editPublication } from "../server/publications"
 import { useFormStatus, } from "react-dom"
 import { useFormState } from "react-dom"
 import { publication } from "@prisma/client"

@@ -1,8 +1,8 @@
 "use client"
 
 import { useState } from "react"
-import { EventCard } from "@/components/eventCard"
-import { EventModal } from "@/components/eventModal"
+import { EventCard } from "@/app/(public)/_shared/eventCard"
+import { EventModal } from "@/app/(public)/_shared/eventModal"
 import { PaginationWithLinks } from "@/components/ui/pagination-with-links"
 
 interface Event {

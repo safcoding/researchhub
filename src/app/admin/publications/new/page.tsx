@@ -1,4 +1,4 @@
-import { PublicationForm } from "../_components/publicationForm";
+import { PublicationForm } from "../../../../features/admin/publications/components/publicationForm";
 import { BackButton } from "@/components/backButton";
 
 export default function AddPublicationPage(){

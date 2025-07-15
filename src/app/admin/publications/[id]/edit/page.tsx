@@ -1,4 +1,4 @@
-import { PublicationForm } from "../../_components/publicationForm"
+import { PublicationForm } from "../../../../../features/admin/publications/components/publicationForm"
 import db from "@/db/db"
 import { notFound } from "next/navigation"
 import { BackButton } from "@/components/backButton"

@@ -14,7 +14,7 @@ import {
 } from "@/components/ui/dropdown-menu"
 import Link from "next/link"
 
-import { deletePublication } from "../../_actions/publications"
+import { deletePublication } from "../server/publications"
 import { useTransition } from "react"
 import { useRouter } from "next/navigation"
 

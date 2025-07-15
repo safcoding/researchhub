@@ -1,4 +1,4 @@
-import { EventForm } from "../_components/eventForm";
+import { EventForm } from "../../../../features/admin/events/components/eventForm";
 import { BackButton } from "@/components/backButton";
 
 export default function AddEventPage(){

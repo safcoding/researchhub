@@ -1,7 +1,7 @@
 import db from "@/db/db";
 import Search from "@/components/ui/search";
 import { Suspense } from "react";
-import { EventGrid } from "./_components/eventGrid";
+import { EventGrid } from "../../../features/public/events/components/eventGrid";
 
 interface Event {
   event_id: string

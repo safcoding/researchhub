@@ -11,7 +11,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import { addLab, editLab } from "../../_actions/labs"
+import { addLab, editLab } from "../server/labs"
 import { useFormStatus, useFormState } from "react-dom"
 import { useState } from "react"
 import { lab, equipment } from "@prisma/client"

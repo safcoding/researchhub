@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import { columns } from "./_components/columns"
-import { DataTable } from "../_components/data-table";
+import { columns } from "../../../features/admin/labs/components/columns"
+import { DataTable } from "../_shared/data-table";
 import db from "@/db/db";
 import Search from "@/components/ui/search";
 import { Suspense } from "react";

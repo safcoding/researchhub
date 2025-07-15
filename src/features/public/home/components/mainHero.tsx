@@ -1,4 +1,4 @@
-import { LearnMoreButton } from "@/components/learnButton";
+import { LearnMoreButton } from "@/features/public/home/components/learnButton";
 
 const HeroSection = () => {
 

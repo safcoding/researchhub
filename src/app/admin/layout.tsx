@@ -1,4 +1,4 @@
-import { AdminNav } from "@/components/adminNav";
+import { AdminNav } from "@/app/admin/_shared/adminNav";
 import { SidebarInset, SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { Separator } from "@/components/ui/separator"
 import { LogoutButton } from "@/components/logoutButton";

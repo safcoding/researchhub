@@ -1,4 +1,4 @@
-import { LabForm } from "../../_components/labForm"
+import { LabForm } from "../../../../../features/admin/labs/components/labForm"
 import db from "@/db/db"
 import { notFound } from "next/navigation"
 import { BackButton } from "@/components/backButton"

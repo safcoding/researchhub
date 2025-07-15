@@ -1,4 +1,4 @@
-import { GrantForm } from "../../_components/grantForm"
+import { GrantForm } from "../../../../../features/admin/grants/components/grantForm"
 import db from "@/db/db"
 import { notFound } from "next/navigation"
 import { BackButton } from "@/components/backButton"

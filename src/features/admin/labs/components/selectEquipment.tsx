@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Button } from "@/components/ui/button"
 import { X } from "lucide-react"
-import { getEquipmentById } from "../../_actions/equipment"
+import { getEquipmentById } from "../server/equipment"
 
 interface SelectedEquipmentItemProps {
     item: { equipment_id: string; quantity: number }

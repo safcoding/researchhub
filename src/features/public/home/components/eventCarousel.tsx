@@ -8,8 +8,8 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "@/components/ui/carousel"
-import { EventCard } from "@/components/eventCard"
-import { EventModal } from "@/components/eventModal"
+import { EventCard } from "@/app/(public)/_shared/eventCard"
+import { EventModal } from "@/app/(public)/_shared/eventModal"
 
 interface Event {
   event_id: string

@@ -10,7 +10,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import { addGrant, editGrant } from "../../_actions/grants"
+import { addGrant, editGrant } from "../server/grants"
 import { useFormStatus, } from "react-dom"
 import { useFormState } from "react-dom"
 import { grant } from "@prisma/client"

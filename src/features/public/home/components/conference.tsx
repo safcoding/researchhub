@@ -1,4 +1,4 @@
-import { getUpcomingConferences } from "../_actions/events"
+import { getUpcomingConferences } from "../server/fetchConferences"
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { MapPin, Clock, ExternalLink } from "lucide-react"

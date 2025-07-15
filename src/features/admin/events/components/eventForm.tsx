@@ -10,7 +10,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import { addEvent, editEvent } from "../../_actions/events"
+import { addEvent, editEvent } from "../server/events"
 import { useFormStatus, useFormState } from "react-dom"
 import { useState, useEffect } from "react"
 import { event } from "@prisma/client"

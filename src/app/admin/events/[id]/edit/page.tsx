@@ -1,4 +1,4 @@
-import { EventForm } from "../../_components/eventForm"
+import { EventForm } from "../../../../../features/admin/events/components/eventForm"
 import db from "@/db/db"
 import { notFound } from "next/navigation"
 import { BackButton } from "@/components/backButton"

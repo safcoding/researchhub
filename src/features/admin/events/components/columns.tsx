@@ -14,7 +14,7 @@ import {
 } from "@/components/ui/dropdown-menu"
 import Link from "next/link"
 
-import { deleteEvent } from "../../_actions/events"
+import { deleteEvent } from "../server/events"
 import { useTransition } from "react"
 import { useRouter } from "next/navigation"
 

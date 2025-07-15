@@ -1,4 +1,4 @@
-import { GrantForm } from "../_components/grantForm";
+import { GrantForm } from "../../../../features/admin/grants/components/grantForm";
 import { BackButton } from "@/components/backButton";
 export default function AddGrantPage(){
     return(

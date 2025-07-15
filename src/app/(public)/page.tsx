@@ -1,7 +1,7 @@
-import { HeroSection } from "./_components/mainHero";
-import { EventCarousel } from "./_components/eventCarousel";
-import { UpcomingConferences } from "./_components/conference";
-import { getLatestEvents } from "./_actions/events";
+import { HeroSection } from "@/features/public/home/components/mainHero";
+import { EventCarousel } from "@/features/public/home/components/eventCarousel";
+import { UpcomingConferences } from "@/features/public/home/components/conference";
+import { getLatestEvents } from "../../features/public/events/server/events";
 
 export default async function Home() {
   const events = await getLatestEvents(5);
