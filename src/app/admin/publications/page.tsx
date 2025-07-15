@@ -6,21 +6,49 @@ import db from "@/db/db";
 import Search from "@/components/ui/search";
 import { Suspense } from "react";
 import { Plus } from "lucide-react"
+import PublicationFilterCard from "@/features/admin/publications/components/PublicationFilterCard";
 
-async function getData(page: number = 1, pageSize: number = 10, query?: string) {
+async function getData(
+  page: number = 1, 
+  pageSize: number = 10, 
+  query?: string,
+  type?: string,
+  status?: string,
+  category?: string
+) {
   const skip = (page - 1) * pageSize
+  const where: any = {}
 
-  const where = query ? {
-    OR: [
+  if (query) {
+    where.OR = [
       {
         title: {
           contains: query,
           mode: 'insensitive' as const,
         },
       },
-    ],
-  } : {}
-  
+    ]
+  }
+
+    if (status && status !== 'any') {
+    where.status = {
+      equals: status,
+      mode: 'insensitive' as const,
+    }
+  }
+     if (category && category !== 'any') {
+    where.category = {
+      equals: category,
+      mode: 'insensitive' as const,
+    }
+  }
+     if (type && type !== 'any') {
+    where.type = {
+      equals: type,
+      mode: 'insensitive' as const,
+    }
+  }
+
   const totalCount = await db.publication.count({ where })
 
     const publication = await  db.publication.findMany({
@@ -40,35 +68,43 @@ async function getData(page: number = 1, pageSize: number = 10, query?: string) 
       skip: skip,
       take: pageSize,
       })
-      console.log('Publications data:', publication)
-      console.log('Search query:', query)
 
       return {
-        data: publication,
-        totalCount
-      }
+        data: publication, totalCount}
   }
 
-
-/*TODO
-  -ADD FILTER BY TYPE,SPONSOR CATEGORY, STATUS, DATE
-  -ADD BACK BUTTON IN EDIT PAGE USING BREADCRUMBS?
-*/
-
-export default async function PublicationAdminPage({
+export default async function PubblicationAdminPage({
   searchParams,
 }: {
-  searchParams: Promise<{ page?: string; pageSize?: string; query?: string }>
+  searchParams: Promise<{ 
+    page?: string; 
+    pageSize?: string; 
+    query?: string;
+    type?: string;
+    status?: string;
+    category?: string;
+  }>
 }) {
   const params = await searchParams
   const page = Number(params.page) || 1
   const pageSize = Number(params.pageSize) || 10
   const query = params.query || ''
-  const { data: publication, totalCount } = await getData(page, pageSize, query)
+  const type = params.type || ''
+  const status = params.status || ''
+  const category = params.category || ''
+
+  const { data: publication, totalCount } = await getData(
+    page, 
+    pageSize, 
+    query, 
+    type, 
+    status, 
+    category
+  )
   
   return (
     <div className="space-y-4">
-      {/* Single header with search and button */}
+      <PublicationFilterCard/>
       <div className="flex items-center justify-between gap-4">
         <Suspense fallback={<div>Loading search...</div>}>
           <Search placeholder="Search by project title..." />

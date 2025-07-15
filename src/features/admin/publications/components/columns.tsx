@@ -71,6 +71,14 @@ export const columns: ColumnDef<Publication>[] = [
         ),
     },
     {
+        accessorKey: "category",
+        header: "Category",
+        size: 120,
+        cell: ({ row }) => (
+            <div className="w-[120px]">{row.getValue("category") || "N/A"}</div>
+        ),
+    },
+    {
         accessorKey: "status",
         header: "Status",
         size: 120,
