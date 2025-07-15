@@ -30,6 +30,8 @@ const publicationFilterSchema = z.object({
     type:              z.string().optional(),           
     category:               z.string().optional(),
     status:             z.string().optional(),
+    date_from:          z.string().optional(),
+    date_to:            z.string().optional(),
 })
 
 
@@ -44,6 +46,8 @@ export function PublicationFilterForm () {
             query: searchParams.get("query") ?? "",              
             type: searchParams.get("type") ?? ANY_VALUE,
             status: searchParams.get("status") ?? ANY_VALUE,
+            date_from: searchParams.get("date_from")   ?? ANY_VALUE,
+            date_to: searchParams.get("date_to")   ?? ANY_VALUE,
         }
     })
 
@@ -62,6 +66,12 @@ export function PublicationFilterForm () {
       if (data.category && data.category !== ANY_VALUE) {
         newParams.set ("category", data.category)
       }
+      if (data.date_from && data.date_from.trim() !== "") {
+          newParams.set("date_from", data.date_from)
+      }
+      if (data.date_to && data.date_to.trim() !== "") {
+          newParams.set("date_to", data.date_to)
+      }   
     
     newParams.set("page", "1")
     router.push(`${pathname}?${newParams.toString()}`)
@@ -157,6 +167,38 @@ export function PublicationFilterForm () {
             </FormItem>
           )}
         />
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <FormField
+                name="date_from"
+                control={form.control}
+                render={({ field }) => (
+                    <FormItem>
+                        <FormLabel>Start Date From</FormLabel>
+                        <FormControl>
+                            <Input 
+                                type="date"
+                                {...field} 
+                            />
+                        </FormControl>
+                    </FormItem>
+                )}
+            />
+            <FormField
+                name="date_to"
+                control={form.control}
+                render={({ field }) => (
+                    <FormItem>
+                        <FormLabel>Start Date To</FormLabel>
+                        <FormControl>
+                            <Input 
+                                type="date"
+                                {...field} 
+                            />
+                        </FormControl>
+                    </FormItem>
+                )}
+            />
+          </div>
         <Button
           disabled={form.formState.isSubmitting}
           type="submit"

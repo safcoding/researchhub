@@ -14,7 +14,9 @@ async function getData(
   query?: string,
   type?: string,
   status?: string,
-  category?: string
+  category?: string,
+  date_from?: string,
+  date_to?: string,
 ) {
   const skip = (page - 1) * pageSize
   const where: any = {}
@@ -46,6 +48,17 @@ async function getData(
     where.type = {
       equals: type,
       mode: 'insensitive' as const,
+    }
+  }
+  if (date_from || date_to) {
+    where.date = {}
+    
+    if (date_from) {
+      where.date.gte = new Date(date_from)
+    }
+    
+    if (date_to) {
+      where.date.lte = new Date(date_to)
     }
   }
 
@@ -83,6 +96,8 @@ export default async function PubblicationAdminPage({
     type?: string;
     status?: string;
     category?: string;
+    date_from?: string;
+    date_to?: string;
   }>
 }) {
   const params = await searchParams
@@ -92,6 +107,8 @@ export default async function PubblicationAdminPage({
   const type = params.type || ''
   const status = params.status || ''
   const category = params.category || ''
+  const date_from = params.date_from || ''
+  const date_to = params.date_to || ''
 
   const { data: publication, totalCount } = await getData(
     page, 
@@ -99,7 +116,9 @@ export default async function PubblicationAdminPage({
     query, 
     type, 
     status, 
-    category
+    category,
+    date_from,
+    date_to,
   )
   
   return (
@@ -123,6 +142,11 @@ export default async function PubblicationAdminPage({
             ? `Found ${totalCount} results for "${query}"` 
             : `No results found for "${query}"`
           }
+          {(date_from || date_to) && (
+            <span className="ml-2">
+              • Date range: {date_from || 'any'} to {date_to || 'any'}
+            </span>
+          )}
         </div>
       )}
 

@@ -12,7 +12,9 @@ async function getData(
   query?: string,
   type?: string,
   status?: string,
-  sponsor_category?: string
+  sponsor_category?: string,
+  date_from?: string,
+  date_to?: string,
 ) {
   const skip = (page - 1) * pageSize
   const where: any = {}
@@ -59,6 +61,17 @@ async function getData(
       mode: 'insensitive' as const,
     }
   }
+  if (date_from || date_to) {
+    where.pro_date_start = {}
+    
+    if (date_from) {
+      where.pro_date_start.gte = new Date(date_from)
+    }
+    
+    if (date_to) {
+      where.pro_date_start.lte = new Date(date_to)
+    }
+  }
 
   const totalCount = await db.grant.count({ where })
   const grants = await db.grant.findMany({
@@ -93,6 +106,8 @@ export default async function GrantAdminPage({
     type?: string;
     status?: string;
     sponsor_category?: string;
+    date_from?: string;
+    date_to?: string;
   }>
 }) {
   const params = await searchParams
@@ -102,6 +117,8 @@ export default async function GrantAdminPage({
   const type = params.type || ''
   const status = params.status || ''
   const sponsor_category = params.sponsor_category || ''
+  const date_from = params.date_from || ''
+  const date_to = params.date_to || ''
 
   const { data: grants, totalCount } = await getData(
     page, 
@@ -109,13 +126,14 @@ export default async function GrantAdminPage({
     query, 
     type, 
     status, 
-    sponsor_category
+    sponsor_category,
+    date_from,
+    date_to,
   )
   
   return (
     <div className="space-y-4">
       <GrantFilterCard />
-      
       <div className="flex items-center justify-between gap-4">
         <Button asChild>
           <Link href="/admin/grants/new">
@@ -131,6 +149,11 @@ export default async function GrantAdminPage({
             ? `Found ${totalCount} results` 
             : `No results found`
           }
+          {(date_from || date_to) && (
+            <span className="ml-2">
+              • Date range: {date_from || 'any'} to {date_to || 'any'}
+            </span>
+          )}
         </div>
       )}
 
