@@ -3,76 +3,120 @@ import Link from "next/link";
 import { columns } from "../../../features/admin/grants/components/columns"
 import { DataTable } from "../_shared/data-table";
 import db from "@/db/db";
-import Search from "@/components/ui/search";
-import { Suspense } from "react";
 import { Plus } from "lucide-react";
+import GrantFilterCard from "../../../features/admin/grants/components/GrantFilterCard";
 
-async function getData(page: number = 1, pageSize: number = 10, query?: string) {
+async function getData(
+  page: number = 1, 
+  pageSize: number = 10, 
+  query?: string,
+  type?: string,
+  status?: string,
+  sponsor_category?: string
+) {
   const skip = (page - 1) * pageSize
+  const where: any = {}
 
-  const where = query ? {
-    OR: [
+  if (query) {
+    where.OR = [
       {
         project_title: {
           contains: query,
           mode: 'insensitive' as const,
         },
       },
-    ],
-  } : {}
-  
-  const totalCount = await db.grant.count({ where })
-
-    const grants = await  db.grant.findMany({
-      where,
-      select: {
-        grant_id: true,
-        project_id: true, 
-        project_title: true, 
-        approved_amount: true, 
-        type: true, 
-        sponsor_category: true, 
-        sponsor_name: true, 
-        subsponsor_name: true, 
-        status: true, 
-        pro_date_start: true  
-      },
-      orderBy:{ createdAt: 'desc'},
-      skip: skip,
-      take: pageSize,
-      })
-      console.log('Grants data:', grants)
-      console.log('Search query:', query)
-
-      return {
-        data: grants,
-        totalCount
-      }
+    ]
   }
 
+  if (type && type !== 'any') {
+    if (type === 'Others') {
+      where.type = {
+        notIn: [
+          'UNIVERSITY GRANT',
+          'GOVERNMENT GRANT', 
+          'INDUSTRIAL GRANT',
+          'RESEARCH CONTRACT'
+        ]
+      }
+    } else {
+      where.type = {
+        equals: type,
+        mode: 'insensitive' as const,
+      }
+    }
+  }
 
-/*TODO
-  -ADD FILTER BY TYPE,SPONSOR CATEGORY, STATUS, DATE
-  -ADD BACK BUTTON IN EDIT PAGE USING BREADCRUMBS?
-*/
+  if (status && status !== 'any') {
+    where.status = {
+      equals: status,
+      mode: 'insensitive' as const,
+    }
+  }
+
+  if (sponsor_category && sponsor_category !== 'any') {
+    where.sponsor_category = {
+      equals: sponsor_category,
+      mode: 'insensitive' as const,
+    }
+  }
+
+  const totalCount = await db.grant.count({ where })
+  const grants = await db.grant.findMany({
+    where,
+    select: {
+      grant_id: true,
+      project_id: true, 
+      project_title: true, 
+      approved_amount: true, 
+      type: true, 
+      sponsor_category: true, 
+      sponsor_name: true, 
+      subsponsor_name: true, 
+      status: true, 
+      pro_date_start: true  
+    },
+    orderBy: { createdAt: 'desc' },
+    skip: skip,
+    take: pageSize,
+  })
+
+  return { data: grants, totalCount }
+}
 
 export default async function GrantAdminPage({
   searchParams,
 }: {
-  searchParams: Promise<{ page?: string; pageSize?: string; query?: string }>
+  searchParams: Promise<{ 
+    page?: string; 
+    pageSize?: string; 
+    query?: string;
+    type?: string;
+    status?: string;
+    sponsor_category?: string;
+  }>
 }) {
   const params = await searchParams
   const page = Number(params.page) || 1
   const pageSize = Number(params.pageSize) || 10
   const query = params.query || ''
-  const { data: grants, totalCount } = await getData(page, pageSize, query)
+  const type = params.type || ''
+  const status = params.status || ''
+  const sponsor_category = params.sponsor_category || ''
+
+  const { data: grants, totalCount } = await getData(
+    page, 
+    pageSize, 
+    query, 
+    type, 
+    status, 
+    sponsor_category
+  )
   
   return (
     <div className="space-y-4">
+      <GrantFilterCard />
+      
       <div className="flex items-center justify-between gap-4">
-        <Suspense fallback={<div>Loading search...</div>}>
-          <Search placeholder="Search by project title..." />
-        </Suspense>
         <Button asChild>
           <Link href="/admin/grants/new">
             <Plus className="h-4 w-4 mr-2" />
@@ -81,11 +125,11 @@ export default async function GrantAdminPage({
         </Button>
       </div>
 
-      {query && (
+      {(query || type || status || sponsor_category) && (
         <div className="text-sm text-gray-600">
           {totalCount > 0 
-            ? `Found ${totalCount} results for "${query}"` 
-            : `No results found for "${query}"`
+            ? `Found ${totalCount} results` 
+            : `No results found`
           }
         </div>
       )}

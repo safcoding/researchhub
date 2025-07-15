@@ -14,10 +14,40 @@ import { addGrant, editGrant } from "../server/grants"
 import { useFormStatus, } from "react-dom"
 import { useFormState } from "react-dom"
 import { grant } from "@prisma/client"
+import { useState } from "react"
 
 export function GrantForm( {grant }: { grant?: grant} ){
 
-    const [formState, action] = useFormState( grant ==  null ? addGrant : editGrant.bind(null, grant.grant_id), {})
+    const [selectedType, setSelectedType] = useState(grant?.type && ![
+        "UNIVERSITY GRANT",
+        "GOVERNMENT GRANT",
+        "INDUSTRIAL GRANT",
+        "RESEARCH CONTRACT"
+    ].includes(grant.type) ? "Others" : grant?.type || "");
+    const [otherType, setOtherType] = useState(
+        grant?.type && ![
+            "UNIVERSITY GRANT",
+            "GOVERNMENT GRANT",
+            "INDUSTRIAL GRANT",
+            "RESEARCH CONTRACT"
+        ].includes(grant.type) ? grant.type : ""
+    );
+
+    const [formState, action] = useFormState(
+        async (prevState: any, formData: FormData) => {
+            // If "Others" is selected, use the manual type
+            if (formData.get("type") === "Others") {
+                formData.set("type", formData.get("other_type") as string);
+            }
+            // Remove the other_type field so it's not saved as a column
+            formData.delete("other_type");
+            return grant == null
+                ? await addGrant(prevState, formData)
+                : await editGrant(grant.grant_id, prevState, formData);
+        },
+        {}
+    );
+
 
     return <form action={action} className="space-y-8">
         <div className="space-y-2">
@@ -68,24 +98,45 @@ export function GrantForm( {grant }: { grant?: grant} ){
             <Input type="text" id="research_group" name="research_group" defaultValue={grant?.research_group || ""} />
         </div>
 
-        <div className="space-y-2">
-            <Label htmlFor="type">Grant Type</Label>
-            <Select name="type" defaultValue={grant?.type || ""} required>
-                <SelectTrigger>
-                    <SelectValue placeholder="Select publication type" />
-                </SelectTrigger>
-                <SelectContent>
-                    <SelectItem value="University Grant">University Grant</SelectItem>
-                    <SelectItem value="Government Grant">Government Grant</SelectItem>
-                    <SelectItem value="Industrial Grant">Industrial Grant</SelectItem>
-                    <SelectItem value="Research Contract">Research Contract</SelectItem>
-                    <SelectItem value="Others">Others</SelectItem>
-                </SelectContent>
-            </Select>
-            {formState.errors?.type && (
-                <div className="text-destructive text-sm">{formState.errors.type[0]}</div>
-            )}
-        </div>
+         <div className="space-y-2">
+                <Label htmlFor="type">Grant Type</Label>
+                <Select
+                    name="type"
+                    value={selectedType}
+                    onValueChange={value => {
+                        setSelectedType(value);
+                        if (value !== "Others") setOtherType("");
+                    }}
+                    required
+                >
+                    <SelectTrigger>
+                        <SelectValue placeholder="Select publication type" />
+                    </SelectTrigger>
+                    <SelectContent>
+                        <SelectItem value="UNIVERSITY GRANT">UNIVERSITY GRANT</SelectItem>
+                        <SelectItem value="GOVERNMENT GRANT">GOVERNMENT GRANT</SelectItem>
+                        <SelectItem value="INDUSTRIAL GRANT">INDUSTRIAL GRANT</SelectItem>
+                        <SelectItem value="RESEARCH CONTRACT">RESEARCH CONTRACT</SelectItem>
+                        <SelectItem value="Others">Others</SelectItem>
+                    </SelectContent>
+                </Select>
+                {selectedType === "Others" && (
+                    <div className="mt-2">
+                        <Label htmlFor="other_type">Specify Grant Type</Label>
+                        <Input
+                            type="text"
+                            id="other_type"
+                            name="other_type"
+                            value={otherType}
+                            onChange={e => setOtherType(e.target.value)}
+                            required
+                        />
+                    </div>
+                )}
+                {formState.errors?.type && (
+                    <div className="text-destructive text-sm">{formState.errors.type[0]}</div>
+                )}
+            </div>
 
         <div className="space-y-2">
             <Label htmlFor="status">Grant Status</Label>
@@ -94,10 +145,12 @@ export function GrantForm( {grant }: { grant?: grant} ){
                     <SelectValue placeholder="Select Grant Status" />
                 </SelectTrigger>
                 <SelectContent>
-                    <SelectItem value="Active">Active</SelectItem>
-                    <SelectItem value="Completed">Completed</SelectItem>
-                    <SelectItem value="Pending">Pending</SelectItem>
-                    <SelectItem value="Suspended">Suspended</SelectItem>
+                    <SelectItem value="ACTIVE">ACTIVE</SelectItem>
+                    <SelectItem value="COMPLETED">COMPLETED</SelectItem>
+                    <SelectItem value="ENDED">ENDED</SelectItem>
+                    <SelectItem value="TERMINATED">TERMINATED</SelectItem>
+                    <SelectItem value="REACTIVATE WITH FINAL REPORT">REACTIVATE WITH FINAL REPORT</SelectItem>
+                    <SelectItem value="END - NEED TO SUBMIT FINAL REPORT">END - NEED TO SUBMIT FINAL REPORT</SelectItem>
                 </SelectContent>
             </Select>
             {formState.errors?.status && (
@@ -111,16 +164,17 @@ export function GrantForm( {grant }: { grant?: grant} ){
         </div>
 
         <div className="space-y-2">
-            <Label htmlFor="sponsor_category">Sponsor  Category</Label>
+            <Label htmlFor="sponsor_category">Sponsor Category</Label>
             <Select name="sponsor_category" defaultValue={grant?.sponsor_category || ""} required>
                 <SelectTrigger>
                     <SelectValue placeholder="Select Sponsor Category" />
                 </SelectTrigger>
                 <SelectContent>
-                    <SelectItem value="Government">Government</SelectItem>
-                    <SelectItem value="University">University</SelectItem>
-                    <SelectItem value="Industry">Industry</SelectItem>
-                    <SelectItem value="International">International</SelectItem>
+                    <SelectItem value="NATIONAL">NATIONAL</SelectItem>
+                    <SelectItem value="UNIVERSITY">UNIVERSITY</SelectItem>
+                    <SelectItem value="PRIVATE">PRIVATE</SelectItem>
+                    <SelectItem value="INTERNATIONAL">INTERNATIONAL</SelectItem>
+                    <SelectItem value="GOVERNMENT">GOVERNMENT</SelectItem>   
                 </SelectContent>
             </Select>
             {formState.errors?.sponsor_category && (

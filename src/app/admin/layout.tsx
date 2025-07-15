@@ -3,8 +3,9 @@ import { SidebarInset, SidebarProvider, SidebarTrigger } from "@/components/ui/s
 import { Separator } from "@/components/ui/separator"
 import { LogoutButton } from "@/components/logoutButton";
 import { createClient } from "@/lib/utils/supabase/server";
+
 export default async  function AdminLayout({
-  children,
+  children
 }: Readonly<{
   children: React.ReactNode
 }>) {
@@ -27,7 +28,7 @@ export default async  function AdminLayout({
               <LogoutButton />
             </div>
           </header>
-      <div className="flex-grow p-6 md:overflow-y-auto md:p-12">{children}</div>
+        <div className="flex-grow p-6 md:overflow-y-auto md:p-12">{children}</div>
       </SidebarInset>
     </SidebarProvider>
     );
