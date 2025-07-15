@@ -51,27 +51,27 @@ const data = {
       items: [
         {
           title: "Home ",
-          url: "#",
+          url: "/",
         },
         {
           title: "About",
-          url: "#",
+          url: "/about",
         },
         {
           title: "Grants",
-          url: "#",
+          url: "/grants",
         },
         {
           title: "Publications",
-          url: "#",
+          url: "/publications",
         },
         {
           title: "Labs",
-          url: "#",
+          url: "/labs",
         },
         {
           title: "Events",
-          url: "#",
+          url: "/events",
         },
       ],
     },

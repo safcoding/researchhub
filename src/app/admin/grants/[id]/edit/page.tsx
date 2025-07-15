@@ -2,6 +2,7 @@ import { GrantForm } from "../../_components/grantForm"
 import db from "@/db/db"
 import { notFound } from "next/navigation"
 import { BackButton } from "@/components/backButton"
+
 export default async function EditGrantPage(
     {params}: {
         params: Promise<{ id: string }>
@@ -18,7 +19,7 @@ export default async function EditGrantPage(
         <div className="space-y-6">
             <div className="space-y-4">
                 <BackButton />
-                <h1 className="text-2xl font-bold">Add New Publication</h1>
+                <h1 className="text-2xl font-bold">Add New Grant</h1>
             </div>
             <GrantForm grant={grant} />
         </div>

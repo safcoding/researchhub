@@ -1,16 +1,27 @@
-import { GrantForm } from "../../_components/grantForm"
+import { LabForm } from "../../_components/labForm"
 import db from "@/db/db"
 import { notFound } from "next/navigation"
 import { BackButton } from "@/components/backButton"
-export default async function EditGrantPage(
+
+export default async function EditLabPage(
     {params}: {
         params: Promise<{ id: string }>
     }
 ){
     const { id } = await params
-    const grant = await db.grant.findUnique({ where: { grant_id: id } })
     
-    if (!grant) {
+    const lab = await db.lab.findUnique({ 
+        where: { lab_id: id },
+        include: {
+            lab_equipment: {
+                include: {
+                    equipment: true 
+                }
+            }
+        }
+    })
+    
+    if (!lab) {
         notFound()
     }
     
@@ -18,9 +29,9 @@ export default async function EditGrantPage(
         <div className="space-y-6">
             <div className="space-y-4">
                 <BackButton />
-                <h1 className="text-2xl font-bold">Add New Publication</h1>
+                <h1 className="text-2xl font-bold">Edit Lab</h1>
             </div>
-            <GrantForm grant={grant} />
+            <LabForm lab={lab} />
         </div>
     )
 }
