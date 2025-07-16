@@ -1,7 +1,7 @@
 'use client'
 
 import { useActionState } from 'react'
-import { GalleryVerticalEnd } from "lucide-react"
+import Image from 'next/image'
 import { login } from "../_actions/actions"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
@@ -23,9 +23,13 @@ export function LoginForm({
               href="#"
               className="flex flex-col items-center gap-2 font-medium"
             >
-              <div className="flex size-8 items-center justify-center rounded-md">
-                <GalleryVerticalEnd className="size-6" />
-              </div>
+            <Image
+            src="/assets/icons/mjiit.png"
+            alt="Mjiit Logo"
+            width={400}
+            height={200}
+            className="mr-4"
+            />
               <span className="sr-only">MJIIT ResearcHub</span>
             </a>
             <h1 className="text-xl font-bold">Welcome back admin.</h1>

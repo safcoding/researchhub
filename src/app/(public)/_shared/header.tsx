@@ -28,6 +28,7 @@ const Header = () => {
             </Link>
         </div>
         <div className="hidden md:flex gap-4">
+          <Link href="/login" target="_blank" className="hover:underline">Login</Link>
           <Link href="https://www.utm.my/" target="_blank" className="hover:underline">UTM Official</Link>
           <Link href="https://mjiit.utm.my/" className="hover:underline">MJIIT</Link>
         </div>
