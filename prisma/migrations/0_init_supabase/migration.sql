@@ -30,7 +30,7 @@ CREATE TABLE "event" (
     "registration_required" BOOLEAN DEFAULT false,
     "registration_deadline" DATE,
     "contact_email" TEXT NOT NULL,
-    "image" TEXT DEFAULT '/api/placeholder/400/250',
+    "image" TEXT DEFAULT '',
     "priority" TEXT NOT NULL DEFAULT 'Medium',
     "status" TEXT NOT NULL DEFAULT 'Upcoming',
     "event_id" UUID NOT NULL DEFAULT gen_random_uuid(),

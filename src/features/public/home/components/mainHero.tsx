@@ -1,4 +1,4 @@
-import { LearnMoreButton } from "@/features/public/home/components/learnButton";
+import { LearnButton } from "./learnButton";
 
 const HeroSection = () => {
 
@@ -26,7 +26,7 @@ const HeroSection = () => {
               </p>
             </div>
             <div className="mt-6 flex justify-center gap-3">
-              <LearnMoreButton />
+              <LearnButton href="/about" title="Learn more about us" variant="outline" size="lg" />
             </div>
           </div>
         </div>

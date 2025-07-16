@@ -2,15 +2,36 @@
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
 import { ExternalLink } from "lucide-react";
+import Link from "next/link";
 
-export function LearnMoreButton () {
-    const router = useRouter()
+interface LearnButtonProps {
+  href: string;
+  title: string;
+  variant?: "default" | "destructive" | "outline" | "secondary" | "ghost" | "link";
+  size?: "default" | "sm" | "lg" | "icon";
+  showIcon?: boolean;
+  className?: string;
+}
 
-    return (
-        <Button variant="outline" className="group" onClick={() => router.push("/about")}>
-        Learn more
-        <ExternalLink className="ml-2 h-4 transition-transform group-hover:translate-x-0.5">
-        </ExternalLink>
-        </Button>       
-    )
+export function LearnButton({ 
+  href, 
+  title, 
+  variant = "default", 
+  size = "default",
+  showIcon = true,
+  className = ""
+}: LearnButtonProps) {
+  return (
+    <Button 
+      asChild 
+      variant={variant} 
+      size={size}
+      className={`${className}`}
+    >
+      <Link href={href}>
+        {title}
+        {showIcon && <ExternalLink className="w-4 h-4 ml-2" />}
+      </Link>
+    </Button>
+  );
 }

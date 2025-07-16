@@ -1,16 +1,22 @@
 'use client'
 import Link from 'next/link';
 import Image from 'next/image';
-
+import { Phone } from 'lucide-react';
+import { Mail } from 'lucide-react';
 const Header = () => {
   return (
     <header>
       <div className="bg-[#159b8a] text-white text-sm py-2 px-4 flex justify-between items-center">
-        <div className="flex items-center gap-4">
-          <span>+60 3-2203-1200</span>
-          <span>research.mjiit@utm.my</span>
-        </div>
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-3 justify-start">
+          <span className="flex items-center gap-1">
+            <Phone className="w-4 h-4" />
+            +60 3-2203-1200
+          </span>
+          {/* Mail */}
+          <span className="flex items-center gap-1">
+            <Mail className="w-4 h-4" />
+            research.mjiit@utm.my
+          </span>
             <Link href="https://www.facebook.com/mjiitutm/" aria-label="Facebook">
             <img src="/assets/icons/facebook.svg" alt="Facebook" className="w-5 h-5" />
             </Link>
@@ -26,15 +32,17 @@ const Header = () => {
           <Link href="https://mjiit.utm.my/" className="hover:underline">MJIIT</Link>
         </div>
       </div>
-      <div className="bg-[#2b9167] py-3 px-4 flex items-center justify-between">
+      <div className="bg-[#2b9167] py-6 px-4 flex items-center justify-between">
         <div className="flex items-center">
-          <Image
-            src="https://mjiit.utm.my/wp-content/uploads/2024/11/logo-mjiit.png"
+          <Link href="/" className="font-bold text-lg text-white hover:text-gray-200">
+            <Image
+            src="/assets/icons/researchUnit.png"
             alt="Mjiit Logo"
-            width={120}
-            height={60}
+            width={400}
+            height={200}
             className="mr-4"
-          />
+            />
+          </Link>
         </div>
         <nav className="flex-1 flex items-center gap-8">
           <Link href="/" className="font-bold text-lg text-white hover:text-gray-200">Home</Link>
