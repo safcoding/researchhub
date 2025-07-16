@@ -1,6 +1,5 @@
 "use server"
 
-import * as XLSX from 'xlsx'
 import db from "@/db/db"
 
 export async function exportPublicationsToExcel(

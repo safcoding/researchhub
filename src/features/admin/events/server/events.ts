@@ -3,7 +3,6 @@
 import {z} from "zod"
 import db from "@/db/db"
 import { redirect, notFound } from "next/navigation"
-import fs from "fs/promises"
 import { uploadEventImage, deleteEventImage } from "@/lib/utils/supabase/storage"
 
 const fileSchema = z.instanceof(File, { message: "Not a file" })

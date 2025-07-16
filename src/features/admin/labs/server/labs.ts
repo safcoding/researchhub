@@ -2,7 +2,7 @@
 
 import { z } from "zod"
 import db from "@/db/db"
-import { redirect, notFound } from "next/navigation"
+import { redirect } from "next/navigation"
 
 const addSchema = z.object({
     lab_name: z.string().min(1, "Lab name is required"),
