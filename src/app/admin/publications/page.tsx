@@ -125,9 +125,6 @@ export default async function PubblicationAdminPage({
     <div className="space-y-4">
       <PublicationFilterCard/>
       <div className="flex items-center justify-between gap-4">
-        <Suspense fallback={<div>Loading search...</div>}>
-          <Search placeholder="Search by project title..." />
-        </Suspense>
         <Button asChild>
           <Link href="/admin/publications/new">
             <Plus className="h-4 w-4 mr-2" />

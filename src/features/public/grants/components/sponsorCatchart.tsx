@@ -25,30 +25,19 @@ interface GrantChartProps {
     amount: number
     count: number
   }>
+  currentYear: number
 }
 
-const sponsorChartConfig = {
-  NATIONAL: {
-    label: "National",
-    color: "hsl(var(--chart-1))",
-  },
-  UNIVERSITY: {
-    label: "University", 
-    color: "hsl(var(--chart-2))",
-  },
-  PRIVATE: {
-    label: "Private",
-    color: "hsl(var(--chart-3))",
-  },
-  INTERNATIONAL: {
-    label: "International",
-    color: "hsl(var(--chart-4))",
-  },
-  GOVERNMENT: {
-    label: "Government",
-    color: "hsl(var(--chart-5))",
-  },
-} satisfies ChartConfig
+const generateCategoryConfig = (sponsorData: Array<{category: string, count: number}>) => {
+  const config: ChartConfig = {}
+  sponsorData.forEach((item, index) => {
+    config[item.category] = {
+      label: item.category,
+      color: `hsl(var(--chart-${(index % 5) + 1}))`,
+    }
+  })
+  return config
+}
 
 const COLORS = [
   "hsl(var(--chart-1))",
@@ -60,16 +49,19 @@ const COLORS = [
 
 export function SponsorTypeChart({
     sponsorData,
+    currentYear
 }: GrantChartProps) {
+    const dynamicConfig = generateCategoryConfig(sponsorData)
+
       return(
         <Card>
           <CardHeader>
-            <CardTitle>Grants by Sponsor Category</CardTitle>
+            <CardTitle>Grants in {currentYear} by Sponsor Category</CardTitle>
             <CardDescription>Distribution of grant amounts by sponsor type</CardDescription>
           </CardHeader>
           <CardContent>
             <ChartContainer
-              config={sponsorChartConfig}
+              config={dynamicConfig}
               className="mx-auto aspect-square max-h-[300px]"
             >
               <PieChart>

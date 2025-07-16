@@ -20,26 +20,14 @@ interface GrantChartsProps {
     month: string
     total: number
   }>
-  sponsorData: Array<{
-    category: string
-    amount: number
-    count: number
-  }>
-  typeData: Array<{
-    type: string
-    count: number
-  }>
   currentYear: number
   totalAmount: number
-  totalGrants: number
-  allTimeTotalAmount: number
-
 }
 
 const cumulativeChartConfig = {
   total: {
     label: "Cumulative Amount",
-    color: "hsl(var(--chart-1))",
+    color: "hsl(var(--chart-2))",
   },
 } satisfies ChartConfig
 
@@ -57,7 +45,7 @@ export function CumGrantCharts({
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <ChartContainer config={cumulativeChartConfig}>
+            <ChartContainer config={cumulativeChartConfig} className="h-[400px] w-[1500px]">
               <LineChart
                 accessibilityLayer
                 data={cumulativeData}

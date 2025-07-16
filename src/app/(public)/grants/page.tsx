@@ -15,13 +15,14 @@ export default async function PublicGrantsPage() {
         <div className="text-muted-foreground">
           View our research funding statistics and grant distribution for {currentYear}
         </div>
-      </div>
+       </div>
       <GrantStatCards {...chartData}/>
-      <CumGrantCharts {...chartData} />
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <GrantTypeChart {...chartData}/>
         <SponsorTypeChart {...chartData}/>
       </div>
+      <CumGrantCharts {...chartData} />
+
     </div>
   )
 }

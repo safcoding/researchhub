@@ -2,8 +2,6 @@
 
 import {
   ColumnDef,
-  ColumnFiltersState,
-  getFilteredRowModel,
   flexRender,
   getCoreRowModel,
   useReactTable,

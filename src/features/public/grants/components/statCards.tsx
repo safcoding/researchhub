@@ -3,7 +3,7 @@
 import StatsCard from "@/components/statsCard"
 
 interface GrantChartsProps {
-    currentYear: number
+  currentYear: number
   totalAmount: number
   totalGrants: number
   allTimeTotalAmount: number
