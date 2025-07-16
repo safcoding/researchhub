@@ -56,7 +56,7 @@ export default async function PublicLabsPage({
       <div className="max-w-2xl mx-auto">
         <LabsSearch />
       </div>
-
+``
       <div className="flex flex-wrap gap-2 justify-center">
         {LAB_TYPES.map((labType) => (
           <Button
@@ -99,7 +99,6 @@ export default async function PublicLabsPage({
         </p>
       </div>
 
-      {/* Labs Grid */}
       <Suspense fallback={<div className="text-center">Loading labs...</div>}>
         <LabsGrid 
           labs={labs}

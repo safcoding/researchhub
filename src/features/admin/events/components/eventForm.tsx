@@ -176,6 +176,9 @@ export function EventForm({ event }: { event?: event }) {
                 {formState.errors?.time && (
                     <div className="text-destructive text-sm">{formState.errors.time[0]}</div>
                 )}
+                <p className="text-xs text-gray-500">
+                    💡 Tip: Put both start and end time (e.g. 8:00 AM - 7:00 PM)
+                </p>
             </div>
 
             <div className="space-y-2">

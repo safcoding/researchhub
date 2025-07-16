@@ -14,10 +14,59 @@ import { addPublication, editPublication } from "../server/publications"
 import { useFormStatus, } from "react-dom"
 import { useFormState } from "react-dom"
 import { publication } from "@prisma/client"
+import { useState } from "react"
 
 export function PublicationForm( {publication }: { publication?: publication} ){
+    const [selectedType, setSelectedType] = useState(publication?.type && ![
+        "Book Chapter",
+        "Original Book", 
+        "Scopus'",
+        "Web of Science",
+        "Conference Paper",
+        "Proceedings"
+    ].includes(publication.type) ? "Others" : publication?.type || "");
+    const [otherType, setOtherType] = useState(
+        publication?.type && ![
+            "Book Chapter",
+            "Original Book", 
+            "Scopus'",
+            "Web of Science",
+            "Conference Paper",
+            "Proceedings"
+        ].includes(publication.type) ? publication.type : ""
+    );
 
-    const [formState, action] = useFormState( publication ==  null ? addPublication : editPublication.bind(null, publication.publication_id), {})
+    const [selectedCategory, setSelectedCategory] = useState(publication?.category && ![
+        "Indexed Publication",
+        "Non-Indexed Publication"
+    ].includes(publication.category) ? "Others" : publication?.category || "");
+    const [otherCategory, setOtherCategory] = useState(
+        publication?.category && ![
+            "Indexed Publication",
+            "Non-Indexed Publication"
+        ].includes(publication.category) ? publication.category : ""
+    );
+
+    const [formState, action] = useFormState(
+        async (prevState: any, formData: FormData) => {
+
+            if (formData.get("type") === "Others") {
+                formData.set("type", formData.get("other_type") as string);
+            }
+
+            if (formData.get("category") === "Others") {
+                formData.set("category", formData.get("other_category") as string);
+            }
+
+            formData.delete("other_type");
+            formData.delete("other_category");
+            
+            return publication == null
+                ? await addPublication(prevState, formData)
+                : await editPublication(publication.publication_id, prevState, formData);
+        },
+        {}
+    );
 
     return (
         <form action={action} className="space-y-8">
@@ -52,43 +101,79 @@ export function PublicationForm( {publication }: { publication?: publication} ){
                     )}
                 </div>
 
-                <div className="space-y-2">
-                    <Label htmlFor="type">Publication Type</Label>
-                    <Select name="type" defaultValue={publication?.type || ""} required>
-                        <SelectTrigger>
-                            <SelectValue placeholder="Select publication type" />
-                        </SelectTrigger>
-                        <SelectContent>
-                            <SelectItem value="Book Chapter">Book Chapter</SelectItem>
-                            <SelectItem value="Original Book">Original Book</SelectItem>
-                            <SelectItem value="Scopus'">Scopus</SelectItem>
-                            <SelectItem value="Web of Science">Web of Science</SelectItem>
-                            <SelectItem value="Conference Paper">Conference Paper</SelectItem>
-                            <SelectItem value="Proceedings">Proceedings</SelectItem>
-                            <SelectItem value="Others">Others</SelectItem>
-                        </SelectContent>
-                    </Select>
-                    {formState.errors?.type && (
-                        <div className="text-destructive text-sm">{formState.errors.type[0]}</div>
-                    )}
+            <div className="space-y-2">
+            <Label htmlFor="type">Publication Type</Label>
+            <Select
+                name="type"
+                value={selectedType}
+                onValueChange={value => {
+                setSelectedType(value);
+                if (value !== "Others") setOtherType("");
+                }}
+                required
+            >
+            <SelectTrigger>
+                <SelectValue placeholder="Select publication type" />
+            </SelectTrigger>
+            <SelectContent>
+                <SelectItem value="Book Chapter">Book Chapter</SelectItem>
+                <SelectItem value="Original Book">Original Book</SelectItem>
+                <SelectItem value="Scopus'">Scopus</SelectItem>
+                <SelectItem value="Web of Science">Web of Science</SelectItem>
+                <SelectItem value="Conference Paper">Conference Paper</SelectItem>
+                <SelectItem value="Proceedings">Proceedings</SelectItem>
+                <SelectItem value="Others">Others</SelectItem>
+            </SelectContent>
+            </Select>
+            {selectedType === "Others" && (
+                <div className="mt-2">
+                <Label htmlFor="other_type">Specify Publication Type</Label>
+                <Input
+                    type="text"
+                    id="other_type"
+                    name="other_type"
+                    value={otherType}
+                    onChange={e => setOtherType(e.target.value)}
+                    required
+                />
                 </div>
+            )}
+            </div>
 
-                <div className="space-y-2">
-                    <Label htmlFor="category">Category</Label>
-                    <Select name="category" defaultValue={publication?.category || ""} required>
-                        <SelectTrigger>
-                            <SelectValue placeholder="Select publication category" />
-                        </SelectTrigger>
-                        <SelectContent>
-                            <SelectItem value="Indexed Publication">Indexed Publication</SelectItem>
-                            <SelectItem value="Non-Indexed Publication">Non-Indexed Publication</SelectItem>
-                            <SelectItem value="Other Publication">Other Publication</SelectItem>
-                        </SelectContent>
-                    </Select>
-                    {formState.errors?.category && (
-                        <div className="text-destructive text-sm">{formState.errors.category[0]}</div>
-                    )}
+            <div className="space-y-2">
+            <Label htmlFor="category">Category</Label>
+            <Select
+                name="category"
+                value={selectedCategory}
+                onValueChange={value => {
+                setSelectedCategory(value);
+                if (value !== "Others") setOtherCategory("");
+                }}
+                required
+            >
+                <SelectTrigger>
+                <SelectValue placeholder="Select publication category" />
+                </SelectTrigger>
+                <SelectContent>
+                <SelectItem value="Indexed Publication">Indexed Publication</SelectItem>
+                <SelectItem value="Non-Indexed Publication">Non-Indexed Publication</SelectItem>
+                <SelectItem value="Others">Others</SelectItem>
+                </SelectContent>
+            </Select>
+            {selectedCategory === "Others" && (
+                <div className="mt-2">
+                <Label htmlFor="other_category">Specify Category</Label>
+                <Input
+                    type="text"
+                    id="other_category"
+                    name="other_category"
+                    value={otherCategory}
+                    onChange={e => setOtherCategory(e.target.value)}
+                    required
+                />
                 </div>
+            )}
+            </div>
 
             <div className="space-y-2">
                 <Label htmlFor="journal">Journal</Label>

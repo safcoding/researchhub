@@ -33,30 +33,32 @@ export function LabCard({ lab, onClick }: LabCardProps) {
   const getStatusVariant = (status: string | null) => {
     switch (status?.toLowerCase()) {
       case 'active':
-        return 'default' 
+        return 'bg-[#06d6a0] text-white border-transparent' 
       case 'under maintenance':
-        return 'secondary' 
+        return 'bg-[#ef476f] text-white border-transparent' 
       case 'unavailable':
-        return 'destructive' 
+        return 'bg-[#ef476f] text-white border-transparent' 
+      case 'inactive':
+        return 'bg-gray-200 text-black border-transparent' 
       default:
-        return 'outline' 
+      return 'bg-gray-200 text-gray-800 border-transparent'
     }
   }
 
   const getTypeVariant = (type: string) => {
     switch (type.toLowerCase()) {
       case 'i-kohza':
-        return 'default'
-      case 'research lab':
-        return 'secondary'
-      case 'satellite lab':
-        return 'outline' 
-      case 'teaching lab':
-        return 'default' 
-      case 'service lab':
-        return 'secondary'
-      default:
-        return 'outline'
+        return 'bg-[#0A867D] text-white border-transparent'
+    case 'research lab':
+      return 'bg-[#F4A261] text-white border-transparent'
+    case 'satellite lab':
+      return 'bg-[#264653] text-white border-transparent'
+    case 'teaching lab':
+      return 'bg-[#E76F51] text-white border-transparent'
+    case 'service lab':
+      return 'bg-[#E9C46A] text-white border-transparent'
+    default:
+      return 'bg-gray-200 text-gray-800 border-transparent'
     }
   }
 
@@ -71,11 +73,11 @@ export function LabCard({ lab, onClick }: LabCardProps) {
             {lab.lab_name}
           </CardTitle>
           <div className="flex flex-col gap-1">
-            <Badge variant={getTypeVariant(lab.type)}>
+            <Badge className={getTypeVariant(lab.type)}>
               {lab.type}
             </Badge>
             {lab.status && (
-              <Badge variant={getStatusVariant(lab.status)}>
+              <Badge className={getStatusVariant(lab.status)}>
                 {lab.status}
               </Badge>
             )}
