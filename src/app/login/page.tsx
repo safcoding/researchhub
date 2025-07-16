@@ -1,20 +1,21 @@
-import { LoginForm } from "@/components/login-form"
-// Fixed import path to match the actual file name (Footer.tsx with capital F)
-import Footer from '@/components/Footer';
-import Navbar from '@/components/navbar';
-
+import { LoginForm } from "@/app/login/_components/login-form"
+import { Button } from "@/components/ui/button"
+import { ArrowLeft } from "lucide-react"
+import Link from "next/link"
 export default function LoginPage() {
   return (
-    <>
-      <Navbar />
-      <div className="min-h-screen flex flex-col">
-        <div className="bg-background flex flex-1 flex-col items-center justify-center gap-6 p-6 md:p-10">
-          <div className="w-full max-w-sm">
-            <LoginForm />
-          </div>
-        </div>
-        <Footer />
+    <div className="bg-background flex min-h-svh flex-col items-center justify-center gap-6 p-6 md:p-10">
+      <div className="w-full max-w-sm">
+        <LoginForm />
+        <Button 
+            variant="ghost" 
+            className="flex items-center gap-2"
+        >
+            <ArrowLeft className="h-4 w-4" />
+          <Link href="/" />
+            Back
+        </Button>
       </div>
-    </>
+    </div>
   )
 }

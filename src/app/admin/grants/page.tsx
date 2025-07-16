@@ -1,177 +1,182 @@
-'use client';
+import { Button } from "@/components/ui/button";
+import Link from "next/link";
+import { columns } from "../../../features/admin/grants/components/columns"
+import { DataTable } from "../_shared/data-table";
+import db from "@/db/db";
+import { Plus } from "lucide-react";
+import GrantFilterCard from "../../../features/admin/grants/components/GrantFilterCard";
+import { ExcelExportButton } from "@/features/admin/grants/components/exportExcel";
 
-import React, { useState, useEffect, useCallback } from 'react';
-import { AdminSidebar } from "@/components/admin-sidebar/sidebar-content";
-import { Separator } from "@/components/ui/separator";
-import { Button } from '@/components/ui/button';
-import {
-  SidebarInset,
-  SidebarProvider,
-  SidebarTrigger,
-} from "@/components/ui/sidebar";
-import { GrantLogic, type Grant, type GrantFilters } from '@/hooks/logic/grant-logic';
-import { ConfirmationModal } from '@/components/reusable/confirmation-popup';
-import { GrantModal } from '@/components/admin-components/grants/grant-form';
-import { GrantDataTable } from '@/components/admin-components/grants/grant-data-table';
-import { GrantFilters as GrantFiltersComponent } from '@/components/admin-components/grants/grant-filters';
-import { useDebounceValue } from '@/hooks/use-debounce-value';
+async function getData(
+  page: number = 1, 
+  pageSize: number = 10, 
+  query?: string,
+  type?: string,
+  status?: string,
+  sponsor_category?: string,
+  date_from?: string,
+  date_to?: string,
+) {
+  const skip = (page - 1) * pageSize
+  const where: any = {}
 
-export default function GrantDBPage() {
-  const itemsPerPage = 10;
-  const [currentPage, setCurrentPage] = useState(1);
-  const [filters, setFilters] = useState<GrantFilters>({
-    year: 'all',
-    month: 'all',
-    status: 'all',
-    grantType: 'all',
-    searchText: '',
-  });
+  if (query) {
+    where.OR = [
+      {
+        project_title: {
+          contains: query,
+          mode: 'insensitive' as const,
+        },
+      },
+    ]
+  }
 
-  const debouncedFilters = useDebounceValue(filters, 300);
-
-  const {
-    grants,
-    loading,
-    error,
-    totalCount,
-    addGrant,
-    updateGrant,
-    deleteGrant,
-    refreshGrants,
-  } = GrantLogic();
-
-  useEffect(() => {
-    refreshGrants({ page: currentPage, itemsPerPage, filters: debouncedFilters });
-  }, [currentPage, itemsPerPage, debouncedFilters, refreshGrants]);
-
-  // Modal state
-  const [showGrantModal, setShowGrantModal] = useState(false);
-  const [showDeleteModal, setShowDeleteModal] = useState(false);
-  const [selectedGrant, setSelectedGrant] = useState<Grant | null>(null);
-
-  // CRUD handlers
-  const handleAddGrant = async (newGrant: Partial<Grant>) => {
-    await addGrant(newGrant as Omit<Grant, 'grant_id'>, { page: currentPage, itemsPerPage, filters: debouncedFilters });
-    setShowGrantModal(false);
-  };
-
-  const handleUpdateGrant = async (updatedGrant: Partial<Grant>) => {
-    if (selectedGrant?.PROJECTID) {
-      await updateGrant(selectedGrant.PROJECTID, updatedGrant, { page: currentPage, itemsPerPage, filters: debouncedFilters });
-      setShowGrantModal(false);
-      setSelectedGrant(null);
+  if (type && type !== 'any') {
+    if (type === 'Others') {
+      where.type = {
+        notIn: [
+          'UNIVERSITY GRANT',
+          'GOVERNMENT GRANT', 
+          'INDUSTRIAL GRANT',
+          'RESEARCH CONTRACT'
+        ]
+      }
+    } else {
+      where.type = {
+        equals: type,
+        mode: 'insensitive' as const,
+      }
     }
-  };
+  }
 
-  const handleDeleteConfirm = async () => {
-    if (selectedGrant?.PROJECTID) {
-      await deleteGrant(selectedGrant.PROJECTID, { page: currentPage, itemsPerPage, filters: debouncedFilters });
-      setShowDeleteModal(false);
-      setSelectedGrant(null);
+  if (status && status !== 'any') {
+    where.status = {
+      equals: status,
+      mode: 'insensitive' as const,
     }
-  };
+  }
 
-  const handleEditClick = (grant: Grant) => {
-    setSelectedGrant(grant);
-    setShowGrantModal(true);
-  };
+  if (sponsor_category && sponsor_category !== 'any') {
+    where.sponsor_category = {
+      equals: sponsor_category,
+      mode: 'insensitive' as const,
+    }
+  }
+  if (date_from || date_to) {
+    where.pro_date_start = {}
+    
+    if (date_from) {
+      where.pro_date_start.gte = new Date(date_from)
+    }
+    
+    if (date_to) {
+      where.pro_date_start.lte = new Date(date_to)
+    }
+  }
 
-  const handleDeleteClick = (grant: Grant) => {
-    setSelectedGrant(grant);
-    setShowDeleteModal(true);
-  };
+  const totalCount = await db.grant.count({ where })
+  const grants = await db.grant.findMany({
+    where,
+    select: {
+      grant_id: true,
+      project_id: true, 
+      project_title: true, 
+      approved_amount: true, 
+      type: true, 
+      sponsor_category: true, 
+      sponsor_name: true, 
+      subsponsor_name: true, 
+      status: true, 
+      pro_date_start: true  
+    },
+    orderBy: { createdAt: 'desc' },
+    skip: skip,
+    take: pageSize,
+  })
 
-  // Filter change handler with debouncing for search
-  const handleFiltersChange = useCallback((newFilters: Partial<GrantFilters>) => {
-    setFilters(prevFilters => ({ ...prevFilters, ...newFilters }));
-    // Resetting to first page when filters change
-    setCurrentPage(1);
-  }, []);
+  return { data: grants, totalCount }
+}
 
-  // Use debouncedFilters instead of filters
-  useEffect(() => {
-    refreshGrants({ page: currentPage, itemsPerPage, filters: debouncedFilters });
-  }, [currentPage, itemsPerPage, debouncedFilters, refreshGrants]);
+export default async function GrantAdminPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ 
+    page?: string; 
+    pageSize?: string; 
+    query?: string;
+    type?: string;
+    status?: string;
+    sponsor_category?: string;
+    date_from?: string;
+    date_to?: string;
+  }>
+}) {
+  const params = await searchParams
+  const page = Number(params.page) || 1
+  const pageSize = Number(params.pageSize) || 10
+  const query = params.query || ''
+  const type = params.type || ''
+  const status = params.status || ''
+  const sponsor_category = params.sponsor_category || ''
+  const date_from = params.date_from || ''
+  const date_to = params.date_to || ''
 
+  const { data: grants, totalCount } = await getData(
+    page, 
+    pageSize, 
+    query, 
+    type, 
+    status, 
+    sponsor_category,
+    date_from,
+    date_to,
+  )
+  
   return (
-    <SidebarProvider style={{ "--sidebar-width": "19rem" } as React.CSSProperties}>
-      <AdminSidebar />
-      <SidebarInset>
-        <header className="flex h-16 shrink-0 items-center gap-2 px-4">
-          <SidebarTrigger className="-ml-1" />
-          <Separator
-            orientation="vertical"
-            className="mr-2 data-[orientation=vertical]:h-4"
-          />
-        </header>
+    <div className="space-y-4">
+      <GrantFilterCard />
+      <div className="flex items-center justify-between gap-4">
+        <Button asChild>
+          <Link href="/admin/grants/new">
+            <Plus className="h-4 w-4 mr-2" />
+            Add Grant
+          </Link>
+        </Button>
 
-        <div className="min-h-screen bg-gray-50">
-          <div className="container mx-auto px-4 py-8">
-            <div className="flex justify-between items-center mb-6">
-              <h1 className="text-3xl font-bold text-gray-800">Admin: Manage Grants</h1>
-              <Button
-                onClick={() => {
-                  setSelectedGrant(null);
-                  setShowGrantModal(true);
-                }}
-                className="bg-blue-600 hover:bg-blue-700"
-              >
-                Add Grant
-              </Button>
-            </div>
+        <ExcelExportButton
+          query={query}
+          type={type}
+          status={status}
+          sponsor_category={sponsor_category}
+          date_from={date_from}
+          date_to={date_to}
+          totalCount={totalCount}
+        />
+      </div>
 
-            {/* Error Display */}
-            {error && (
-              <div className="mt-4 p-4 bg-red-100 border border-red-400 text-red-700 rounded">
-                Error: {error}
-              </div>
-            )}
-            
-            <GrantFiltersComponent
-              filters={filters}
-              onFiltersChange={handleFiltersChange}
-            />
-
-            <GrantDataTable
-              data={grants}
-              onEdit={handleEditClick}
-              onDelete={handleDeleteClick}
-              totalCount={totalCount}
-              currentPage={currentPage}
-              itemsPerPage={itemsPerPage}
-              onPageChange={setCurrentPage}
-            />
-
-            {/* Modals */}
-            {showGrantModal && (
-              <GrantModal
-                grant={selectedGrant ?? undefined}
-                onSave={selectedGrant ? handleUpdateGrant : handleAddGrant}
-                onClose={() => {
-                  setShowGrantModal(false);
-                  setSelectedGrant(null);
-                }}
-              />
-            )}
-
-            {showDeleteModal && selectedGrant && (
-              <ConfirmationModal
-                isOpen={showDeleteModal}
-                title="Delete Grant"
-                message={`Are you sure you want to delete "${selectedGrant?.PROJECT_TITLE}"? This action cannot be undone.`}
-                confirmText="Delete"
-                cancelText="Cancel"
-                variant="destructive"
-                onConfirm={handleDeleteConfirm}
-                onCancel={() => {
-                  setShowDeleteModal(false);
-                  setSelectedGrant(null);
-                }}
-              />
-            )}
-          </div>
+      {(query || type || status || sponsor_category) && (
+        <div className="text-sm text-gray-600">
+          {totalCount > 0 
+            ? `Found ${totalCount} results` 
+            : `No results found`
+          }
+          {(date_from || date_to) && (
+            <span className="ml-2">
+              • Date range: {date_from || 'any'} to {date_to || 'any'}
+            </span>
+          )}
         </div>
-      </SidebarInset>
-    </SidebarProvider>
-  );
+      )}
+
+      <div className="overflow-x-auto">
+        <DataTable 
+          columns={columns} 
+          data={grants}
+          page={page}
+          pageSize={pageSize}
+          totalCount={totalCount}
+        />
+      </div>
+    </div>
+  )
 }

@@ -1,20 +1,118 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
-    provider = "prisma-client-js"
+  provider = "prisma-client-js"
 }
 
 datasource db {
-    provider = "postgresql"
-    url      = env("DATABASE_URL")
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
 }
 
-model Post {
-    id        Int      @id @default(autoincrement())
-    name      String
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
+model about_content {
+  id                   Int     @id
+  title                String?
+  intro_paragraph      String?
+  main_paragraph       String?
+  conclusion_paragraph String?
+  closing_statement    String?
+}
 
-    @@index([name])
+model equipment {
+  equipment_id  String          @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name          String          @default("")
+  createdAt     DateTime        @default(now()) @db.Timestamp(6)
+  lab_equipment lab_equipment[]
+}
+
+model event {
+  title                 String
+  description           String
+  date                  DateTime  @db.Date
+  time                  String?
+  location              String?
+  category              String
+  organizer             String?
+  registration_required Boolean   @default(false)
+  registration_deadline DateTime? @db.Date
+  contact_email         String?
+  image                 String?   @default("")
+  priority              String    @default("")
+  status                String    @default("")
+  event_id              String    @id(map: "events_pkey") @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  createdAt             DateTime  @default(now()) @db.Timestamp(6)
+
+  @@index([category], map: "idx_events_category")
+  @@index([date], map: "idx_events_date")
+  @@index([priority], map: "idx_events_priority")
+  @@index([status], map: "idx_events_status")
+}
+
+model grant {
+  project_id            String
+  cost_center_code      String?
+  pl_staff_no           BigInt?
+  pl_name               String?
+  ptj_research_alliance String?
+  research_group        String?
+  project_title         String?
+  pro_date_start        DateTime? @db.Date
+  pro_date_end          DateTime? @db.Date
+  type                  String
+  status                String?
+  sponsor_category      String
+  subsponsor_name       String?
+  approved_amount       Float     @db.Real
+  sponsor_name          String?
+  grant_id              String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  createdAt             DateTime  @default(now()) @db.Timestamp(6)
+}
+
+model lab {
+  lab_id        String          @id(map: "labs_pkey") @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  lab_name      String
+  lab_head      String?
+  email         String?
+  research_area String?
+  description   String?
+  location      String?
+  status        String?
+  type          String
+  contact_phone String?
+  createdAt     DateTime        @default(now()) @db.Timestamp(6)
+  lab_equipment lab_equipment[]
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model lab_equipment {
+  id           String    @id @unique @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  quantity     Int       @default(0) @db.SmallInt
+  equipment_id String    @db.Uuid
+  lab_id       String    @db.Uuid
+  createdAt    DateTime  @default(now()) @db.Timestamp(6)
+  equipment    equipment @relation(fields: [equipment_id], references: [equipment_id], onDelete: Cascade, onUpdate: NoAction)
+  lab          lab       @relation(fields: [lab_id], references: [lab_id], onDelete: Cascade, onUpdate: NoAction)
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model project {
+  created_at DateTime @default(now()) @db.Timestamptz(6)
+  project_id String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+}
+
+model publication {
+  pub_refno         String
+  status            String
+  type              String
+  category          String
+  journal           String
+  title             String
+  impact            Float?   @db.Real
+  date              DateTime @db.Date
+  level             String
+  author_id         Int      @db.SmallInt
+  research_alliance String?
+  rg_name           String?
+  author_name       String
+  publication_id    String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  createdAt         DateTime @default(now()) @db.Timestamp(6)
 }

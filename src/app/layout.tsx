@@ -1,27 +1,27 @@
-import "@/styles/globals.css";
+import type { Metadata } from "next";
+import { Inter } from "next/font/google";
+import "./globals.css";
+import { cn } from "@/lib/utils";
 
-import { type Metadata } from "next";
-import { Geist } from "next/font/google";
+const inter = Inter({ subsets: ["latin"], variable: "--font-sans"})
 
 export const metadata: Metadata = {
-  title: "MJIIT Research Hub",
-  description: "For all your research needs at MJIIT",
-  icons: [{ rel: "icon", url: "/favicon.ico" }],
+  title: "MJIIT ResearchHub",
+  description: "Research platform for the researchers of the Malaysia-Japan International Institute of Technology (MJIIT). ",
 };
-
-const geist = Geist({
-  subsets: ["latin"],
-  variable: "--font-geist-sans",
-});
 
 export default function RootLayout({
   children,
-}: Readonly<{ children: React.ReactNode }>) {  return (
-      <html lang="en" className={`${geist.variable}`}>
-        <body className={`antialiased ${geist.variable}`}>
-          {children}
-        </body>
-      </html>
+}: Readonly<{
+  children: React.ReactNode;
+}>) {
+  return (
+    <html lang="en">
+      <body
+        className={cn("min-h-screen bg-background font-sans antialiased", inter.variable)}
+      >
+        {children}
+      </body>
+    </html>
   );
 }
-

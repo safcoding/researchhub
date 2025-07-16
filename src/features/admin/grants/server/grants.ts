@@ -1,0 +1,123 @@
+"use server"
+
+import {z} from "zod"
+import db from "@/db/db"
+import { redirect, notFound  } from "next/navigation"
+
+const addSchema = z.object({
+    project_id:             z.string().min(1, "Project ID is required"),
+    project_title:          z.string().optional(),
+    pro_date_start:         z.string().optional(),
+    pro_date_end:           z.string().optional(),
+    cost_center_code:       z.string().optional(),
+    pl_staff_no:            z.coerce.number().int().optional(),
+    pl_name:                z.string().optional(),
+    ptj_research_alliance:  z.string().optional(),
+    research_group:         z.string().optional(),
+    type:                   z.string().min(1, "Grant Type is required"),
+    status:                 z.string().optional(),
+    sponsor_name:           z.string().optional(),
+    sponsor_category:       z.string().min(1, "Sponsor Category is required"),
+    subsponsor_name:        z.string().optional(),
+    approved_amount:        z.coerce.number().int().min(1, "Amount is required"),
+})
+
+type FormState = {
+    errors?: {
+        [key: string]: string[]
+    }
+    success?: boolean
+}
+
+export async function addGrant(prevState: FormState, formData: FormData):  Promise<FormState> {
+  const result = addSchema.safeParse(Object.fromEntries(formData.entries()))
+  
+  if (result.success === false) {
+    return {errors: result.error.flatten().fieldErrors
+    }
+  }
+    
+    const data = result.data
+
+    await db.grant.create({
+        data: {
+            project_id: data.project_id,
+            project_title: data.project_title || null,
+            pro_date_start: data.pro_date_start ? new Date(data.pro_date_start) : null,
+            pro_date_end: data.pro_date_end ? new Date(data.pro_date_end) : null,
+            cost_center_code: data.cost_center_code || null,
+            pl_staff_no: data.pl_staff_no || null,
+            pl_name: data.pl_name || null,
+            ptj_research_alliance: data.ptj_research_alliance || null,
+            research_group: data.research_group || null,
+            type: data.type,
+            status: data.status || null,
+            sponsor_name: data.sponsor_name || null,
+            sponsor_category: data.sponsor_category, 
+            subsponsor_name: data.subsponsor_name || null,
+            approved_amount: data.approved_amount,
+        }})
+    
+    redirect("/admin/grants")
+}
+
+export async function deleteGrant(grant_id: string) {
+  const grant = await db.grant.delete({where: { grant_id } })
+  if (grant == null) return notFound()
+}
+
+const editSchema = z.object({
+  
+    project_id:             z.string().min(1, "Project ID is required"),
+    project_title:          z.string().optional(),
+    pro_date_start:         z.string().optional(),
+    pro_date_end:           z.string().optional(),
+    cost_center_code:       z.string().optional(),
+    pl_staff_no:            z.coerce.number().int().optional(),
+    pl_name:                z.string().optional(),
+    ptj_research_alliance:  z.string().optional(),
+    research_group:         z.string().optional(),
+    type:                   z.string().min(1, "Grant Type is required"),
+    status:                 z.string().optional(),
+    sponsor_name:           z.string().optional(),
+    sponsor_category:       z.string().min(1, "Sponsor Category is required"),
+    subsponsor_name:        z.string().optional(),
+    approved_amount:        z.coerce.number().int().min(1, "Amount is required"),
+})
+
+export async function editGrant(id: string, prevState: FormState, formData: FormData):  Promise<FormState> {
+  const result = editSchema.safeParse(Object.fromEntries(formData.entries()))
+  
+  if (result.success === false) {
+    return {errors: result.error.flatten().fieldErrors
+    }
+  }
+    
+    const data = result.data
+    const grant = await db.grant.findUnique({ where: { grant_id: id } })
+    if (!grant) {
+        notFound()
+    }
+    
+    await db.grant.update({
+      where: { grant_id: id },
+        data: {
+            project_id: data.project_id,
+            project_title: data.project_title || null,
+            pro_date_start: data.pro_date_start ? new Date(data.pro_date_start) : null,
+            pro_date_end: data.pro_date_end ? new Date(data.pro_date_end) : null,
+            cost_center_code: data.cost_center_code || null,
+            pl_staff_no: data.pl_staff_no || null,
+            pl_name: data.pl_name || null,
+            ptj_research_alliance: data.ptj_research_alliance || null,
+            research_group: data.research_group || null,
+            type: data.type,
+            status: data.status || null,
+            sponsor_name: data.sponsor_name || null,
+            sponsor_category: data.sponsor_category, 
+            subsponsor_name: data.subsponsor_name || null,
+            approved_amount: data.approved_amount,
+        }})
+    
+    redirect("/admin/grants")
+}
