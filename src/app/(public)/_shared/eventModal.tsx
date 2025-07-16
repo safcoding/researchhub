@@ -10,6 +10,8 @@ import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Calendar, MapPin, Clock, User} from "lucide-react"
 import { useState } from "react"
+import { linkifyText } from "@/lib/linkifyText"
+
 
 interface Event {
   event_id: string
@@ -108,9 +110,9 @@ export function EventModal({ event, isOpen, onClose }: EventModalProps) {
           
           <div>
             <h3 className="font-semibold text-lg mb-2">About this Event</h3>
-            <p className="text-gray-700 leading-relaxed">
-              {event.description}
-            </p>
+            <div className="text-gray-700 whitespace-pre-wrap">
+              {linkifyText(event.description)}
+            </div>
           </div>
           
           <div className="flex gap-3 pt-4">

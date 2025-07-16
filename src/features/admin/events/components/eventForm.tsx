@@ -91,11 +91,22 @@ export function EventForm({ event }: { event?: event }) {
 
             <div className="space-y-2">
                 <Label htmlFor="description">Description</Label>
-                <Textarea id="description" name="description" required defaultValue={event?.description || ""} />
+                <Textarea 
+                    id="description" 
+                    name="description" 
+                    required 
+                    defaultValue={event?.description || ""} 
+                    rows={5}
+                    placeholder="Enter event description. URLs like https://example.com will automatically become clickable links."
+                />
+                <p className="text-xs text-gray-500">
+                    💡 Tip: Paste URLs directly (e.g., https://example.com) and they'll become clickable links
+                </p>
                 {formState.errors?.description && (
                     <div className="text-destructive text-sm">{formState.errors.description[0]}</div>
                 )}
             </div>
+            
             <div className="space-y-2">
                 <Label htmlFor="category">Category</Label>
                 <Select name="category" defaultValue={event?.category || ""} required>
@@ -235,7 +246,6 @@ export function EventForm({ event }: { event?: event }) {
                     Images will be automatically compressed to under 1MB
                 </p>
                 
-                {/* Show preview of new image */}
                 {imagePreview && (
                     <div className="mt-2">
                         <p className="text-sm text-gray-600">Preview:</p>
@@ -247,7 +257,6 @@ export function EventForm({ event }: { event?: event }) {
                     </div>
                 )}
                 
-                {/* Show current image for editing */}
                 {event?.image && !imagePreview && (
                     <div className="mt-2">
                         <p className="text-sm text-gray-600">Current image:</p>

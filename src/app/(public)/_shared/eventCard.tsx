@@ -3,6 +3,8 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Calendar, MapPin, Clock } from "lucide-react"
+import { linkifyText } from "@/lib/linkifyText" 
+
 
 interface Event {
   event_id: string
@@ -44,7 +46,9 @@ export function EventCard({ event, onClick, className = "" }: EventCardProps) {
         <CardTitle className="line-clamp-2 text-[#046951]">{event.title}</CardTitle>
       </CardHeader>
       <CardContent>
-        <p className="text-gray-600 mb-4 line-clamp-3">{event.description}</p>
+        <p className="text-gray-600 mb-4 line-clamp-3">
+          {linkifyText(event.description)}
+        </p>
         
         <div className="space-y-2 text-sm text-gray-500">
           <div className="flex items-center gap-2">
