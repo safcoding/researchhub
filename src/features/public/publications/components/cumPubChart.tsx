@@ -29,7 +29,7 @@ interface PublicationChartsProps {
 const cumulativeChartConfig = {
   total: {
     label: "Cumulative Publications",
-    color: "hsl(var(--chart-2))",
+    color: "hsl(176, 86%, 28%)",
   },
 } satisfies ChartConfig
 

@@ -33,8 +33,10 @@
     "react-dom": "^19.0.0",
     "react-hook-form": "^7.60.0",
     "recharts": "^2.15.4",
+    "sonner": "^2.0.6",
     "tailwind-merge": "^3.3.1",
     "use-debounce": "^10.0.5",
+    "xlsx": "https://cdn.sheetjs.com/xlsx-0.19.3/xlsx-0.19.3.tgz",
     "zod": "^4.0.5"
   },
   "devDependencies": {
@@ -43,6 +45,7 @@
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "@types/xlsx": "^0.0.35",
     "eslint": "^9",
     "eslint-config-next": "15.3.5",
     "prisma": "^6.11.1",

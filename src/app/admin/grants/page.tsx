@@ -5,6 +5,7 @@ import { DataTable } from "../_shared/data-table";
 import db from "@/db/db";
 import { Plus } from "lucide-react";
 import GrantFilterCard from "../../../features/admin/grants/components/GrantFilterCard";
+import { ExcelExportButton } from "@/features/admin/grants/components/exportExcel";
 
 async function getData(
   page: number = 1, 
@@ -141,6 +142,16 @@ export default async function GrantAdminPage({
             Add Grant
           </Link>
         </Button>
+
+        <ExcelExportButton
+          query={query}
+          type={type}
+          status={status}
+          sponsor_category={sponsor_category}
+          date_from={date_from}
+          date_to={date_to}
+          totalCount={totalCount}
+        />
       </div>
 
       {(query || type || status || sponsor_category) && (

@@ -1,12 +1,12 @@
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import { columns, Publication } from "../../../features/admin/publications/components/columns"
+import { columns } from "../../../features/admin/publications/components/columns"
 import { DataTable } from "../_shared/data-table";
 import db from "@/db/db";
-import Search from "@/components/ui/search";
-import { Suspense } from "react";
+
 import { Plus } from "lucide-react"
 import PublicationFilterCard from "@/features/admin/publications/components/PublicationFilterCard";
+import { ExcelExportButton } from "@/features/admin/publications/components/exportExcel";
 
 async function getData(
   page: number = 1, 
@@ -131,14 +131,28 @@ export default async function PubblicationAdminPage({
             Add Publication
           </Link>
         </Button>
+        
+        <ExcelExportButton
+          query={query}
+          type={type}
+          status={status}
+          category={category}
+          date_from={date_from}
+          date_to={date_to}
+          totalCount={totalCount}
+        />
       </div>
 
-      {query && (
+      {(query || type || status || category || date_from || date_to) && (
         <div className="text-sm text-gray-600">
           {totalCount > 0 
-            ? `Found ${totalCount} results for "${query}"` 
-            : `No results found for "${query}"`
+            ? `Found ${totalCount} results` 
+            : `No results found`
           }
+          {query && <span className="ml-2">• Search: "{query}"</span>}
+          {type && type !== 'any' && <span className="ml-2">• Type: {type}</span>}
+          {status && status !== 'any' && <span className="ml-2">• Status: {status}</span>}
+          {category && category !== 'any' && <span className="ml-2">• Category: {category}</span>}
           {(date_from || date_to) && (
             <span className="ml-2">
               • Date range: {date_from || 'any'} to {date_to || 'any'}

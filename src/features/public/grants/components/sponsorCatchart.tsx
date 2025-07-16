@@ -1,12 +1,10 @@
 "use client"
 
-import { TrendingUp } from "lucide-react"
-import { CartesianGrid, XAxis, YAxis, Line, LineChart, Pie, PieChart, Cell, ResponsiveContainer } from "recharts"
+import {  Pie, PieChart, Cell } from "recharts"
 import {
   Card,
   CardContent,
   CardDescription,
-  CardFooter,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card"
@@ -33,25 +31,33 @@ const generateCategoryConfig = (sponsorData: Array<{category: string, count: num
   sponsorData.forEach((item, index) => {
     config[item.category] = {
       label: item.category,
-      color: `hsl(var(--chart-${(index % 5) + 1}))`,
+      color: COLORS[index % COLORS.length], 
     }
   })
   return config
 }
 
 const COLORS = [
-  "hsl(var(--chart-1))",
-  "hsl(var(--chart-2))", 
-  "hsl(var(--chart-3))",
-  "hsl(var(--chart-4))",
-  "hsl(var(--chart-5))",
+  "hsl(176, 86%, 28%)",
+  "hsl(175, 34%, 79%)",
+  "hsl(175, 34%, 64%)",
+  "hsl(176, 46%, 43%)",
+  "hsl(175, 34%, 86%)",
 ]
 
 export function SponsorTypeChart({
     sponsorData,
     currentYear
 }: GrantChartProps) {
-    const dynamicConfig = generateCategoryConfig(sponsorData)
+    const sortedData = [...sponsorData].sort((a, b) => b.amount - a.amount)
+    const dynamicConfig = generateCategoryConfig(sortedData)
+    const dataWithColors = sortedData.map((item, index) => {
+      return {
+        ...item,
+        color: COLORS[index % COLORS.length],
+        opacity: 1 
+      }
+    })
 
       return(
         <Card>
@@ -83,20 +89,24 @@ export function SponsorTypeChart({
                     />
                   }
                 />
-                <Pie
-                  data={sponsorData}
-                  dataKey="amount"
-                  nameKey="category"
-                  innerRadius={40}
-                  strokeWidth={5}
-                >
-                  {sponsorData.map((entry, index) => (
-                    <Cell 
-                      key={`cell-${index}`} 
-                      fill={COLORS[index % COLORS.length]} 
-                    />
-                  ))}
-                </Pie>
+              <Pie
+                data={dataWithColors} 
+                dataKey="amount"
+                nameKey="category"
+                innerRadius={40}
+                strokeWidth={5}
+              >
+                {dataWithColors.map((entry, index) => (
+                  <Cell 
+                    key={`cell-${index}`} 
+                    fill={entry.color} 
+                  />
+                ))}
+              </Pie>
+              <ChartLegend
+                content={<ChartLegendContent nameKey="category" />}
+                className="-translate-y-2 flex-wrap gap-2 [&>*]:basis-1/4 [&>*]:justify-center"
+              />
                 <ChartLegend
                   content={<ChartLegendContent nameKey="category" />}
                   className="-translate-y-2 flex-wrap gap-2 [&>*]:basis-1/4 [&>*]:justify-center"

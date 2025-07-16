@@ -1,12 +1,10 @@
 "use client"
 
-import { TrendingUp } from "lucide-react"
-import { Bar, BarChart, CartesianGrid, LabelList, XAxis, YAxis } from "recharts"
+import { Pie, PieChart, Cell } from "recharts"
 import {
   Card,
   CardContent,
   CardDescription,
-  CardFooter,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card"
@@ -15,7 +13,10 @@ import {
   ChartContainer,
   ChartTooltip,
   ChartTooltipContent,
+  ChartLegend,
+  ChartLegendContent,
 } from "@/components/ui/chart"
+
 
 interface PublicationTypeChartProps {
   typeData: Array<{
@@ -24,17 +25,35 @@ interface PublicationTypeChartProps {
   }>
 }
 
-const typeChartConfig = {
-  count: {
-    label: "Publication Count",
-    color: "hsl(var(--chart-2))",
-  },
-  label: {
-    color: "hsl(var(--background))",
-  },
-} satisfies ChartConfig
+const generateTypeConfig = (typeData: Array<{type: string, count: number}>) => {
+  const config: ChartConfig = {}
+  typeData.forEach((item, index) => {
+    config[item.type] = {
+      label: item.type,
+      color: COLORS[index % COLORS.length], 
+    }
+  })
+  return config
+}
+
+const COLORS = [
+  "hsl(176, 86%, 28%)",
+  "hsl(175, 34%, 79%)",
+  "hsl(175, 34%, 64%)",
+  "hsl(176, 46%, 43%)",
+  "hsl(175, 34%, 86%)",
+]
 
 export function PublicationTypeChart({ typeData }: PublicationTypeChartProps) {
+    const sortedData = [...typeData].sort((a, b) => b.count - a.count)
+    const dynamicConfig = generateTypeConfig(sortedData)
+    const dataWithColors = sortedData.map((item, index) => {
+      return {
+        ...item,
+        color: COLORS[index % COLORS.length],
+        opacity: 1 
+      }
+    })
   return (
     <Card>
       <CardHeader>
@@ -42,60 +61,43 @@ export function PublicationTypeChart({ typeData }: PublicationTypeChartProps) {
         <CardDescription>Distribution of publications by type</CardDescription>
       </CardHeader>
       <CardContent>
-        <ChartContainer 
-        config={typeChartConfig} 
-        className="h-[300px] overflow-y-auto w-full"
+        <ChartContainer
+          config={dynamicConfig}
+          className="mx-auto aspect-square max-h-[350px]"
         >
-        <BarChart
-            accessibilityLayer
-            data={typeData}
-            layout="vertical"
-            height={typeData.length * 70} 
-            margin={{
-            right: 20,
-            left: 15,
-            top: 10,
-            bottom: 10,
-            }}
-        >
-            <CartesianGrid horizontal={false} />
-            <YAxis
-              dataKey="type"
-              type="category"
-              tickLine={false}
-              tickMargin={10}
-              axisLine={false}
-              tickFormatter={(value) => value.slice(0, 15)}
-              hide
-            />
-            <XAxis dataKey="count" type="number" hide />
+          <PieChart>
             <ChartTooltip
               cursor={false}
-              content={<ChartTooltipContent indicator="line" />}
+              content={
+                <ChartTooltipContent 
+                  hideLabel 
+                  formatter={(value, name) => [
+                    `${value} `,
+                    name
+                  ]}
+                />
+              }
             />
-            <Bar
-            dataKey="count"
-            layout="vertical"
-            fill="hsl(var(--chart-2))"
-            radius={4}
-            barSize={40} // Slightly larger bars
+            <Pie
+              data={dataWithColors}
+              dataKey="count"
+              nameKey="type"
+              innerRadius={60}
+              outerRadius={120}
+              strokeWidth={2}
             >
-              <LabelList
-                dataKey="type"
-                position="insideLeft"
-                offset={8}
-                fill="--color-label"
-                fontSize={12}
-              />
-              <LabelList
-                dataKey="count"
-                position="right"
-                offset={8}
-                className="fill-foreground"
-                fontSize={12}
-              />
-            </Bar>
-          </BarChart>
+              {dataWithColors.map((entry, index) => (
+                <Cell 
+                  key={`cell-${index}`} 
+                  fill={COLORS[index % COLORS.length]} 
+                />
+              ))}
+            </Pie>
+            <ChartLegend
+              content={<ChartLegendContent nameKey="type" />}
+              className="flex-wrap gap-2 justify-center text-sm"
+            />
+          </PieChart>
         </ChartContainer>
       </CardContent>
     </Card>

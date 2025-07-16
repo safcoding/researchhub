@@ -1,12 +1,10 @@
 "use client"
 
-import { TrendingUp } from "lucide-react"
-import { CartesianGrid, XAxis, YAxis, Line, LineChart, Pie, PieChart, Cell, ResponsiveContainer } from "recharts"
+import { Pie, PieChart, Cell } from "recharts"
 import {
   Card,
   CardContent,
   CardDescription,
-  CardFooter,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card"
@@ -31,7 +29,7 @@ const generateCategoryConfig = (categoryData: Array<{category: string, count: nu
   categoryData.forEach((item, index) => {
     config[item.category] = {
       label: item.category,
-      color: `hsl(var(--chart-${(index % 5) + 1}))`,
+      color: COLORS[index % COLORS.length], 
     }
   })
   return config
@@ -39,16 +37,24 @@ const generateCategoryConfig = (categoryData: Array<{category: string, count: nu
 
 
 const COLORS = [
-  "hsl(var(--chart-1))",
-  "hsl(var(--chart-2))", 
-  "hsl(var(--chart-3))",
-  "hsl(var(--chart-4))",
-  "hsl(var(--chart-5))",
+  "hsl(176, 86%, 28%)",
+  "hsl(175, 34%, 79%)",
+  "hsl(175, 34%, 64%)",
+  "hsl(176, 46%, 43%)",
+  "hsl(175, 34%, 86%)",
 ]
 
 
 export function PublicationCategoryChart({ categoryData }: PublicationCategoryChartProps) {
-  const dynamicConfig = generateCategoryConfig(categoryData)
+    const sortedData = [...categoryData].sort((a, b) => b.count - a.count)
+    const dynamicConfig = generateCategoryConfig(sortedData)
+    const dataWithColors = sortedData.map((item, index) => {
+      return {
+        ...item,
+        color: COLORS[index % COLORS.length],
+        opacity: 1 
+      }
+    })
   
   return (
     <Card>
@@ -75,14 +81,14 @@ export function PublicationCategoryChart({ categoryData }: PublicationCategoryCh
               }
             />
             <Pie
-              data={categoryData}
+              data={dataWithColors}
               dataKey="count"
               nameKey="category"
               innerRadius={60}
               outerRadius={120}
               strokeWidth={2}
             >
-              {categoryData.map((entry, index) => (
+              {dataWithColors.map((entry, index) => (
                 <Cell 
                   key={`cell-${index}`} 
                   fill={COLORS[index % COLORS.length]} 
