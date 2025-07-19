@@ -1,71 +1,26 @@
 "use client"
 
-import { useState } from "react"
-import { EventCard } from "@/app/(public)/_shared/eventCard"
-import { EventModal } from "@/app/(public)/_shared/eventModal"
-import { PaginationWithLinks } from "@/components/ui/pagination-with-links"
+import { PartnerCard } from "./partnerCard"
 
-interface Event {
-  event_id: string
-  title: string
-  description: string
-  date: Date
-  time?: string | null
-  location?: string | null
-  image?: string | null
-  category: string
-  organizer: string | null
+interface Partner{
+    partner_id: string,
+    name: string,
+    image: string,
 }
 
-interface EventGridProps {
-  events: Event[]
-  page: number
-  pageSize: number
-  totalCount: number
+interface PartnerGridProps{
+  partners: Partner[]
 }
-
-export function EventGrid({ events, page, pageSize, totalCount }: EventGridProps) {
-  const [selectedEvent, setSelectedEvent] = useState<Event | null>(null)
-  const [isModalOpen, setIsModalOpen] = useState(false)
-
-  const handleEventClick = (event: Event) => {
-    setSelectedEvent(event)
-    setIsModalOpen(true)
-  }
-
-  const handleCloseModal = () => {
-    setIsModalOpen(false)
-    setSelectedEvent(null)
-  }
+export function PartnerGrid( {partners}: PartnerGridProps) {
 
   return (
-    <>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-6">
-        {events.map((event) => (
-          <EventCard 
-            key={event.event_id}
-            event={event}
-            onClick={handleEventClick}
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
+        {partners.map((partner) => (
+          <PartnerCard 
+            key={partner.partner_id}
+            partner={partner}
           />
         ))}
       </div>
-      
-      <EventModal 
-        event={selectedEvent}
-        isOpen={isModalOpen}
-        onClose={handleCloseModal}
-      />
-        <div className="flex items-center justify-between py-4">
-        <div className="text-sm text-muted-foreground">
-          Showing {((page - 1) * pageSize) + 1} to {Math.min(page * pageSize, totalCount)} of {totalCount}
-        </div>
-        
-        <PaginationWithLinks 
-          page={page} 
-          pageSize={pageSize} 
-          totalCount={totalCount} 
-        />
-        </div>
-    </>
   )
 }

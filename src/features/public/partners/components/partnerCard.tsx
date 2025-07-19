@@ -8,16 +8,20 @@ interface Partner{
     image: string,
 }
 
-export function PartnerCard({name, image}: Partner){
+interface PartnerCardProps{
+  partner: Partner
+}
+
+export function PartnerCard({partner}: PartnerCardProps){
     return (
     <Card 
       className={`h-full cursor-pointer hover:shadow-lg transition-all duration-200 hover:scale-[1.02]`}
     >
-      {image && (
+      {partner.image && (
         <div className="aspect-video overflow-hidden rounded-t-lg">
           <img 
-            src={image} 
-            alt={name}
+            src={partner.image} 
+            alt={partner.name}
             className="w-full h-full object-cover transition-transform duration-200 hover:scale-105"
           />
         </div>
