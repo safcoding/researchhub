@@ -46,7 +46,7 @@ export async function addPartner(prevState: FormState, formData: FormData): Prom
    try {
     const imageUrl = await uploadPartnerImage(data.image)
 
-    await db.event.create({
+    await db.partner.create({
       data: {
         name: data.name,
         image: imageUrl,
