@@ -48,6 +48,7 @@ const Header = () => {
         <nav className="flex-1 flex items-center gap-8">
           <Link href="/" className="font-bold text-lg text-white hover:text-gray-200">Home</Link>
           <Link href="/about" className="font-bold text-lg text-white hover:text-gray-200">About</Link>
+          <Link href="/partners" className="font-bold text-lg text-white hover:text-gray-200">Our Partners</Link>
           <Link href="/grants" className="font-bold text-lg text-white hover:text-gray-200">Grants</Link>
           <Link href="/publications" className="font-bold text-lg text-white hover:text-gray-200">Publications</Link>
           <Link href="/labs" className="font-bold text-lg text-white hover:text-gray-200">Labs</Link>
