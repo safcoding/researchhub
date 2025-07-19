@@ -48,7 +48,7 @@ export async function uploadPartnerImage(file: File): Promise<string> {
   const fileName = `${Date.now()}-${Math.random().toString(36).substring(2)}.${fileExt}`
   
   const { data, error } = await supabase.storage
-    .from('partner-pics')
+    .from('partners')
     .upload(fileName, file, {
       cacheControl: '3600',
       upsert: false
@@ -61,7 +61,7 @@ export async function uploadPartnerImage(file: File): Promise<string> {
 
 
   const { data: publicUrlData } = supabase.storage
-    .from('partner-pics')
+    .from('partners')
     .getPublicUrl(data.path)
 
   return publicUrlData.publicUrl
