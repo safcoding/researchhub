@@ -48,7 +48,7 @@ export async function uploadPartnerImage(file: File): Promise<string> {
   const fileName = `${Date.now()}-${Math.random().toString(36).substring(2)}.${fileExt}`
   
   const { data, error } = await supabase.storage
-    .from('partners')
+    .from('partner-pics')
     .upload(fileName, file, {
       cacheControl: '3600',
       upsert: false
@@ -61,7 +61,7 @@ export async function uploadPartnerImage(file: File): Promise<string> {
 
 
   const { data: publicUrlData } = supabase.storage
-    .from('partners')
+    .from('partner-pics')
     .getPublicUrl(data.path)
 
   return publicUrlData.publicUrl
@@ -74,7 +74,7 @@ export async function deletePartnerImage(imageUrl: string): Promise<void> {
   if (!fileName) return
 
   const { error } = await supabase.storage
-    .from('event-pics')
+    .from('partner-pics')
     .remove([fileName])
 
   if (error) {
