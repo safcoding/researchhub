@@ -11,8 +11,6 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import Link from "next/link"
-
 import { deletePartner } from "../server/partners"
 import { useTransition } from "react"
 import { useRouter } from "next/navigation"

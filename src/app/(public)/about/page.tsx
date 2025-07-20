@@ -34,11 +34,11 @@ export default function AboutPage() {
               Researchers can also share their progress, update achievements, and stay informed on matters related to publications, consultancies, community engagement projects, and intellectual property.
             </p>
             <p className="mb-6">
-              Whether you're preparing a grant application, reporting research outcomes, or exploring collaborative opportunities, this platform aims to simplify and support your work.
+              Whether you&apos;re preparing a grant application, reporting research outcomes, or exploring collaborative opportunities, this platform aims to simplify and support your work.
               We are committed to making research at MJIIT more connected, transparent, and impactful.
             </p>
             <p className="text-xl font-semibold mb-8 text-center">
-              Together, let's advance innovation and excellence in research at MJIIT.
+              Together, let&apos;s advance innovation and excellence in research at MJIIT.
             </p>
           </div>
         </div>

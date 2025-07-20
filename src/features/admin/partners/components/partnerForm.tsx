@@ -8,6 +8,8 @@ import { useFormStatus, useFormState } from "react-dom"
 import { useState, useEffect } from "react"
 import imageCompression from "browser-image-compression"
 import { Partner } from "./columns"
+import Image from "next/image"
+
 interface FormState {
   message: string;
   errors?: {
@@ -101,7 +103,7 @@ export function PartnerForm({partner}: {partner?: Partner}){
                 {imagePreview && (
                     <div className="mt-2">
                         <p className="text-sm text-gray-600">Preview:</p>
-                        <img 
+                        <Image 
                             src={imagePreview} 
                             alt="Image preview" 
                             className="w-32 h-32 object-cover rounded border"
@@ -112,7 +114,7 @@ export function PartnerForm({partner}: {partner?: Partner}){
                 {partner?.image && !imagePreview && (
                     <div className="mt-2">
                         <p className="text-sm text-gray-600">Current image:</p>
-                        <img 
+                        <Image 
                             src={partner.image} 
                             alt="Current event image" 
                             className="w-32 h-32 object-cover rounded border"

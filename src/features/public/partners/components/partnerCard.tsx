@@ -1,6 +1,7 @@
 "use client"
 
 import { Card } from "@/components/ui/card"
+import { Image } from "lucide-react"
 
 interface Partner{
     partner_id: string,
@@ -19,7 +20,7 @@ export function PartnerCard({partner}: PartnerCardProps){
     >
       {partner.image && (
         <div className="w-full h-full flex items-center jusity-center">
-          <img 
+          <Image 
             src={partner.image} 
             alt={partner.name}
             className="max-w-full max-g-48 object-contain"

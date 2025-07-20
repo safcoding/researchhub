@@ -4,7 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Calendar, MapPin, Clock } from "lucide-react"
 import { linkifyText } from "@/lib/linkifyText" 
-
+import Image from "next/image"
 
 interface Event {
   event_id: string
@@ -32,7 +32,7 @@ export function EventCard({ event, onClick, className = "" }: EventCardProps) {
     >
       {event.image && (
         <div className="aspect-video overflow-hidden rounded-t-lg">
-          <img 
+          <Image 
             src={event.image} 
             alt={event.title}
             className="w-full h-full object-cover transition-transform duration-200 hover:scale-105"
