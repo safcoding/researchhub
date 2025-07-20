@@ -61,6 +61,8 @@ export function EventModal({ event, isOpen, onClose }: EventModalProps) {
             <Image 
               src={event.image} 
               alt={event.title}
+              width={400}
+              height={225}
               className="w-full h-full object-cover"
             />
           </div>
@@ -69,6 +71,8 @@ export function EventModal({ event, isOpen, onClose }: EventModalProps) {
               <Image
                 src={event.image}
                 alt={event.title}
+                width={400}
+                height={225}
                 className="w-full h-auto max-h-[80vh] object-contain rounded-lg"
               />
             </DialogContent>

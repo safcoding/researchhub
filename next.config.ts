@@ -11,6 +11,7 @@ const nextConfig: NextConfig = {
   images: {
     domains: [
       'mjiit.utm.my',
+      "fqtizehthryjvqxqvpkl.supabase.co",
     ],
   },
 };

@@ -1,7 +1,7 @@
 "use client"
 
 import { Card } from "@/components/ui/card"
-import { Image } from "lucide-react"
+import Image from "next/image"
 
 interface Partner{
     partner_id: string,
@@ -23,6 +23,8 @@ export function PartnerCard({partner}: PartnerCardProps){
           <Image 
             src={partner.image} 
             alt={partner.name}
+            width={225}
+            height={400}
             className="max-w-full max-g-48 object-contain"
           />
         </div>

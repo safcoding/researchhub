@@ -18,13 +18,22 @@ const Header = () => {
             research.mjiit@utm.my
           </span>
             <Link href="https://www.facebook.com/mjiitutm/" aria-label="Facebook">
-            <Image src="/assets/icons/facebook.svg" alt="Facebook" className="w-5 h-5" />
+            <Image src="/assets/icons/facebook.svg" alt="Facebook" 
+            width={20}
+            height={20}
+            />
             </Link>
             <Link href="https://www.instagram.com/mjiitutm/" aria-label="Instagram">
-            <Image src="/assets/icons/instagram.svg" alt="Instagram" className="w-5 h-5" />
+            <Image src="/assets/icons/instagram.svg" alt="Instagram"
+            width={20}
+            height={20}
+            />
             </Link>
             <Link href="https://x.com/MJIITOFFICIAL/" aria-label="X">
-            <Image src="/assets/icons/x.svg" alt="X" className="w-5 h-5" />
+            <Image src="/assets/icons/x.svg" alt="X"
+            width={20}
+            height={20}
+            />
             </Link>
         </div>
         <div className="hidden md:flex gap-4">

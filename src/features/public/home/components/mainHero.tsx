@@ -9,8 +9,9 @@ const HeroSection = () => {
         <Image
           alt="background"
           src="https://mjiit.utm.my/wp-content/uploads/2024/12/mjiit-building-front-scaled.jpg"
-          className="h-[120%] w-full object-cover scale-110  blur-[2px]
-"
+          className="h-[120%] w-full object-cover scale-110  blur-[2px]"
+            width={1920}
+            height={120}
         />
         <div className="absolute inset-0 bg-gradient-to-b from-[#046951]/80 via-[#046951]/60  to-white"></div>
       </div>
