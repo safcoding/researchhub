@@ -25,18 +25,6 @@ export interface PaginationWithLinksProps {
   pageSearchParam?: string;
 }
 
-/**
- * Navigate with Nextjs links (need to update your own `pagination.tsx` to use Nextjs Link)
- * 
- * @example
- * ```
- * <PaginationWithLinks
-    page={1}
-    pageSize={20}
-    totalCount={500}
-  />
- * ```
- */
 export function PaginationWithLinks({
   pageSizeSelectOptions,
   pageSize,

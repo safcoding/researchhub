@@ -84,7 +84,7 @@ export function EventSearch() {
         <div className="flex flex-wrap gap-2">
           {eventQuery.trim() && (
             <div className="flex items-center gap-1 bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm">
-              <span>Event: "{eventQuery.trim()}"</span>
+              <span>Event: &quot;{eventQuery.trim()}&quot;</span>
               <button
                 onClick={() => {
                   setEventQuery("")

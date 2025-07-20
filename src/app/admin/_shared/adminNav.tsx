@@ -1,6 +1,6 @@
 'use client'
 import * as React from "react"
-import { GalleryVerticalEnd } from "lucide-react"
+import { UserCog } from "lucide-react"
 
 import {
   Sidebar,
@@ -35,7 +35,7 @@ const data = {
           url: "/admin/publications",
         },
         {
-          title: "Lab and Equipment Management",
+          title: "Lab Management",
           url: "/admin/labs",
         },
         {
@@ -55,6 +55,10 @@ const data = {
         {
           title: "About",
           url: "/about",
+        },
+        {
+          title: "Partners",
+          url: "/partners",
         },
         {
           title: "Grants",
@@ -86,7 +90,7 @@ export function AdminNav({ ...props }: React.ComponentProps<typeof Sidebar>) {
             <SidebarMenuButton size="lg" asChild>
               <a href="#">
                 <div className="bg-sidebar-primary text-sidebar-primary-foreground flex aspect-square size-8 items-center justify-center rounded-lg">
-                  <GalleryVerticalEnd className="size-4" />
+                  <UserCog className="size-6" />
                 </div>
                 <div className="flex flex-col gap-0.5 leading-none">
                   <span className="font-medium">ResearchHub Admin Panel</span>

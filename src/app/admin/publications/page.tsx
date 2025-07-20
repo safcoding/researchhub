@@ -149,7 +149,7 @@ export default async function PubblicationAdminPage({
             ? `Found ${totalCount} results` 
             : `No results found`
           }
-          {query && <span className="ml-2">• Search: "{query}"</span>}
+          {query && <span className="ml-2">• Search: &quot;{query}&quot;</span>}
           {type && type !== 'any' && <span className="ml-2">• Type: {type}</span>}
           {status && status !== 'any' && <span className="ml-2">• Status: {status}</span>}
           {category && category !== 'any' && <span className="ml-2">• Category: {category}</span>}
