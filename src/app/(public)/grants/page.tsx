@@ -1,7 +1,7 @@
 import { CumGrantCharts } from "@/features/public/grants/components/cumGrantCharts"
 import { GrantTypeChart } from "@/features/public/grants/components/typeChart"
 import { getGrantChartData } from "@/features/public/grants/server/chartData"
-import { SponsorTypeChart } from "@/features/public/grants/components/sponsorCatchart"
+import { SponsorTypeChart } from "@/features/public/grants/components/sponsorCategoryChart"
 import { GrantStatCards } from "@/features/public/grants/components/statCards"
 
 export default async function PublicGrantsPage() {
@@ -9,6 +9,7 @@ export default async function PublicGrantsPage() {
   const chartData = await getGrantChartData(currentYear)
 
   return (
+  
     <div className="container mx-auto py-8 space-y-8">
       <div className="text-center space-y-2">
         <h1 className="text-3xl font-bold tracking-tight">Research Grants Overview</h1>

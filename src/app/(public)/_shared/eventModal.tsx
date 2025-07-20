@@ -10,7 +10,7 @@ import { Badge } from "@/components/ui/badge"
 import { Calendar, MapPin, Clock, User} from "lucide-react"
 import { useState } from "react"
 import { linkifyText } from "@/lib/linkifyText"
-
+import Image from "next/image"
 
 interface Event {
   event_id: string
@@ -49,9 +49,7 @@ export function EventModal({ event, isOpen, onClose }: EventModalProps) {
     </DialogTitle>
   </DialogHeader>
 
-  {/* Grid layout */}
   <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-    {/* Left column: Image */}
     <div className="flex flex-col justify-start">
       {event.image && (
         <>
@@ -60,17 +58,21 @@ export function EventModal({ event, isOpen, onClose }: EventModalProps) {
             onClick={() => setShowImageModal(true)}
             title="Click to view full image"
           >
-            <img 
+            <Image 
               src={event.image} 
               alt={event.title}
+              width={400}
+              height={225}
               className="w-full h-full object-cover"
             />
           </div>
           <Dialog open={showImageModal} onOpenChange={setShowImageModal}>
             <DialogContent className="p-0 max-w-3xl bg-transparent shadow-none">
-              <img
+              <Image
                 src={event.image}
                 alt={event.title}
+                width={400}
+                height={225}
                 className="w-full h-auto max-h-[80vh] object-contain rounded-lg"
               />
             </DialogContent>
@@ -79,9 +81,8 @@ export function EventModal({ event, isOpen, onClose }: EventModalProps) {
       )}
     </div>
 
-    {/* Right column: 2 rows */}
+
     <div className="flex flex-col gap-6">
-      {/* Row 1: Event details */}
       <div className="grid grid-cols-1 gap-2 text-sm">
         <div className="flex items-center gap-2 text-gray-600">
           <Calendar className="h-4 w-4" />

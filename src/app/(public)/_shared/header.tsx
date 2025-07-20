@@ -1,4 +1,5 @@
 'use client'
+
 import Link from 'next/link';
 import Image from 'next/image';
 import { Phone } from 'lucide-react';
@@ -12,19 +13,27 @@ const Header = () => {
             <Phone className="w-4 h-4" />
             +60 3-2203-1200
           </span>
-          {/* Mail */}
           <span className="flex items-center gap-1">
             <Mail className="w-4 h-4" />
             research.mjiit@utm.my
           </span>
             <Link href="https://www.facebook.com/mjiitutm/" aria-label="Facebook">
-            <img src="/assets/icons/facebook.svg" alt="Facebook" className="w-5 h-5" />
+            <Image src="/assets/icons/facebook.svg" alt="Facebook" 
+            width={20}
+            height={20}
+            />
             </Link>
             <Link href="https://www.instagram.com/mjiitutm/" aria-label="Instagram">
-            <img src="/assets/icons/instagram.svg" alt="Instagram" className="w-5 h-5" />
+            <Image src="/assets/icons/instagram.svg" alt="Instagram"
+            width={20}
+            height={20}
+            />
             </Link>
             <Link href="https://x.com/MJIITOFFICIAL/" aria-label="X">
-            <img src="/assets/icons/x.svg" alt="X" className="w-5 h-5" />
+            <Image src="/assets/icons/x.svg" alt="X"
+            width={20}
+            height={20}
+            />
             </Link>
         </div>
         <div className="hidden md:flex gap-4">
@@ -48,6 +57,7 @@ const Header = () => {
         <nav className="flex-1 flex items-center gap-8">
           <Link href="/" className="font-bold text-lg text-white hover:text-gray-200">Home</Link>
           <Link href="/about" className="font-bold text-lg text-white hover:text-gray-200">About</Link>
+          <Link href="/partners" className="font-bold text-lg text-white hover:text-gray-200">Our Partners</Link>
           <Link href="/grants" className="font-bold text-lg text-white hover:text-gray-200">Grants</Link>
           <Link href="/publications" className="font-bold text-lg text-white hover:text-gray-200">Publications</Link>
           <Link href="/labs" className="font-bold text-lg text-white hover:text-gray-200">Labs</Link>

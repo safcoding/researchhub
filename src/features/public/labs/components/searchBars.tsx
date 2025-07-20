@@ -101,7 +101,7 @@ export function LabsSearch() {
         <div className="flex flex-wrap gap-2">
           {labQuery.trim() && (
             <div className="flex items-center gap-1 bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm">
-              <span>Lab: "{labQuery.trim()}"</span>
+              <span>Lab: &quot;{labQuery.trim()}&quot;</span>
               <button
                 onClick={() => {
                   setLabQuery("")
@@ -116,7 +116,7 @@ export function LabsSearch() {
           
           {equipmentQuery.trim() && (
             <div className="flex items-center gap-1 bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm">
-              <span>Equipment: "{equipmentQuery.trim()}"</span>
+              <span>Equipment: &quot;{equipmentQuery.trim()}&quot;</span>
               <button
                 onClick={() => {
                   setEquipmentQuery("")

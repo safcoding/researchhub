@@ -16,6 +16,7 @@ import { useState, useEffect } from "react"
 import { event } from "@prisma/client"
 import { Textarea } from "@/components/ui/textarea"
 import imageCompression from 'browser-image-compression'
+import Image from "next/image"
 
 interface FormState {
   message: string;
@@ -100,7 +101,7 @@ export function EventForm({ event }: { event?: event }) {
                     placeholder="Enter event description. URLs like https://example.com will automatically become clickable links."
                 />
                 <p className="text-xs text-gray-500">
-                    💡 Tip: Paste URLs directly (e.g., https://example.com) and they'll become clickable links
+                    💡 Tip: Paste URLs directly (e.g., https://example.com) and they&apos;ll become clickable links
                 </p>
                 {formState.errors?.description && (
                     <div className="text-destructive text-sm">{formState.errors.description[0]}</div>
@@ -252,7 +253,7 @@ export function EventForm({ event }: { event?: event }) {
                 {imagePreview && (
                     <div className="mt-2">
                         <p className="text-sm text-gray-600">Preview:</p>
-                        <img 
+                        <Image 
                             src={imagePreview} 
                             alt="Image preview" 
                             className="w-32 h-32 object-cover rounded border"
@@ -263,7 +264,7 @@ export function EventForm({ event }: { event?: event }) {
                 {event?.image && !imagePreview && (
                     <div className="mt-2">
                         <p className="text-sm text-gray-600">Current image:</p>
-                        <img 
+                        <Image 
                             src={event.image} 
                             alt="Current event image" 
                             className="w-32 h-32 object-cover rounded border"
