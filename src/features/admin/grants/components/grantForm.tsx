@@ -35,11 +35,9 @@ export function GrantForm( {grant }: { grant?: grant} ){
 
     const [formState, action] = useFormState(
         async (prevState: any, formData: FormData) => {
-            // If "Others" is selected, use the manual type
             if (formData.get("type") === "Others") {
                 formData.set("type", formData.get("other_type") as string);
             }
-            // Remove the other_type field so it's not saved as a column
             formData.delete("other_type");
             return grant == null
                 ? await addGrant(prevState, formData)

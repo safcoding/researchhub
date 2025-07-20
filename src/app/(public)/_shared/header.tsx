@@ -1,4 +1,5 @@
 'use client'
+
 import Link from 'next/link';
 import Image from 'next/image';
 import { Phone } from 'lucide-react';
@@ -12,7 +13,6 @@ const Header = () => {
             <Phone className="w-4 h-4" />
             +60 3-2203-1200
           </span>
-          {/* Mail */}
           <span className="flex items-center gap-1">
             <Mail className="w-4 h-4" />
             research.mjiit@utm.my

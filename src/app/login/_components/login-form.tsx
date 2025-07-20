@@ -7,6 +7,7 @@ import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
+import { useFormStatus, } from "react-dom"
 
 export function LoginForm({
   className,
@@ -60,12 +61,18 @@ export function LoginForm({
                 name="password"
               />
             </div>
-            <Button type="submit" className="w-full">
-              Login
-            </Button>
+        <SubmitButton/>
           </div>
         </div>
       </form>
     </div>
   )
+}
+
+function SubmitButton(){
+    const { pending } = useFormStatus()
+    return (
+        <Button type="submit" disabled={pending}>{pending ? "Logging in..." : "Log in"}</Button>
+    )
+
 }

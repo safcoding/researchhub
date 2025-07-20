@@ -15,14 +15,14 @@ interface PartnerCardProps{
 export function PartnerCard({partner}: PartnerCardProps){
     return (
     <Card 
-      className={`h-full cursor-pointer hover:shadow-lg transition-all duration-200 hover:scale-[1.02]`}
+      className={`h-full cursor-pointer hover:shadow-lg transition-all duration-200 hover:scale-[1.02] px-4 py-4`}
     >
       {partner.image && (
-        <div className="aspect-video overflow-hidden rounded-t-lg">
+        <div className="w-full h-full flex items-center jusity-center">
           <img 
             src={partner.image} 
             alt={partner.name}
-            className="w-full h-full object-cover transition-transform duration-200 hover:scale-105"
+            className="max-w-full max-g-48 object-contain"
           />
         </div>
       )}

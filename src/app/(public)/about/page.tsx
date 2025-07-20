@@ -3,22 +3,19 @@
 import React from 'react';
 import Image from 'next/image';
 
-// Import images from public/assets/about
 const DeputyDean = '/assets/about/deputydean.png';
 const organizationChartImage = '/assets/about/organizationchart.png';
 const MrShaiful = '/assets/about/mrshaiful.png';
 const MrsAriffi = '/assets/about/mrsariffi.png';
 
 export default function AboutPage() {
-  // Remove loading state since it's not defined
-  // If you need loading, add: const [loading, setLoading] = useState(false);
+
 
   return (
     <main className="container mx-auto px-4 py-12">
       <div className="max-w-4xl mx-auto">
         <h1 className="text-4xl font-bold mb-8 text-center">About the MJIIT Research Portal</h1>
         <div className="flex flex-col md:flex-row gap-6 mb-12 items-start">
-          {/* Deputy Dean Image */}
           <Image
             src={DeputyDean}
             alt="Deputy Dean"
@@ -26,8 +23,6 @@ export default function AboutPage() {
             height={350}
             className="rounded-lg shadow-md object-cover flex-shrink-0"
           />
-
-          {/* Text Content */}
           <div className="prose prose-lg max-w-none">
             <p className="text-xl mb-6">
               Welcome to the MJIIT Research Portal – a centralized platform designed exclusively for the researchers of the Malaysia-Japan International Institute of Technology (MJIIT).
@@ -48,7 +43,6 @@ export default function AboutPage() {
           </div>
         </div>
 
-        {/* Info Cards */}
         <div className="mt-16 grid grid-cols-1 md:grid-cols-3 gap-8">
           <div className="bg-white rounded-lg shadow-md p-6 flex flex-col items-center text-center">
             <div className="text-4xl mb-4">🔬</div>
@@ -79,7 +73,7 @@ export default function AboutPage() {
 
           <div className="mt-12">
             <h2 className="text-3xl font-bold mb-6">Staff of Research Administration</h2>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
               <div className="bg-white rounded-lg shadow-md p-6 text-center">
                 <Image
                   src={MrShaiful}

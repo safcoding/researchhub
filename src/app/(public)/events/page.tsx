@@ -30,7 +30,7 @@ export default async function EventsPage({
   const query = params.query || ''
   const category = params.category || 'all'
   const { data: events, totalCount } = await getEvents(page, pageSize, query, category)
-  
+
   return (
     <div className="container mx-auto px-4 py-8 space-y-6">
       <div className="text-center space-y-4">
