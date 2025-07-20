@@ -84,7 +84,7 @@ export async function addLab(prevState: FormState, formData: FormData): Promise<
             }
         })
 
-        redirect("/admin/labs")
+
     } catch (error) {
         console.error('Error creating lab:', error)
         return {
@@ -92,6 +92,7 @@ export async function addLab(prevState: FormState, formData: FormData): Promise<
             errors: {}
         }
     }
+        redirect("/admin/labs")
 }
 
 export async function editLab(id: string, prevState: FormState, formData: FormData): Promise<FormState> {
@@ -155,7 +156,7 @@ export async function editLab(id: string, prevState: FormState, formData: FormDa
             }
         })
 
-        redirect("/admin/labs")
+
     } catch (error) {
         console.error('Error updating lab:', error)
         return {
@@ -163,6 +164,7 @@ export async function editLab(id: string, prevState: FormState, formData: FormDa
             errors: {}
         }
     }
+        redirect("/admin/labs")
 }
 
 export async function deleteLab(lab_id: string) {
@@ -176,10 +178,9 @@ export async function deleteLab(lab_id: string) {
                 where: { lab_id }
             })
         })
-        
-        redirect("/admin/labs")
     } catch (error) {
         console.error('Error deleting lab:', error)
         throw error
     }
+    redirect("/admin/labs")
 }

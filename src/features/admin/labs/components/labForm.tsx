@@ -70,7 +70,7 @@ export function LabForm({ lab }: LabFormProps) {
                 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="space-y-2">
-                        <Label htmlFor="lab_name">Lab Name *</Label>
+                        <Label htmlFor="lab_name">Lab Name <span className="text-red-500">*</span></Label>
                         <Input 
                             type="text" 
                             id="lab_name" 
@@ -84,7 +84,7 @@ export function LabForm({ lab }: LabFormProps) {
                     </div>
 
                     <div className="space-y-2">
-                        <Label htmlFor="type">Lab Type *</Label>
+                        <Label htmlFor="type">Lab Type <span className="text-red-500">*</span></Label>
                         <Select name="type" defaultValue={lab?.type || ""} required>
                             <SelectTrigger>
                                 <SelectValue placeholder="Select lab type" />

@@ -75,7 +75,7 @@ export function PartnerForm({partner}: {partner?: Partner}){
     return (
         <form action={action} className="space-y-8">
             <div className="space-y-2">
-                <Label htmlFor="name">Partner Name</Label>
+                <Label htmlFor="name">Partner Name <span className="text-red-500">*</span></Label>
                 <Input type="text" id="name" name="name" required defaultValue={partner?.name || ""} />
                 {formState.errors?.name && (
                     <div className="text-destructive text-sm">{formState.errors.name[0]}</div>
@@ -83,7 +83,7 @@ export function PartnerForm({partner}: {partner?: Partner}){
             </div>
 
             <div className="space-y-2">
-                <Label htmlFor="image">Partner  Logo</Label>
+                <Label htmlFor="image">Partner Logo <span className="text-red-500">*</span></Label>
                 <Input
                     type="file"
                     id="image"

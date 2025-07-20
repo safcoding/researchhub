@@ -82,7 +82,9 @@ export const columns: ColumnDef<Publication>[] = [
         header: "Status",
         size: 120,
         cell: ({ row }) => (
-            <div className="w-[120px]">{row.getValue("status") || "N/A"}</div>
+            <div className="w-[120px] truncate" title={row.getValue("status") || ""}>
+                {row.getValue("status") || "N/A"}
+            </div>
         ),
     },
     {
