@@ -1,7 +1,7 @@
 import { CumGrantCharts } from "@/features/public/grants/components/cumGrantCharts"
 import { GrantTypeChart } from "@/features/public/grants/components/typeChart"
 import { getGrantChartData } from "@/features/public/grants/server/chartData"
-import { SponsorTypeChart } from "@/features/public/grants/components/sponsorCatChart"
+import { SponsorTypeChart } from "@/features/public/grants/components/sponsorCategoryChart"
 import { GrantStatCards } from "@/features/public/grants/components/statCards"
 
 export default async function PublicGrantsPage() {
