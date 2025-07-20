@@ -27,6 +27,7 @@ const HeroSection = () => {
             </div>
             <div className="mt-6 flex justify-center gap-3">
               <LearnButton href="/about" title="Learn more about us" variant="outline" size="lg" />
+              <LearnButton href="/partners" title="Our partners" variant="outline" size="lg" />
             </div>
           </div>
         </div>

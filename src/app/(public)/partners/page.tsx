@@ -8,7 +8,7 @@ export default async function PartnersPage() {
   return (
     <div className="min-h-screen flex flex-col">
       <div className="text-center space-y-4 mb-4 mt-10">
-        <h1 className="text-4xl font-bold">All of our industry Partners</h1>
+        <h1 className="text-4xl font-bold">Our valued industry partners</h1>
       </div>
         <div className="px-20 py-8 justify-center">
           <PartnerGrid

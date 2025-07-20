@@ -1,25 +1,31 @@
 "use client"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { LearnButton } from "./learnButton";
-
+import { CalendarRange, Newspaper, CircleDollarSign, Microscope } from "lucide-react";
 const programs = [
   { 
     title: 'MJIIT Publication Achievements', 
-    icon: '🎓', 
+    icon: <Newspaper className="size-10"/>, 
     description: 'Discover more about MJIIT research utilities.',
     route: '/publications' 
   },
   { 
     title: 'MJIIT Grant Achievements', 
-    icon: '🌏', 
+    icon: <CircleDollarSign className="size-10"/>, 
     description: 'Explore our research funding and grant achievements.',
     route: '/grants' 
   },
   { 
     title: 'Research Labs in MJIIT', 
-    icon: '🔬', 
+    icon: <Microscope className="size-10"/>, 
     description: 'Learn about our state-of-the-art research facilities.',
     route: '/labs' 
+  },
+  { 
+    title: 'Research Related Events', 
+    icon: <CalendarRange className="size-10"/>, 
+    description: 'Learn about events for researchers.',
+    route: '/events' 
   },
 ];
 

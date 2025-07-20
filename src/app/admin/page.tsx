@@ -123,7 +123,6 @@ export default async function AdminDashboard() {
         </Card>
       </div>
 
-      {/* Client component for partner table with modal */}
       <PartnerTableSection partners={partners} />
     </div>
   )
