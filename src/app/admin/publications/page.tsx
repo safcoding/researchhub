@@ -50,17 +50,27 @@ async function getData(
       mode: 'insensitive' as const,
     }
   }
-  if (date_from || date_to) {
-    where.date = {}
-    
-    if (date_from) {
-      where.date.gte = new Date(date_from)
+    if (date_from || date_to) {
+      where.pro_date_start = {}
+      
+      if (date_from && date_from.trim() !== '') {
+        const fromDate = new Date(date_from)
+        if (!isNaN(fromDate.getTime())) { 
+          where.pro_date_start.gte = fromDate
+        }
+      }
+      
+      if (date_to && date_to.trim() !== '') {
+        const toDate = new Date(date_to)
+        if (!isNaN(toDate.getTime())) {   
+          where.pro_date_start.lte = toDate
+        }
+      }
+
+      if (Object.keys(where.pro_date_start).length === 0) {
+        delete where.pro_date_start
+      }
     }
-    
-    if (date_to) {
-      where.date.lte = new Date(date_to)
-    }
-  }
 
   const totalCount = await db.publication.count({ where })
 

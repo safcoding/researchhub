@@ -71,7 +71,7 @@ export function PublicationForm( {publication }: { publication?: publication} ){
     return (
         <form action={action} className="space-y-8">
             <div className="space-y-2">
-                <Label htmlFor="pub_refno">Publication Reference Number</Label>
+                <Label htmlFor="pub_refno">Publication Reference Number <span className="text-red-500">*</span></Label>
                 <Input type="text" id="pub_refno" name="pub_refno" required defaultValue={publication?.pub_refno || ""} />
                 {formState.errors?.pub_refno && (
                     <div className="text-destructive text-sm">{formState.errors.pub_refno[0]}</div>
@@ -79,14 +79,14 @@ export function PublicationForm( {publication }: { publication?: publication} ){
             </div>
 
             <div className="space-y-2">
-                <Label htmlFor="title">Publication Title</Label>
+                <Label htmlFor="title">Publication Title <span className="text-red-500">*</span></Label>
                 <Input type="text" id="title" name="title" required defaultValue={publication?.title || ""} />
                 {formState.errors?.title && (
                     <div className="text-destructive text-sm">{formState.errors.title[0]}</div>
                 )}
             </div>
                 <div className="space-y-2">
-                    <Label htmlFor="status">Status</Label>
+                    <Label htmlFor="status">Status <span className="text-red-500">*</span></Label>
                     <Select name="status" defaultValue={publication?.status || ""} required>
                         <SelectTrigger>
                             <SelectValue placeholder="Select publication status" />
@@ -102,7 +102,7 @@ export function PublicationForm( {publication }: { publication?: publication} ){
                 </div>
 
             <div className="space-y-2">
-            <Label htmlFor="type">Publication Type</Label>
+            <Label htmlFor="type">Publication Type <span className="text-red-500">*</span></Label>
             <Select
                 name="type"
                 value={selectedType}
@@ -141,7 +141,7 @@ export function PublicationForm( {publication }: { publication?: publication} ){
             </div>
 
             <div className="space-y-2">
-            <Label htmlFor="category">Category</Label>
+            <Label htmlFor="category">Category <span className="text-red-500">*</span></Label>
             <Select
                 name="category"
                 value={selectedCategory}
@@ -176,7 +176,7 @@ export function PublicationForm( {publication }: { publication?: publication} ){
             </div>
 
             <div className="space-y-2">
-                <Label htmlFor="journal">Journal</Label>
+                <Label htmlFor="journal">Journal <span className="text-red-500">*</span></Label>
                 <Input type="text" id="journal" name="journal" required defaultValue={publication?.journal || ""} />
                 {formState.errors?.journal && (
                     <div className="text-destructive text-sm">{formState.errors.journal[0]}</div>
@@ -192,7 +192,7 @@ export function PublicationForm( {publication }: { publication?: publication} ){
             </div>
 
             <div className="space-y-2">
-                <Label htmlFor="date">Publication Date</Label>
+                <Label htmlFor="date">Publication Date <span className="text-red-500">*</span></Label>
                 <Input type="date" id="date" name="date" required defaultValue={publication?.date ? new Date(publication.date).toISOString().split('T')[0] : ""} />
                 {formState.errors?.date && (
                     <div className="text-destructive text-sm">{formState.errors.date[0]}</div>
@@ -200,7 +200,7 @@ export function PublicationForm( {publication }: { publication?: publication} ){
             </div>
 
             <div className="space-y-2">
-                <Label htmlFor="level">Level</Label>
+                <Label htmlFor="level">Level <span className="text-red-500">*</span></Label>
                 <Input type="text" id="level" name="level" required defaultValue={publication?.level || ""} />
                 {formState.errors?.level && (
                     <div className="text-destructive text-sm">{formState.errors.level[0]}</div>
@@ -208,7 +208,7 @@ export function PublicationForm( {publication }: { publication?: publication} ){
             </div>
 
             <div className="space-y-2">
-                <Label htmlFor="author_id">Author ID</Label>
+                <Label htmlFor="author_id">Author ID <span className="text-red-500">*</span></Label>
                 <Input type="number" id="author_id" name="author_id" required defaultValue={publication?.author_id?.toString() || ""} />
                 {formState.errors?.author_id && (
                     <div className="text-destructive text-sm">{formState.errors.author_id[0]}</div>
@@ -216,7 +216,7 @@ export function PublicationForm( {publication }: { publication?: publication} ){
             </div>
 
             <div className="space-y-2">
-                <Label htmlFor="author_name">Author Name</Label>
+                <Label htmlFor="author_name">Author Name <span className="text-red-500">*</span></Label>
                 <Input type="text" id="author_name" name="author_name" required defaultValue={publication?.author_name || ""} />
                 {formState.errors?.author_name && (
                     <div className="text-destructive text-sm">{formState.errors.author_name[0]}</div>
