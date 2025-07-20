@@ -19,7 +19,7 @@ export default async function EditGrantPage(
         <div className="space-y-6">
             <div className="space-y-4">
                 <BackButton />
-                <h1 className="text-2xl font-bold">Add New Grant</h1>
+                <h1 className="text-2xl font-bold">Edit Grant</h1>
             </div>
             <GrantForm grant={grant} />
         </div>
