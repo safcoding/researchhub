@@ -51,24 +51,24 @@ async function getData(
     }
   }
     if (date_from || date_to) {
-      where.pro_date_start = {}
+      where.date = {}
       
       if (date_from && date_from.trim() !== '') {
         const fromDate = new Date(date_from)
         if (!isNaN(fromDate.getTime())) { 
-          where.pro_date_start.gte = fromDate
+          where.date.gte = fromDate
         }
       }
       
       if (date_to && date_to.trim() !== '') {
         const toDate = new Date(date_to)
         if (!isNaN(toDate.getTime())) {   
-          where.pro_date_start.lte = toDate
+          where.date.lte = toDate
         }
       }
 
-      if (Object.keys(where.pro_date_start).length === 0) {
-        delete where.pro_date_start
+      if (Object.keys(where.date).length === 0) {
+        delete where.date
       }
     }
 
