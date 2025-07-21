@@ -87,7 +87,7 @@ export async function addEvent(prevState: FormState, formData: FormData): Promis
       }
     })
 
-    redirect("/admin/events")
+
   } catch (error) {
     console.error('Error creating event:', error)
     return {
@@ -95,6 +95,7 @@ export async function addEvent(prevState: FormState, formData: FormData): Promis
       errors: {}
     }
   }
+      redirect("/admin/events")
 }
 
 export async function deleteEvent(id: string) {

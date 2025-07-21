@@ -23,7 +23,7 @@ const Header = () => {
             height={20}
             />
             </Link>
-            <Link href="https://www.instagram.com/mjiitutm/" aria-label="Instagram">
+            <Link href="https://www.instagram.com/mjiitofficial/" aria-label="Instagram">
             <Image src="/assets/icons/instagram.svg" alt="Instagram"
             width={20}
             height={20}
