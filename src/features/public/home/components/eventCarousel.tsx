@@ -52,9 +52,9 @@ export function EventCarousel({ events, title = "Upcoming Events" }: EventCarous
 
   return (
     <>
-      <div className="w-full px-4 sm:px-6 lg:px-8 overflow-x-hidden">
+      <div className="w-full px-4 sm:px-6 lg:px-8 overflow-x-hidden bg-gray-50 py-16 relative">
         <div className="mx-auto max-w-7xl">
-          <h2 className="text-2xl font-bold mb-6 text-center">{title}</h2>
+          <h2 className="text-5xl font-bold mb-6 text-center">{title}</h2>
           <Carousel className="w-full">
             <CarouselContent>
               {events.map((event) => (
@@ -70,13 +70,16 @@ export function EventCarousel({ events, title = "Upcoming Events" }: EventCarous
             <CarouselNext />
           </Carousel>
         </div>
+        <div className="pointer-events-none absolute left-0 bottom-0 w-full h-16 bg-gradient-to-t from-gray-200/80 to-transparent" />
       </div>
+
       
       <EventModal 
         event={selectedEvent}
         isOpen={isModalOpen}
         onClose={handleCloseModal}
       />
+
     </>
   )
 }

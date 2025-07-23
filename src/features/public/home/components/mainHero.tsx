@@ -13,7 +13,7 @@ const HeroSection = () => {
             width={1920}
             height={120}
         />
-        <div className="absolute inset-0 bg-gradient-to-b from-[#046951]/80 via-[#046951]/60  to-white"></div>
+        <div className="absolute inset-0 bg-gradient-to-b from-[#046951]/80 via-[#046951]/60  to-gray-50"></div>
       </div>
       <div className="relative z-10 w-full px-4 sm:px-6 lg:px-8">
         <div className="mx-auto flex max-w-5xl flex-col items-center">
