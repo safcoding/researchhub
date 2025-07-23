@@ -54,7 +54,7 @@ export function EventModal({ event, isOpen, onClose }: EventModalProps) {
       {event.image && (
         <>
           <div
-            className="aspect-video overflow-hidden rounded-lg cursor-pointer"
+            className=" overflow-hidden rounded-lg cursor-pointer"
             onClick={() => setShowImageModal(true)}
             title="Click to view full image"
           >
