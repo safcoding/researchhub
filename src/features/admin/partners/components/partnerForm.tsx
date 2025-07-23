@@ -17,7 +17,7 @@ interface FormState {
   };
 }
 
-export function PartnerForm({partner}: {partner?: Partner}){
+export function PartnerForm({partner, onSuccess}: {partner?: Partner, onSuccess?: () => void}){
     const [formState, action] = useFormState(
         partner == null ? addPartner : editPartner.bind(null, partner.partner_id),
         { message: "", errors: {}} as FormState
@@ -34,6 +34,11 @@ export function PartnerForm({partner}: {partner?: Partner}){
             }
         }
     }, [formState.errors])
+  useEffect(() => {
+    if (formState.message === "success" && onSuccess) {
+      onSuccess();
+    }
+  }, [formState, onSuccess]);
 
     const handleImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0]
@@ -103,7 +108,7 @@ export function PartnerForm({partner}: {partner?: Partner}){
                 {imagePreview && (
                     <div className="mt-2">
                         <p className="text-sm text-gray-600">Preview:</p>
-                        <Image 
+                        <img 
                             src={imagePreview} 
                             alt="Image preview" 
                             className="w-32 h-32 object-cover rounded border"
@@ -114,7 +119,7 @@ export function PartnerForm({partner}: {partner?: Partner}){
                 {partner?.image && !imagePreview && (
                     <div className="mt-2">
                         <p className="text-sm text-gray-600">Current image:</p>
-                        <Image 
+                        <img 
                             src={partner.image} 
                             alt="Current event image" 
                             className="w-32 h-32 object-cover rounded border"
