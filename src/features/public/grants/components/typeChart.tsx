@@ -59,7 +59,7 @@ export function GrantTypeChart({ typeData, currentYear }: GrantChartProps) {
         <CardDescription>Number of grants by grant type</CardDescription>
       </CardHeader>
       <CardContent>
-        <ChartContainer config={typeChartConfig} className="h-[400px] overflow-y-auto">
+        <ChartContainer config={typeChartConfig} className="h-[400px] overflow-y-auto w-full">
           <BarChart
             accessibilityLayer
             data={dataWithColors}
