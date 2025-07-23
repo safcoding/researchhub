@@ -11,12 +11,13 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import { addEvent, editEvent } from "../server/events"
-import { useFormStatus, useFormState } from "react-dom"
+import { useFormStatus } from "react-dom"
 import { useState, useEffect } from "react"
 import { event } from "@prisma/client"
 import { Textarea } from "@/components/ui/textarea"
 import imageCompression from 'browser-image-compression'
 import Image from "next/image"
+import { useActionState } from "react"
 
 interface FormState {
   message: string;
@@ -26,7 +27,7 @@ interface FormState {
 }
 
 export function EventForm({ event }: { event?: event }) {
-    const [formState, action] = useFormState(
+    const [formState, action] = useActionState(
         event == null ? addEvent : editEvent.bind(null, event.event_id), 
         { message: "", errors: {} } as FormState
     )
@@ -253,7 +254,7 @@ export function EventForm({ event }: { event?: event }) {
                 {imagePreview && (
                     <div className="mt-2">
                         <p className="text-sm text-gray-600">Preview:</p>
-                        <Image 
+                        <img 
                             src={imagePreview} 
                             alt="Image preview" 
                             className="w-32 h-32 object-cover rounded border"
@@ -264,7 +265,7 @@ export function EventForm({ event }: { event?: event }) {
                 {event?.image && !imagePreview && (
                     <div className="mt-2">
                         <p className="text-sm text-gray-600">Current image:</p>
-                        <Image 
+                        <img 
                             src={event.image} 
                             alt="Current event image" 
                             className="w-32 h-32 object-cover rounded border"

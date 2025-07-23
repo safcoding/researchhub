@@ -11,10 +11,10 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import { addPublication, editPublication } from "../server/publications"
-import { useFormStatus, } from "react-dom"
-import { useFormState } from "react-dom"
+import { useFormStatus } from "react-dom"
 import { publication } from "@prisma/client"
 import { useState } from "react"
+import { useActionState } from "react"
 
 export function PublicationForm( {publication }: { publication?: publication} ){
     const [selectedType, setSelectedType] = useState(publication?.type && ![
@@ -47,7 +47,7 @@ export function PublicationForm( {publication }: { publication?: publication} ){
         ].includes(publication.category) ? publication.category : ""
     );
 
-    const [formState, action] = useFormState(
+    const [formState, action] = useActionState(
         async (prevState: any, formData: FormData) => {
 
             if (formData.get("type") === "Others") {
