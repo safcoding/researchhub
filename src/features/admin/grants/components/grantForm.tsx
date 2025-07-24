@@ -12,7 +12,7 @@ import {
 } from "@/components/ui/select"
 import { addGrant, editGrant } from "../server/grants"
 import { useFormStatus, } from "react-dom"
-import { useFormState } from "react-dom"
+import { useActionState } from "react"
 import { grant } from "@prisma/client"
 import { useState } from "react"
 
@@ -33,7 +33,7 @@ export function GrantForm( {grant }: { grant?: grant} ){
         ].includes(grant.type) ? grant.type : ""
     );
 
-    const [formState, action] = useFormState(
+    const [formState, action] = useActionState(
         async (prevState: any, formData: FormData) => {
             if (formData.get("type") === "Others") {
                 formData.set("type", formData.get("other_type") as string);

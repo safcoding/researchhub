@@ -19,7 +19,7 @@ export function PartnerCard({partner}: PartnerCardProps){
       className={`h-full cursor-pointer hover:shadow-lg transition-all duration-200 hover:scale-[1.02] px-4 py-4`}
     >
       {partner.image && (
-        <div className="w-full h-full flex items-center jusity-center">
+        <div className="w-full h-full flex items-center justify-center">
           <Image 
             src={partner.image} 
             alt={partner.name}

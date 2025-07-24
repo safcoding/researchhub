@@ -98,7 +98,9 @@ export const columns: ColumnDef<Event>[] = [
         header: "Time",
         size: 100,
         cell: ({ row }) => (
-            <div className="w-[100px]">{row.getValue("time") || "N/A"}</div>
+            <div className="w-[150px] truncate" title={row.getValue("time") || ""}>
+            {row.getValue("time") || "N/A"}
+            </div>
         ),
     },
     {

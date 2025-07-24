@@ -15,9 +15,9 @@ export default async function AdminDashboard() {
       
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
         <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Grants</CardTitle>
-            <FileText className="h-4 w-4 text-muted-foreground" />
+          <CardHeader className="flex flex-row items-center space-y-0 pb-2">
+            <CardTitle className="text-xl font-medium">Grants</CardTitle>
+            <FileText className="h-7 w-7 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{counts.grantsCount}</div>
@@ -28,9 +28,9 @@ export default async function AdminDashboard() {
         </Card>
 
         <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Publications</CardTitle>
-            <FileText className="h-4 w-4 text-muted-foreground" />
+          <CardHeader className="flex flex-row items-center space-y-0 pb-2">
+            <CardTitle className="text-xl font-medium">Publications</CardTitle>
+            <FileText className="h-7 w-7 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{counts.publicationsCount}</div>
@@ -41,9 +41,9 @@ export default async function AdminDashboard() {
         </Card>
 
         <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Events</CardTitle>
-            <Calendar className="h-4 w-4 text-muted-foreground" />
+          <CardHeader className="flex flex-row items-center space-y-0 pb-2">
+            <CardTitle className="text-xl font-medium">Events</CardTitle>
+            <Calendar className="h-7 w-7 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{counts.eventsCount}</div>
@@ -54,9 +54,9 @@ export default async function AdminDashboard() {
         </Card>
 
         <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Labs</CardTitle>
-            <FlaskConical className="h-4 w-4 text-muted-foreground" />
+          <CardHeader className="flex flex-row items-centerspace-y-0 pb-2">
+            <CardTitle className="text-xl font-medium">Labs</CardTitle>
+            <FlaskConical className="h-7 w-7 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{counts.labsCount}</div>
@@ -67,9 +67,9 @@ export default async function AdminDashboard() {
         </Card>
 
         <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Partners</CardTitle>
-            <Users className="h-4 w-4 text-muted-foreground" />
+          <CardHeader className="flex flex-row items-center space-y-0 pb-2">
+            <CardTitle className="text-xl font-medium">Partners</CardTitle>
+            <Users className="h-7 w-7 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{counts.partnersCount}</div>
@@ -80,7 +80,7 @@ export default async function AdminDashboard() {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <Card>
           <CardHeader>
-            <CardTitle>Recent Grants</CardTitle>
+            <CardTitle className="text-xl font-bold text-primary">Recent Grants</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="space-y-2">
@@ -101,7 +101,7 @@ export default async function AdminDashboard() {
 
         <Card>
           <CardHeader>
-            <CardTitle>Recent Events</CardTitle>
+            <CardTitle className="text-xl font-bold text-primary">Recent Events</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="space-y-2">

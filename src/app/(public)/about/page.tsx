@@ -7,6 +7,7 @@ const DeputyDean = '/assets/about/deputydean.png';
 const organizationChartImage = '/assets/about/organizationchart.png';
 const MrShaiful = '/assets/about/mrshaiful.png';
 const MrsAriffi = '/assets/about/mrsariffi.png';
+const MrsMahsuri = '/assets/about/mrsmahsuri.jpg';
 
 export default function AboutPage() {
 
@@ -73,7 +74,7 @@ export default function AboutPage() {
 
           <div className="mt-12">
             <h2 className="text-3xl font-bold mb-6">Staff of Research Administration</h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
               <div className="bg-white rounded-lg shadow-md p-6 text-center">
                 <Image
                   src={MrShaiful}
@@ -84,7 +85,6 @@ export default function AboutPage() {
                 />
                 <h3 className="text-xl font-semibold mb-2">MR. MOHD SHAIFUL BIN ZAINAL</h3>
                 <p className="text-gray-600">Senior Administrative Assistant</p>
-                <p className="text-gray-600"><i>iKohza</i></p>
               </div>
               <div className="bg-white rounded-lg shadow-md p-6 text-center">
                 <Image
@@ -96,7 +96,17 @@ export default function AboutPage() {
                 />
                 <h3 className="text-xl font-semibold mb-2">MRS. ARIFFI SURAYA BINTI RAHMANI</h3>
                 <p className="text-gray-600">Research Officer</p>
-                <p className="text-gray-600"><i>iKohza</i></p>
+              </div>
+              <div className="bg-white rounded-lg shadow-md p-6 text-center">
+                <Image
+                  src={MrsMahsuri}
+                  alt="MRS. MAHSURI BINTI KHALID"
+                  width={200}
+                  height={200}
+                  className="rounded-full mb-4 mx-auto"
+                />
+                <h3 className="text-xl font-semibold mb-2">MRS. MAHSURI BINTI KHALID</h3>
+                <p className="text-gray-600">Assistant Secretary (NIA)</p>
               </div>
             </div>
           </div>
