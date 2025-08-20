@@ -11,12 +11,13 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import { addEvent, editEvent } from "../server/events"
-import { useFormStatus, useFormState } from "react-dom"
+import { useFormStatus } from "react-dom"
 import { useState, useEffect } from "react"
 import { event } from "@prisma/client"
 import { Textarea } from "@/components/ui/textarea"
 import imageCompression from 'browser-image-compression'
 import Image from "next/image"
+import { useActionState } from "react"
 
 interface FormState {
   message: string;
@@ -26,7 +27,7 @@ interface FormState {
 }
 
 export function EventForm({ event }: { event?: event }) {
-    const [formState, action] = useFormState(
+    const [formState, action] = useActionState(
         event == null ? addEvent : editEvent.bind(null, event.event_id), 
         { message: "", errors: {} } as FormState
     )
@@ -83,7 +84,7 @@ export function EventForm({ event }: { event?: event }) {
     return (
         <form action={action} className="space-y-8">
             <div className="space-y-2">
-                <Label htmlFor="title">Event Title</Label>
+                <Label htmlFor="title">Event Title <span className="text-red-500">*</span></Label>
                 <Input type="text" id="title" name="title" required defaultValue={event?.title || ""} />
                 {formState.errors?.title && (
                     <div className="text-destructive text-sm">{formState.errors.title[0]}</div>
@@ -91,7 +92,7 @@ export function EventForm({ event }: { event?: event }) {
             </div>
 
             <div className="space-y-2">
-                <Label htmlFor="description">Description</Label>
+                <Label htmlFor="description">Description <span className="text-red-500">*</span></Label>
                 <Textarea 
                     id="description" 
                     name="description" 
@@ -109,7 +110,7 @@ export function EventForm({ event }: { event?: event }) {
             </div>
             
             <div className="space-y-2">
-                <Label htmlFor="category">Category</Label>
+                <Label htmlFor="category">Category <span className="text-red-500">*</span></Label>
                 <Select name="category" defaultValue={event?.category || ""} required>
                     <SelectTrigger>
                         <SelectValue placeholder="Select event category" />
@@ -164,7 +165,7 @@ export function EventForm({ event }: { event?: event }) {
             </div>
 
             <div className="space-y-2">
-                <Label htmlFor="date">Event Date</Label>
+                <Label htmlFor="date">Event Date <span className="text-red-500">*</span></Label>
                 <Input type="date" id="date" name="date" required defaultValue={event?.date ? new Date(event.date).toISOString().split('T')[0] : ""} />
                 {formState.errors?.date && (
                     <div className="text-destructive text-sm">{formState.errors.date[0]}</div>
@@ -191,7 +192,7 @@ export function EventForm({ event }: { event?: event }) {
             </div>
 
             <div className="space-y-2">
-                <Label htmlFor="organizer">Organizer</Label>
+                <Label htmlFor="organizer">Organizer <span className="text-red-500">*</span></Label>
                 <Input type="text" id="organizer" name="organizer" required defaultValue={event?.organizer || ""} />
                 {formState.errors?.organizer && (
                     <div className="text-destructive text-sm">{formState.errors.organizer[0]}</div>
@@ -232,7 +233,7 @@ export function EventForm({ event }: { event?: event }) {
             </div>
 
     <div className="space-y-2">
-                <Label htmlFor="image">Event Image</Label>
+                <Label htmlFor="image">Event Image <span className="text-red-500">*</span></Label>
                 <Input 
                     type="file" 
                     id="image" 
@@ -253,7 +254,7 @@ export function EventForm({ event }: { event?: event }) {
                 {imagePreview && (
                     <div className="mt-2">
                         <p className="text-sm text-gray-600">Preview:</p>
-                        <Image 
+                        <img 
                             src={imagePreview} 
                             alt="Image preview" 
                             className="w-32 h-32 object-cover rounded border"
@@ -264,7 +265,7 @@ export function EventForm({ event }: { event?: event }) {
                 {event?.image && !imagePreview && (
                     <div className="mt-2">
                         <p className="text-sm text-gray-600">Current image:</p>
-                        <Image 
+                        <img 
                             src={event.image} 
                             alt="Current event image" 
                             className="w-32 h-32 object-cover rounded border"

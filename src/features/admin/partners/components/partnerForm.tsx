@@ -17,7 +17,7 @@ interface FormState {
   };
 }
 
-export function PartnerForm({partner}: {partner?: Partner}){
+export function PartnerForm({partner, onSuccess}: {partner?: Partner, onSuccess?: () => void}){
     const [formState, action] = useFormState(
         partner == null ? addPartner : editPartner.bind(null, partner.partner_id),
         { message: "", errors: {}} as FormState
@@ -34,6 +34,11 @@ export function PartnerForm({partner}: {partner?: Partner}){
             }
         }
     }, [formState.errors])
+  useEffect(() => {
+    if (formState.message === "success" && onSuccess) {
+      onSuccess();
+    }
+  }, [formState, onSuccess]);
 
     const handleImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0]
@@ -75,7 +80,7 @@ export function PartnerForm({partner}: {partner?: Partner}){
     return (
         <form action={action} className="space-y-8">
             <div className="space-y-2">
-                <Label htmlFor="name">Partner Name</Label>
+                <Label htmlFor="name">Partner Name <span className="text-red-500">*</span></Label>
                 <Input type="text" id="name" name="name" required defaultValue={partner?.name || ""} />
                 {formState.errors?.name && (
                     <div className="text-destructive text-sm">{formState.errors.name[0]}</div>
@@ -83,7 +88,7 @@ export function PartnerForm({partner}: {partner?: Partner}){
             </div>
 
             <div className="space-y-2">
-                <Label htmlFor="image">Partner  Logo</Label>
+                <Label htmlFor="image">Partner Logo <span className="text-red-500">*</span></Label>
                 <Input
                     type="file"
                     id="image"
@@ -103,7 +108,7 @@ export function PartnerForm({partner}: {partner?: Partner}){
                 {imagePreview && (
                     <div className="mt-2">
                         <p className="text-sm text-gray-600">Preview:</p>
-                        <Image 
+                        <img 
                             src={imagePreview} 
                             alt="Image preview" 
                             className="w-32 h-32 object-cover rounded border"
@@ -114,7 +119,7 @@ export function PartnerForm({partner}: {partner?: Partner}){
                 {partner?.image && !imagePreview && (
                     <div className="mt-2">
                         <p className="text-sm text-gray-600">Current image:</p>
-                        <Image 
+                        <img 
                             src={partner.image} 
                             alt="Current event image" 
                             className="w-32 h-32 object-cover rounded border"

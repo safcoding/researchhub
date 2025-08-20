@@ -3,7 +3,7 @@
 import {z} from "zod"
 import db from "@/db/db"
 import { uploadPartnerImage, deletePartnerImage } from "@/lib/utils/supabase/storage"
-import { redirect, notFound } from "next/navigation"
+import { notFound } from "next/navigation"
 
 
 const fileSchema = z.instanceof(File, { message: "Not a file" })
@@ -53,7 +53,8 @@ export async function addPartner(prevState: FormState, formData: FormData): Prom
 
       }
     })
-    redirect("/admin")
+  return { message: "success" };
+  
   } catch (error) {
     return {
       message: "Failed to create event. Please try again.",
@@ -70,7 +71,7 @@ export async function deletePartner(id: string){
         await deletePartnerImage(partner.image)
     }
     await db.partner.delete({ where: { partner_id: id}})
-    redirect ("/admin")
+    return { message: "success" };
 }
 
 export async function editPartner (id: string, prevState: FormState, formData: FormData): Promise<FormState> {
@@ -106,5 +107,5 @@ export async function editPartner (id: string, prevState: FormState, formData: F
         }
     })
     
-    redirect("/admin/")
+return { message: "success" };
 }

@@ -7,6 +7,7 @@ export default async function AddLabPage(){
             <div className="space-y-4">
                 <BackButton />
                 <h1 className="text-2xl font-bold">Add New Lab</h1>
+                Fields with <span className="text-red-500">*</span> are required fields.
             </div>
             <LabForm />
         </div>

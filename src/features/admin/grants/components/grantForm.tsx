@@ -12,7 +12,7 @@ import {
 } from "@/components/ui/select"
 import { addGrant, editGrant } from "../server/grants"
 import { useFormStatus, } from "react-dom"
-import { useFormState } from "react-dom"
+import { useActionState } from "react"
 import { grant } from "@prisma/client"
 import { useState } from "react"
 
@@ -33,7 +33,7 @@ export function GrantForm( {grant }: { grant?: grant} ){
         ].includes(grant.type) ? grant.type : ""
     );
 
-    const [formState, action] = useFormState(
+    const [formState, action] = useActionState(
         async (prevState: any, formData: FormData) => {
             if (formData.get("type") === "Others") {
                 formData.set("type", formData.get("other_type") as string);
@@ -49,7 +49,7 @@ export function GrantForm( {grant }: { grant?: grant} ){
 
     return <form action={action} className="space-y-8">
         <div className="space-y-2">
-            <Label htmlFor="project_id">Project ID</Label>
+            <Label htmlFor="project_id">Project ID <span className="text-red-500">*</span></Label>
             <Input type="text" id="project_id" name="project_id" required defaultValue={grant?.project_id || ""} />
             {formState.errors?.project_id && (
                 <div className="text-destructive text-sm">{formState.errors.project_id[0]}</div>
@@ -97,7 +97,7 @@ export function GrantForm( {grant }: { grant?: grant} ){
         </div>
 
          <div className="space-y-2">
-                <Label htmlFor="type">Grant Type</Label>
+                <Label htmlFor="type">Grant Type <span className="text-red-500">*</span></Label>
                 <Select
                     name="type"
                     value={selectedType}
@@ -162,7 +162,7 @@ export function GrantForm( {grant }: { grant?: grant} ){
         </div>
 
         <div className="space-y-2">
-            <Label htmlFor="sponsor_category">Sponsor Category</Label>
+            <Label htmlFor="sponsor_category">Sponsor Category <span className="text-red-500">*</span></Label>
             <Select name="sponsor_category" defaultValue={grant?.sponsor_category || ""} required>
                 <SelectTrigger>
                     <SelectValue placeholder="Select Sponsor Category" />
@@ -186,7 +186,7 @@ export function GrantForm( {grant }: { grant?: grant} ){
         </div>
 
         <div className="space-y-2">
-            <Label htmlFor="approved_amount">Approved Amount</Label>
+            <Label htmlFor="approved_amount">Approved Amount <span className="text-red-500">*</span></Label>
             <Input type="number" step="0.01" id="approved_amount" name="approved_amount" defaultValue={grant?.approved_amount?.toString() || ""} />
             {formState.errors?.approved_amount && (
                 <div className="text-destructive text-sm">{formState.errors.approved_amount[0]}</div>

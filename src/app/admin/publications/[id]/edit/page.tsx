@@ -19,6 +19,7 @@ export default async function EditPublicationPage(
             <div className="space-y-4">
                 <BackButton />
                 <h1 className="text-2xl font-bold">Edit Publication</h1>
+                Fields with <span className="text-red-500">*</span> are required fields.
             </div>
             <PublicationForm publication={publication} />
         </div>

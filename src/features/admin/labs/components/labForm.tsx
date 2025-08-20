@@ -12,11 +12,12 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import { addLab, editLab } from "../server/labs"
-import { useFormStatus, useFormState } from "react-dom"
+import { useFormStatus } from "react-dom"
 import { useState } from "react"
 import { lab, equipment } from "@prisma/client"
 import { EquipmentSearch } from "./searchEquipment"
 import { SelectedEquipmentItem } from "./selectEquipment"
+import { useActionState } from "react"
 
 interface FormState {
   message: string;
@@ -38,7 +39,7 @@ interface LabFormProps {
 }
 
 export function LabForm({ lab }: LabFormProps) {
-    const [formState, action] = useFormState(
+    const [formState, action] = useActionState(
         lab == null ? addLab : editLab.bind(null, lab.lab_id), 
         { message: "", errors: {} } as FormState
     )
@@ -70,7 +71,7 @@ export function LabForm({ lab }: LabFormProps) {
                 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="space-y-2">
-                        <Label htmlFor="lab_name">Lab Name *</Label>
+                        <Label htmlFor="lab_name">Lab Name <span className="text-red-500">*</span></Label>
                         <Input 
                             type="text" 
                             id="lab_name" 
@@ -84,7 +85,7 @@ export function LabForm({ lab }: LabFormProps) {
                     </div>
 
                     <div className="space-y-2">
-                        <Label htmlFor="type">Lab Type *</Label>
+                        <Label htmlFor="type">Lab Type <span className="text-red-500">*</span></Label>
                         <Select name="type" defaultValue={lab?.type || ""} required>
                             <SelectTrigger>
                                 <SelectValue placeholder="Select lab type" />

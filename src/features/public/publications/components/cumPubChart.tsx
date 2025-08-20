@@ -47,7 +47,7 @@ export function CumPubCharts({
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <ChartContainer config={cumulativeChartConfig} className="h-[400px] w-[1500px]">
+          <ChartContainer config={cumulativeChartConfig} className="h-[250px] w-full">
             <LineChart
               accessibilityLayer
               data={cumulativeData}

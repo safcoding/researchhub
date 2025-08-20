@@ -67,6 +67,7 @@ export function PartnerTableSection({ partners }: PartnerTableSectionProps) {
         isOpen={isModalOpen}
         onClose={handleCloseModal}
         partner={selectedPartner}
+        onSuccess={handleCloseModal}
       />
     </>
   );
