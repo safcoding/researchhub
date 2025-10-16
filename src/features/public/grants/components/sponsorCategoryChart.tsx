@@ -38,11 +38,11 @@ const generateCategoryConfig = (sponsorData: Array<{category: string, count: num
 }
 
 const COLORS = [
-  "hsl(176, 86%, 28%)",
-  "hsl(175, 34%, 79%)",
-  "hsl(175, 34%, 64%)",
-  "hsl(176, 46%, 43%)",
-  "hsl(175, 34%, 86%)",
+  "hsl(199, 100%, 36%)",
+  "hsl(248, 28%, 43%)",
+  "hsl(324, 45%, 53%)",
+  "hsl(1, 100%, 69%)",
+  "hsl(39, 100%, 50%)",
 ]
 
 export function SponsorTypeChart({

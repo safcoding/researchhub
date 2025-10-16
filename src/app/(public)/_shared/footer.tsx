@@ -14,9 +14,8 @@ const Footer = () => {
           <div>
             <h4 className="text-lg font-semibold mb-4">Resources</h4>
             <ul className="space-y-2">
-              <li><Link href="/dbcri-office" className="text-gray-400 hover:text-white">DBCRI Office</Link></li>
+              <li><Link href="https://research.utm.my/office-kl/" className="text-gray-400 hover:text-white">DVCRI Office</Link></li>
               <li><Link href="https://rmc.utm.my/" target="_blank" className="text-gray-400 hover:text-white">UTM RMC</Link></li>
-              <li><Link href="/downloads" className="text-gray-400 hover:text-white">Downloadable Forms</Link></li>
             </ul>
           </div>
 
