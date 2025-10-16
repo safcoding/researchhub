@@ -46,7 +46,7 @@ function ConferenceContent({ conferences }: ConferenceProps) {
     <>
       <div className="w-full px-4 sm:px-6 lg:px-8 py-16">
         <div className="mx-auto max-w-7xl">
-          <h2 className="text-3xl font-bold mb-8 text-center">Upcoming Conferences</h2>
+          <h2 className="text-5xl font-bold mb-8 text-center">Upcoming Conferences</h2>
           
           <div className="space-y-4">
             {conferences.map((conference) => (

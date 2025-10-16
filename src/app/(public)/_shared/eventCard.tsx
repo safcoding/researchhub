@@ -4,7 +4,6 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Calendar, MapPin, Clock } from "lucide-react"
 import { linkifyText } from "@/lib/linkifyText" 
-import Image from "next/image"
 
 interface Event {
   event_id: string
